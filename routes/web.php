@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostsController;
+use App\Http\Controllers\PredictionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -11,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,3 +22,11 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::group(['middleware' => ['auth']], function () {
+    Route::post('/posts/options/{post_id}', [PostsController::class, 'options']);
+    Route::get('/posts/create', [PostsController::class, 'create']);
+    Route::get('/posts/{post}', [PostsController::class, 'show']);
+    Route::post('/posts', [PostsController::class, 'store']);
+    Route::post('/predictions', [PredictionController::class, 'store']);
+});
