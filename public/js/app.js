@@ -2260,7 +2260,13 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "attracorsAllowed", 10);
 
-    _defineProperty(_assertThisInitialized(_this), "readyState", false);
+    _defineProperty(_assertThisInitialized(_this), "readyButtonState", false);
+
+    _defineProperty(_assertThisInitialized(_this), "readyTimerState", false);
+
+    _defineProperty(_assertThisInitialized(_this), "readyAttractorState", false);
+
+    _defineProperty(_assertThisInitialized(_this), "finishState", false);
 
     _defineProperty(_assertThisInitialized(_this), "startButtonConfiguration", void 0);
 
@@ -2270,74 +2276,98 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "timerShown", false);
 
-    _defineProperty(_assertThisInitialized(_this), "seconds", '');
+    _defineProperty(_assertThisInitialized(_this), "timer", 3);
 
-    _defineProperty(_assertThisInitialized(_this), "attractorSwitch", function () {
-      if (_this.attractorState) {
-        _this.attractorState = false;
-        return;
-      }
+    _defineProperty(_assertThisInitialized(_this), "timerTextColor", [255, 255, 255]);
 
-      _this.attractorState = true;
-    });
+    _defineProperty(_assertThisInitialized(_this), "predictions", []);
 
     _defineProperty(_assertThisInitialized(_this), "addAttractor", function (mouseX, mouseY, p5) {
-      // if (this.attractorState) {
-      // }
-      // this.attractorSwitch();
-      if (_this.attractors.length < _this.attracorsAllowed && mouseX > 0 && mouseX < _this.landgrass.clientWidth && mouseY > 0 && mouseY < _this.landgrass.clientHeight && _this.readyState) {
+      if (_this.attractors.length < _this.attracorsAllowed && mouseX > 0 && mouseX < _this.landgrass.clientWidth && mouseY > 0 && mouseY < _this.landgrass.clientHeight && _this.readyAttractorState) {
         _this.attractors.push(p5.createVector(mouseX, mouseY));
 
         console.log(mouseX, mouseY);
         mouseX = mouseX.toString().indexOf('.') > 0 ? parseInt(mouseX.toString().split('.')[0]) : parseInt(mouseX.toString());
-        mouseY = mouseY.toString().indexOf('.') > 0 ? parseInt(mouseY.toString().split('.')[0]) : parseInt(mouseY.toString()); // Simple POST request with a JSON body using axios
+        mouseY = mouseY.toString().indexOf('.') > 0 ? parseInt(mouseY.toString().split('.')[0]) : parseInt(mouseY.toString());
+        var time = parseInt(_this.timer); // Simple POST request with a JSON body using axios
 
         var data = {
           postId: parseInt(_this.landgrass.dataset.id),
           mouseX: mouseX,
-          mouseY: mouseY
+          mouseY: mouseY,
+          time: time
         };
         axios__WEBPACK_IMPORTED_MODULE_6___default().post('/predictions', data);
-      } // if (this.attractors.length > 0 && this.attractors.length < 2) {
-      // var secondsBetweenActions = this.countdown;
-      // setInterval( function() {
-      // secondsBetweenActions--;
-      // console.log(secondsBetweenActions);
-      // }, 1000 );
-      // }
-
+      }
     });
 
     _defineProperty(_assertThisInitialized(_this), "checkReadyState", function (mouseX, mouseY, p5) {
       if (mouseX > _this.startButtonConfiguration.buttonX && mouseX < _this.startButtonConfiguration.buttonX + _this.startButtonConfiguration.rectWidth) {
         if (mouseY > _this.startButtonConfiguration.buttonY && mouseY < _this.startButtonConfiguration.buttonY + _this.startButtonConfiguration.rectHeight) {
-          _this.readyState = true;
+          _this.readyTimerState = true;
+          _this.readyButtonState = true;
 
           _this.startFirstTimer(p5);
-
-          _this.seconds = 3;
         }
       }
     });
 
-    _defineProperty(_assertThisInitialized(_this), "updateCounter", function (counter) {
-      _this.seconds = counter;
+    _defineProperty(_assertThisInitialized(_this), "updateFirstTimer", function (counter) {
+      _this.timer = counter;
     });
 
     _defineProperty(_assertThisInitialized(_this), "startFirstTimer", function (p5) {
-      var seconds = _this.seconds;
+      _this.timerTextColor = [255, 0, 0];
+      var timer = _this.timer;
       var width = _this.landgrass.clientWidth;
       var height = _this.landgrass.clientHeight;
       var myVar = setInterval(function () {
-        seconds -= 1;
-        if (seconds == 0) seconds = 'GO!';
+        timer--;
 
-        _this.updateCounter(seconds);
+        _this.updateFirstTimer(timer);
 
-        if (seconds < 1) {
-          clearInterval(myVar);
+        if (timer < 1) {
+          clearInterval(myVar); // this.startSecondTimer();
+          // this.readyTimerState = true;
+
+          _this.timerTextColor = [0, 255, 0];
+          _this.timer = 'GO!';
+          setTimeout(function () {
+            _this.startSecondTimer(p5);
+
+            _this.readyAttractorState = true;
+          }, 2000);
         }
       }, 1000);
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "startSecondTimer", function (p5) {
+      _this.timerTextColor = [255, 255, 255];
+      var timer = _this.timer = 60;
+      var width = _this.landgrass.clientWidth;
+      var height = _this.landgrass.clientHeight;
+      var myVar = setInterval(function () {
+        timer--;
+
+        _this.updateFirstTimer(timer);
+
+        if (typeof _this.predictions[timer] !== 'undefined') {
+          _this.addAttractor(_this.predictions[timer].mouseX, _this.predictions[timer].mouseY, p5);
+        }
+
+        if (timer < 1) {
+          clearInterval(myVar); // this.startSecondTimer();
+
+          _this.timer = '';
+          _this.finishState = true;
+        }
+      }, 1000);
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "sleep", function (ms) {
+      return new Promise(function (resolve) {
+        return setTimeout(resolve, ms);
+      });
     });
 
     _defineProperty(_assertThisInitialized(_this), "startTimer", function (p5) {
@@ -2349,7 +2379,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
         _this.updateCounter(seconds);
 
-        if (seconds < 1) {
+        if (seconds <= 1) {
           clearInterval(myVar);
         }
       }, 1000);
@@ -2359,12 +2389,22 @@ var Application = /*#__PURE__*/function (_React$Component) {
       return _this.p5.dist(mx, my, _this.x, _this.y) < _this.r;
     });
 
+    _defineProperty(_assertThisInitialized(_this), "assignPredictions", function (predictions) {
+      var predictionsArr = [];
+      Object.entries(predictions).forEach(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+            key = _ref2[0],
+            value = _ref2[1];
+
+        predictionsArr[key] = value;
+      });
+      _this.predictions = predictionsArr;
+    });
+
     _defineProperty(_assertThisInitialized(_this), "setup", function (p5, parentRef) {
       p5.createCanvas(landgrass.clientWidth, landgrass.clientWidth).parent(parentRef);
       var mouseX = p5.mouseX;
-      var mouseY = p5.mouseY; // console.log(this.state);
-
-      p5.frameRate(60);
+      var mouseY = p5.mouseY; // p5.frameRate(60);
 
       p5.mousePressed = function () {
         // if (this.attractorsState) {
@@ -2377,6 +2417,11 @@ var Application = /*#__PURE__*/function (_React$Component) {
         //
 
       };
+
+      var responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/posts/predictions/' + _this.landgrass.dataset.id, {}).then(function (response) {
+        return _this.assignPredictions(response.data);
+      });
+      console.log(_this.predictions);
     });
 
     _defineProperty(_assertThisInitialized(_this), "draw", function (p5, parentRef) {
@@ -2395,67 +2440,89 @@ var Application = /*#__PURE__*/function (_React$Component) {
       p5.circle(width / 2, height / 2, circleDiameter); // p5.stroke(255);
 
       p5.strokeWeight(0);
-      Object.entries(_this.state.options).forEach(function (_ref) {
-        var _ref2 = _slicedToArray(_ref, 2),
-            key = _ref2[0],
-            value = _ref2[1];
+      p5.noStroke();
+      p5.fill(_this.timerTextColor);
+      p5.textSize(30);
+      p5.textAlign(p5.CENTER, p5.CENTER);
 
-        // let angle = (countOptions - 2) * 180;
-        var angle = _this.listAngles[countOptions][count];
-        angle = angle + p5.PI; // if (countOptions === 2) {
-        // angle = 360;
-        // }
-        // angle = (angle / countOptions) * count;
-
-        var x = width / 2 + radius * p5.cos(angle);
-        var y = height / 2 + radius * p5.sin(angle);
-        p5.fill(255);
-        p5.textSize(20);
-        p5.textAlign(p5.CENTER, p5.CENTER);
-        p5.text(value, x, y);
-        count++;
-      }); // console.log(Object.keys(this.state.options).length);
-      // if (particles.length < this.amountOfFireflies) {
-
-      _this.particles.push(new _Firefly__WEBPACK_IMPORTED_MODULE_4__["default"](p5.random(landgrass.clientWidth), p5.random(landgrass.clientHeight), p5)); // }
-      //
-
-
-      if (particles.length > _this.amountOfFireflies) {
-        particles.splice(0, 1);
+      if (!_this.readyTimerState) {
+        p5.text(_this.state.target + '\n' + _this.state.question, width / 2, height / 2);
       }
 
-      for (var i = 0; i < _this.attractors.length; i++) {
-        p5.fill(240, 10, 10, 150);
-        p5.noStroke();
-        p5.circle(_this.attractors[i].x, _this.attractors[i].y, 10); // hide attraction point stroke(0, 255, 0);
-        // p5.point(this.attractors[i].x, this.attractors[i].y);
+      if (_this.readyTimerState) {
+        Object.entries(_this.state.options).forEach(function (_ref3) {
+          var _ref4 = _slicedToArray(_ref3, 2),
+              key = _ref4[0],
+              value = _ref4[1];
+
+          // let angle = (countOptions - 2) * 180;
+          var angle = _this.listAngles[countOptions][count];
+          angle = angle + p5.PI; // if (countOptions === 2) {
+          // angle = 360;
+          // }
+          // angle = (angle / countOptions) * count;
+
+          var x = width / 2 + radius * p5.cos(angle);
+          var y = height / 2 + radius * p5.sin(angle);
+          p5.fill(255);
+          p5.textSize(20);
+          p5.textAlign(p5.CENTER, p5.CENTER);
+          p5.text(value, x, y);
+          count++;
+        });
       }
 
-      for (var i = 0; i < _this.particles.length; i++) {
-        var particle = _this.particles[i];
+      if (_this.readyTimerState && !_this.finishState) {
+        // console.log(Object.keys(this.state.options).length);
+        // if (particles.length < this.amountOfFireflies) {
+        _this.particles.push(new _Firefly__WEBPACK_IMPORTED_MODULE_4__["default"](p5.random(landgrass.clientWidth), p5.random(landgrass.clientHeight), p5)); // }
+        //
 
-        for (var j = 0; j < _this.attractors.length; j++) {
-          particle.attracted(_this.attractors[j]);
+
+        if (particles.length > _this.amountOfFireflies) {
+          particles.splice(0, 1);
         }
 
-        particle.update();
-        particle.show();
+        for (var i = 0; i < _this.attractors.length; i++) {
+          p5.fill(240, 10, 10, 150);
+          p5.noStroke();
+          p5.circle(_this.attractors[i].x, _this.attractors[i].y, 10); // hide attraction point stroke(0, 255, 0);
+          // p5.point(this.attractors[i].x, this.attractors[i].y);
+        }
+
+        for (var i = 0; i < _this.particles.length; i++) {
+          var particle = _this.particles[i];
+
+          for (var j = 0; j < _this.attractors.length; j++) {
+            particle.attracted(_this.attractors[j]);
+          }
+
+          particle.update();
+          particle.show();
+        }
       } // my button
 
 
-      if (!_this.readyState) {
+      if (!_this.readyButtonState) {
         var startButton = new _StartButton__WEBPACK_IMPORTED_MODULE_5__["default"](p5, _this.landgrass.clientWidth, _this.landgrass.clientHeight);
         _this.startButtonConfiguration = startButton.getConfiguration();
-      } // startButton.display(mouseX, mouseY);
-      // p5.noLoop();
+      }
 
+      if (_this.readyTimerState) {
+        p5.noStroke();
+        p5.fill(_this.timerTextColor);
+        p5.textSize(30);
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.text(_this.timer, width / 2, height / 2);
+      }
 
-      p5.noStroke();
-      p5.fill(255);
-      p5.textSize(30);
-      p5.textAlign(p5.CENTER, p5.CENTER);
-      p5.text(_this.seconds, width / 2, height / 2);
+      if (_this.finishState) {
+        p5.noStroke();
+        p5.fill(_this.timerTextColor);
+        p5.textSize(30);
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.text('FINISH', width / 2, height / 2);
+      }
     });
 
     return _this;
@@ -2463,14 +2530,15 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
   _createClass(Application, [{
     key: "componentDidMount",
-    value: // TODO
+    value: // seconds = 60;
+    // TODO
     // -Ready Button (done)
     // -request options and display (done)
     // -send request (done)
-    // -limit time + add countdown
+    // -limit time + add countdown (done)
     // -interact with others predictions, which means,
     //  that you have to pull the data first
-    // -clean up
+    // -code clean up
     function () {
       var _componentDidMount = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
         var _this2 = this;
@@ -2482,14 +2550,11 @@ var Application = /*#__PURE__*/function (_React$Component) {
               case 0:
                 responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/posts/options/' + this.landgrass.dataset.id, {}).then(function (response) {
                   return _this2.setState({
-                    options: response.data
+                    target: response.data.target,
+                    question: response.data.question,
+                    options: response.data.options
                   });
-                }); // .catch(function (error) {
-                // console.log(error);
-                // });
-                // const article = { title: 'React POST Request Example' };
-                // const response = await axios.post('https://reqres.in/api/articles', article);
-                // this.setState({ 'options': responseData });
+                });
 
               case 1:
               case "end":

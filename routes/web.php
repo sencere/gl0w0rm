@@ -24,9 +24,10 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::post('/posts/options/{post_id}', [PostsController::class, 'options']);
+    Route::post('/posts/options/{post_id}', [PostsController::class, 'getPostOptions']);
     Route::get('/posts/create', [PostsController::class, 'create']);
     Route::get('/posts/{post}', [PostsController::class, 'show']);
     Route::post('/posts', [PostsController::class, 'store']);
     Route::post('/predictions', [PredictionController::class, 'store']);
+    Route::post('/posts/predictions/{post_id}', [PostsController::class, 'getPostPredictions']);
 });

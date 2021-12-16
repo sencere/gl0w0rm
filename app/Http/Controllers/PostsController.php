@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Post;
-use App\Models\Option;
+use App\Models\Prediction;
 
 class PostsController extends Controller
 {
@@ -44,18 +44,45 @@ class PostsController extends Controller
 
         session()->flash('message', 'Your post has now been published.');
 
-        return redirect('/home');
+        return redirect()->home();
     }
 
-    public function options($number) {
-        $options = Post::find($number)->options;
+    public function getPostOptions($number) {
+        $post = Post::find($number);
+        $options = $post->options;
         $optionArr = [];
+        $dataArr = [];
 
         if (isset($options)) {
             foreach ($options as $value) {
                 $optionArr[$value->id] = $value->option;
             }
         }
-        return $optionArr;
+
+        $dataArr = [
+            'target' => $post->target,
+            'question' => $post->question,
+            'options' => $optionArr
+        ];
+
+        return $dataArr;
+    }
+
+    public function getPostPredictions($postId) {
+        $postId = intval($postId);
+        $attractorAvg = [];
+        $attractorCount = Prediction::where('post_id', '=', 1)->get()->max('attractor');
+
+        for($i = 0; $i < $attractorCount; $i++) {
+            $time = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))->get()->avg('time');
+            $mouseX = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))->get()->avg('mouseX');
+            $mouseY = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))->get()->avg('mouseY');
+
+            $attractorAvg[intval($time)] = [
+                'mouseX' => $mouseX,
+                'mouseY' => $mouseY
+            ];
+        }
+        return $attractorAvg;
     }
 }

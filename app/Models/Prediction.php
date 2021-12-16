@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Prediction extends Model
 {
     use HasFactory;
-    protected $fillable = ['mouseX', 'mouseY', 'user_id', 'post_id'];
+    protected $fillable = ['user_id', 'post_id', 'attractor', 'time', 'mouseX', 'mouseY'];
 
     public function post()
     {

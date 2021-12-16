@@ -17,6 +17,8 @@ class CreatePredictionsTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('post_id');
+            $table->integer('attractor');
+            $table->integer('time');
             $table->integer('mouseX');
             $table->integer('mouseY');
             $table->timestamps();
