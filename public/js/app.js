@@ -2282,14 +2282,39 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "predictions", []);
 
+    _defineProperty(_assertThisInitialized(_this), "attractorCount", 0);
+
+    _defineProperty(_assertThisInitialized(_this), "completed", false);
+
+    _defineProperty(_assertThisInitialized(_this), "smCircleX", 0);
+
+    _defineProperty(_assertThisInitialized(_this), "smCircleY", 0);
+
+    _defineProperty(_assertThisInitialized(_this), "secondTimer", 10);
+
+    _defineProperty(_assertThisInitialized(_this), "setPredictionCompleted", function () {
+      _this.readyButtonState = true;
+      _this.readyTimerState = true;
+      _this.readyAttractorState = false;
+      _this.finishState = true;
+      _this.completed = true;
+      _this.timer = '';
+    });
+
     _defineProperty(_assertThisInitialized(_this), "addAttractor", function (mouseX, mouseY, p5) {
-      if (_this.attractors.length < _this.attracorsAllowed && mouseX > 0 && mouseX < _this.landgrass.clientWidth && mouseY > 0 && mouseY < _this.landgrass.clientHeight && _this.readyAttractorState) {
+      var botClick = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+
+      if (_this.attractorCount < _this.attracorsAllowed && mouseX > 0 && mouseX < _this.landgrass.clientWidth && mouseY > 0 && mouseY < _this.landgrass.clientHeight && _this.readyAttractorState) {
         _this.attractors.push(p5.createVector(mouseX, mouseY));
 
-        console.log(mouseX, mouseY);
-        mouseX = mouseX.toString().indexOf('.') > 0 ? parseInt(mouseX.toString().split('.')[0]) : parseInt(mouseX.toString());
-        mouseY = mouseY.toString().indexOf('.') > 0 ? parseInt(mouseY.toString().split('.')[0]) : parseInt(mouseY.toString());
-        var time = parseInt(_this.timer); // Simple POST request with a JSON body using axios
+        mouseX = parseInt(mouseX.toFixed(0));
+        mouseY = parseInt(mouseY.toFixed(0));
+        var time = parseInt(_this.timer);
+
+        if (!botClick) {
+          _this.attractorCount++;
+        } // Simple POST request with a JSON body using axios
+
 
         var data = {
           postId: parseInt(_this.landgrass.dataset.id),
@@ -2302,12 +2327,14 @@ var Application = /*#__PURE__*/function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "checkReadyState", function (mouseX, mouseY, p5) {
-      if (mouseX > _this.startButtonConfiguration.buttonX && mouseX < _this.startButtonConfiguration.buttonX + _this.startButtonConfiguration.rectWidth) {
-        if (mouseY > _this.startButtonConfiguration.buttonY && mouseY < _this.startButtonConfiguration.buttonY + _this.startButtonConfiguration.rectHeight) {
-          _this.readyTimerState = true;
-          _this.readyButtonState = true;
+      if (!_this.completed) {
+        if (mouseX > _this.startButtonConfiguration.buttonX && mouseX < _this.startButtonConfiguration.buttonX + _this.startButtonConfiguration.rectWidth) {
+          if (mouseY > _this.startButtonConfiguration.buttonY && mouseY < _this.startButtonConfiguration.buttonY + _this.startButtonConfiguration.rectHeight) {
+            _this.readyTimerState = true;
+            _this.readyButtonState = true;
 
-          _this.startFirstTimer(p5);
+            _this.startFirstTimer(p5);
+          }
         }
       }
     });
@@ -2332,6 +2359,9 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
           _this.timerTextColor = [0, 255, 0];
           _this.timer = 'GO!';
+
+          _this.getPredictions();
+
           setTimeout(function () {
             _this.startSecondTimer(p5);
 
@@ -2343,7 +2373,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "startSecondTimer", function (p5) {
       _this.timerTextColor = [255, 255, 255];
-      var timer = _this.timer = 60;
+      var timer = _this.secondTimer;
       var width = _this.landgrass.clientWidth;
       var height = _this.landgrass.clientHeight;
       var myVar = setInterval(function () {
@@ -2360,6 +2390,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
           _this.timer = '';
           _this.finishState = true;
+          _this.readyAttractorState = false;
+          console.log(_this.readyButtonState, _this.readyTimerState, _this.readyAttractorState, _this.finishState);
         }
       }, 1000);
     });
@@ -2385,8 +2417,10 @@ var Application = /*#__PURE__*/function (_React$Component) {
       }, 1000);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "contains", function (mx, my) {
-      return _this.p5.dist(mx, my, _this.x, _this.y) < _this.r;
+    _defineProperty(_assertThisInitialized(_this), "getPredictions", function () {
+      var responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/posts/predictions/' + _this.landgrass.dataset.id, {}).then(function (response) {
+        return _this.assignPredictions(response.data);
+      });
     });
 
     _defineProperty(_assertThisInitialized(_this), "assignPredictions", function (predictions) {
@@ -2401,27 +2435,100 @@ var Application = /*#__PURE__*/function (_React$Component) {
       _this.predictions = predictionsArr;
     });
 
+    _defineProperty(_assertThisInitialized(_this), "getSmallCircleCoordinates", function () {
+      var count = _this.particles.length;
+      console.log(count);
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "displayCircleMiddleText", function (p5, width, height, middleText) {
+      p5.noStroke();
+      p5.fill(_this.timerTextColor);
+      p5.textSize(30);
+      p5.textAlign(p5.CENTER, p5.CENTER);
+      p5.text(middleText, width / 2, height / 2);
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "displayPredictionResults", function (p5, width, height) {
+      var countOptions = Object.keys(_this.state.options).length;
+      var count = 0;
+      var circleDiameter = width / 2 - 1 / 20 * width;
+      var radius = circleDiameter / 2;
+      var resultArr = [];
+      var minValue = 1000;
+      var winner = '';
+      var middleText = '';
+      var minDistance = 0;
+      var distanceSum = 1;
+      var percentagePerOption = 100 / countOptions;
+
+      if (_this.predictions.length > 0) {
+        Object.entries(_this.state.options).forEach(function (_ref3) {
+          var _ref4 = _slicedToArray(_ref3, 2),
+              key = _ref4[0],
+              value = _ref4[1];
+
+          var angle = _this.listAngles[countOptions][count];
+          angle = angle + p5.PI;
+          var x = width / 2 + radius * p5.cos(angle);
+          var y = height / 2 + radius * p5.sin(angle);
+          var positionTextX = x;
+          var positionTextY = y - 20; // -sum of all distances between prediction ball and prediction point
+          //
+
+          var distance = p5.dist(x, y, _this.smCircleX, _this.smCircleY);
+          distanceSum += distance;
+
+          if (distance < minValue) {
+            winner = value;
+            minDistance = distance;
+          }
+
+          resultArr.push([distance, positionTextX, positionTextY]);
+          count++;
+        }); // resultArr.forEach(function(value, key) {
+        // let avgDistance = distanceSum / countOptions;
+        // let ratio = value[0] / avgDistance;
+        // let result = (ratio * percentagePerOption);
+        // let result = (ratio > 1) ? percentagePerOption - ((ratio - 1) * percentagePerOption) : (1 - ratio) * percentagePerOption;
+        // 
+        // 
+        // console.log(result);
+        // console.log(ratio);
+        // 
+        // p5.fill(0,0,255);
+        // p5.textSize(20);
+        // p5.textAlign(p5.CENTER, p5.CENTER);
+        // 
+        // p5.text(p5.random(0,1).toFixed(2), positionTextX, positionTextY);
+        // p5.text(Math.abs(radius - value[0]).toFixed(2) + '%', value[1], value[2]);
+        // });
+
+        _this.displayCircleMiddleText(p5, width, height, winner);
+
+        p5.noLoop();
+        console.log(_this.predictions.length);
+      } // console.log(resultArr['test']);
+      // p5.noLoop();
+
+    });
+
     _defineProperty(_assertThisInitialized(_this), "setup", function (p5, parentRef) {
       p5.createCanvas(landgrass.clientWidth, landgrass.clientWidth).parent(parentRef);
       var mouseX = p5.mouseX;
-      var mouseY = p5.mouseY; // p5.frameRate(60);
+      var mouseY = p5.mouseY;
+      _this.smCircleX = landgrass.clientWidth / 2;
+      _this.smCircleY = landgrass.clientHeight / 2; // p5.frameRate(60);
 
-      p5.mousePressed = function () {
-        // if (this.attractorsState) {
-        // }
-        _this.addAttractor(p5.mouseX, p5.mouseY, p5);
+      if (!_this.completed) {
+        p5.mousePressed = function () {
+          _this.addAttractor(p5.mouseX, p5.mouseY, p5, false);
 
-        _this.checkReadyState(p5.mouseX, p5.mouseY, p5); // if (startButton.contains(mouseX, mouseY) && attractorsState === false) {
-        // attractorsSwitch();
-        // }
-        //
+          _this.checkReadyState(p5.mouseX, p5.mouseY, p5);
+        };
+      }
 
-      };
-
-      var responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/posts/predictions/' + _this.landgrass.dataset.id, {}).then(function (response) {
-        return _this.assignPredictions(response.data);
-      });
-      console.log(_this.predictions);
+      _this.secondTimer = _this.state.time; // this.getPredictions();
+      // this.setPredictionCompleted();
     });
 
     _defineProperty(_assertThisInitialized(_this), "draw", function (p5, parentRef) {
@@ -2437,31 +2544,26 @@ var Application = /*#__PURE__*/function (_React$Component) {
       p5.background(backgroundColor);
       p5.fill(circleColor);
       p5.noStroke();
-      p5.circle(width / 2, height / 2, circleDiameter); // p5.stroke(255);
-
+      p5.circle(width / 2, height / 2, circleDiameter);
       p5.strokeWeight(0);
-      p5.noStroke();
-      p5.fill(_this.timerTextColor);
-      p5.textSize(30);
-      p5.textAlign(p5.CENTER, p5.CENTER);
-
-      if (!_this.readyTimerState) {
-        p5.text(_this.state.target + '\n' + _this.state.question, width / 2, height / 2);
-      }
 
       if (_this.readyTimerState) {
-        Object.entries(_this.state.options).forEach(function (_ref3) {
-          var _ref4 = _slicedToArray(_ref3, 2),
-              key = _ref4[0],
-              value = _ref4[1];
+        // let circleColor = p5.color(5, 8, 163);
+        var _circleColor = p5.color(200, 0, 0);
 
-          // let angle = (countOptions - 2) * 180;
+        _circleColor.setAlpha(128 + 128 * (p5.sin(p5.millis() / 1000) + 0.7));
+
+        p5.fill(_circleColor);
+        p5.noStroke();
+        p5.circle(_this.smCircleX, _this.smCircleY, circleDiameter / 4);
+        p5.strokeWeight(0);
+        Object.entries(_this.state.options).forEach(function (_ref5) {
+          var _ref6 = _slicedToArray(_ref5, 2),
+              key = _ref6[0],
+              value = _ref6[1];
+
           var angle = _this.listAngles[countOptions][count];
-          angle = angle + p5.PI; // if (countOptions === 2) {
-          // angle = 360;
-          // }
-          // angle = (angle / countOptions) * count;
-
+          angle = angle + p5.PI;
           var x = width / 2 + radius * p5.cos(angle);
           var y = height / 2 + radius * p5.sin(angle);
           p5.fill(255);
@@ -2470,6 +2572,15 @@ var Application = /*#__PURE__*/function (_React$Component) {
           p5.text(value, x, y);
           count++;
         });
+      }
+
+      p5.noStroke();
+      p5.fill(_this.timerTextColor);
+      p5.textSize(30);
+      p5.textAlign(p5.CENTER, p5.CENTER);
+
+      if (!_this.readyTimerState) {
+        p5.text(_this.state.target + '\n' + _this.state.question, width / 2, height / 2);
       }
 
       if (_this.readyTimerState && !_this.finishState) {
@@ -2490,8 +2601,14 @@ var Application = /*#__PURE__*/function (_React$Component) {
           // p5.point(this.attractors[i].x, this.attractors[i].y);
         }
 
-        for (var i = 0; i < _this.particles.length; i++) {
+        var particleSumX = 0;
+        var particleSumY = 0;
+        var particleLength = _this.particles.length;
+
+        for (var i = 0; i < particleLength; i++) {
           var particle = _this.particles[i];
+          particleSumX += _this.particles[0].pos.x;
+          particleSumY += _this.particles[0].pos.y;
 
           for (var j = 0; j < _this.attractors.length; j++) {
             particle.attracted(_this.attractors[j]);
@@ -2499,6 +2616,21 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
           particle.update();
           particle.show();
+        }
+
+        var concentrationX = particleSumX / particleLength;
+        var concentrationY = particleSumY / particleLength;
+
+        if (_this.smCircleX < concentrationX) {
+          _this.smCircleX = _this.smCircleX + 0.8;
+        } else {
+          _this.smCircleX = _this.smCircleX - 0.8;
+        }
+
+        if (_this.smCircleY < concentrationY) {
+          _this.smCircleY = _this.smCircleY + 0.8;
+        } else {
+          _this.smCircleY = _this.smCircleY - 0.8;
         }
       } // my button
 
@@ -2517,11 +2649,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       }
 
       if (_this.finishState) {
-        p5.noStroke();
-        p5.fill(_this.timerTextColor);
-        p5.textSize(30);
-        p5.textAlign(p5.CENTER, p5.CENTER);
-        p5.text('FINISH', width / 2, height / 2);
+        _this.displayPredictionResults(p5, width, height);
       }
     });
 
@@ -2530,14 +2658,15 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
   _createClass(Application, [{
     key: "componentDidMount",
-    value: // seconds = 60;
-    // TODO
+    value: // TODO
     // -Ready Button (done)
     // -request options and display (done)
     // -send request (done)
     // -limit time + add countdown (done)
     // -interact with others predictions, which means,
-    //  that you have to pull the data first
+    //  that you have to pull the data first (done)
+    // -show winner (confidence level)
+    // -prediction
     // -code clean up
     function () {
       var _componentDidMount = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
@@ -2552,7 +2681,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
                   return _this2.setState({
                     target: response.data.target,
                     question: response.data.question,
-                    options: response.data.options
+                    options: response.data.options,
+                    time: response.data.time
                   });
                 });
 

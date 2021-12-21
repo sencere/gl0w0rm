@@ -23,7 +23,11 @@ class Application extends React.Component {
     timer = 3;
     timerTextColor = [255, 255, 255];
     predictions = [];
-    // seconds = 60;
+    attractorCount = 0;
+    completed = false;
+    smCircleX = 0;
+    smCircleY = 0;
+    secondTimer = 10;
 
     // TODO
     // -Ready Button (done)
@@ -31,7 +35,9 @@ class Application extends React.Component {
     // -send request (done)
     // -limit time + add countdown (done)
     // -interact with others predictions, which means,
-    //  that you have to pull the data first
+    //  that you have to pull the data first (done)
+    // -show winner (confidence level)
+    // -prediction
     // -code clean up
 
     async componentDidMount() {
@@ -39,20 +45,34 @@ class Application extends React.Component {
             .then(response => this.setState({
                 target: response.data.target,
                 question: response.data.question,
-                options: response.data.options
+                options: response.data.options, 
+                time: response.data.time
             }));
     };
 
-    addAttractor = (mouseX, mouseY, p5) => {
-        if (this.attractors.length < this.attracorsAllowed &&
+    setPredictionCompleted = () => {
+        this.readyButtonState = true;
+        this.readyTimerState = true;
+        this.readyAttractorState = false;
+        this.finishState = true;
+        this.completed = true;
+        this.timer = '';
+    };
+
+    addAttractor = (mouseX, mouseY, p5, botClick=true) => {
+        if (this.attractorCount < this.attracorsAllowed &&
             (mouseX > 0 && mouseX < this.landgrass.clientWidth && mouseY > 0 && mouseY < this.landgrass.clientHeight) &&
             this.readyAttractorState) {
             this.attractors.push(p5.createVector(mouseX, mouseY));
-            console.log(mouseX, mouseY);
 
-            mouseX = mouseX.toString().indexOf('.') > 0 ? parseInt(mouseX.toString().split('.')[0]) : parseInt(mouseX.toString());
-            mouseY = mouseY.toString().indexOf('.') > 0 ? parseInt(mouseY.toString().split('.')[0]) : parseInt(mouseY.toString());
+            mouseX = parseInt(mouseX.toFixed(0));
+            mouseY = parseInt(mouseY.toFixed(0));
             let time = parseInt(this.timer);
+
+            if (!botClick) {
+                this.attractorCount++;
+            }
+
             // Simple POST request with a JSON body using axios
             const data = {
                 postId: parseInt(this.landgrass.dataset.id),
@@ -65,15 +85,16 @@ class Application extends React.Component {
     };
 
     checkReadyState = (mouseX, mouseY, p5) => {
-        if (mouseX > this.startButtonConfiguration.buttonX && mouseX < this.startButtonConfiguration.buttonX + this.startButtonConfiguration.rectWidth) {
-            if (mouseY > this.startButtonConfiguration.buttonY && mouseY < this.startButtonConfiguration.buttonY + this.startButtonConfiguration.rectHeight) {
-                this.readyTimerState = true;
-                this.readyButtonState = true;
-                this.startFirstTimer(p5);
+        if (!this.completed) {
+            if (mouseX > this.startButtonConfiguration.buttonX && mouseX < this.startButtonConfiguration.buttonX + this.startButtonConfiguration.rectWidth) {
+                if (mouseY > this.startButtonConfiguration.buttonY && mouseY < this.startButtonConfiguration.buttonY + this.startButtonConfiguration.rectHeight) {
+                    this.readyTimerState = true;
+                    this.readyButtonState = true;
+                    this.startFirstTimer(p5);
+                }
             }
         }
     };
-
 
     updateFirstTimer = (counter) => {
         this.timer = counter;
@@ -93,6 +114,7 @@ class Application extends React.Component {
                 // this.readyTimerState = true;
                 this.timerTextColor = [0, 255, 0];
                 this.timer = 'GO!';
+                this.getPredictions();
                 setTimeout(() =>  {
                     this.startSecondTimer(p5);
                     this.readyAttractorState = true;
@@ -103,7 +125,7 @@ class Application extends React.Component {
 
     startSecondTimer = (p5) => {
         this.timerTextColor = [255, 255, 255];
-        let timer = this.timer = 60;
+        let timer = this.secondTimer;
         let width = this.landgrass.clientWidth;
         let height = this.landgrass.clientHeight;
         let myVar = setInterval(() => {
@@ -118,6 +140,8 @@ class Application extends React.Component {
                 // this.startSecondTimer();
                 this.timer = '';
                 this.finishState = true;
+                this.readyAttractorState = false;
+                console.log(this.readyButtonState, this.readyTimerState, this.readyAttractorState, this.finishState);
             }
         }, 1000);
     };
@@ -139,9 +163,10 @@ class Application extends React.Component {
         }, 1000);
     };
 
-    contains = (mx, my) => {
-        return this.p5.dist(mx, my, this.x, this.y) < this.r;
-    };
+    getPredictions = () => {
+        let responseData = axios.post('/posts/predictions/' + this.landgrass.dataset.id, {})
+            .then(response => this.assignPredictions(response.data));
+    }
 
     assignPredictions = (predictions) => {
         let predictionsArr = [];
@@ -152,25 +177,103 @@ class Application extends React.Component {
         this.predictions = predictionsArr;
     };
 
+    getSmallCircleCoordinates = () => {
+        let count = this.particles.length;
+        console.log(count);
+    };
+
+    displayCircleMiddleText = (p5, width, height, middleText) => {
+        p5.noStroke();
+        p5.fill(this.timerTextColor);
+        p5.textSize(30);
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.text(middleText, width/2, height/2);
+    };
+
+    displayPredictionResults = (p5, width, height) => {
+        let countOptions = Object.keys(this.state.options).length;
+        let count = 0;
+        let circleDiameter = (width/2) - (1/20 * width);
+        let radius = circleDiameter/2;
+        let resultArr = [];
+        let minValue = 1000;
+        let winner = '';
+        let middleText = '';
+        let minDistance = 0;
+        let distanceSum = 1;
+        let percentagePerOption = 100 / countOptions;
+
+        if (this.predictions.length > 0) {
+            Object.entries(this.state.options).forEach(([key, value]) => {
+                let angle = this.listAngles[countOptions][count];
+                angle = angle + p5.PI;
+
+                let x = (width/2) + radius * p5.cos(angle);
+                let y = (height/2) + radius * p5.sin(angle);
+
+                let positionTextX = x;
+                let positionTextY = y - 20;
+
+
+                // -sum of all distances between prediction ball and prediction point
+                //
+                let distance =p5.dist(x, y, this.smCircleX, this.smCircleY);
+                distanceSum += distance;
+
+                if (distance < minValue) {
+                    winner = value;
+                    minDistance = distance;
+                }
+
+                resultArr.push([distance, positionTextX, positionTextY]); 
+                count++;
+            });
+
+            // resultArr.forEach(function(value, key) {
+                // let avgDistance = distanceSum / countOptions;
+                // let ratio = value[0] / avgDistance;
+                // let result = (ratio * percentagePerOption);
+                // let result = (ratio > 1) ? percentagePerOption - ((ratio - 1) * percentagePerOption) : (1 - ratio) * percentagePerOption;
+// 
+// 
+                // console.log(result);
+                // console.log(ratio);
+// 
+                // p5.fill(0,0,255);
+                // p5.textSize(20);
+                // p5.textAlign(p5.CENTER, p5.CENTER);
+// 
+                // p5.text(p5.random(0,1).toFixed(2), positionTextX, positionTextY);
+                // p5.text(Math.abs(radius - value[0]).toFixed(2) + '%', value[1], value[2]);
+            // });
+
+
+            this.displayCircleMiddleText(p5, width, height, winner);
+            p5.noLoop();
+            console.log(this.predictions.length);
+        }
+
+        // console.log(resultArr['test']);
+
+        // p5.noLoop();
+    };
+
     setup = (p5, parentRef) => {
         p5.createCanvas(landgrass.clientWidth, landgrass.clientWidth).parent(parentRef);
         let mouseX = p5.mouseX;
         let mouseY = p5.mouseY;
+        this.smCircleX = landgrass.clientWidth / 2;
+        this.smCircleY = landgrass.clientHeight / 2;
         // p5.frameRate(60);
-        p5.mousePressed = () => {
-            // if (this.attractorsState) {
-            // }
-            this.addAttractor(p5.mouseX, p5.mouseY, p5);
-            this.checkReadyState(p5.mouseX, p5.mouseY, p5);
-            // if (startButton.contains(mouseX, mouseY) && attractorsState === false) {
-            // attractorsSwitch();
-            // }
-            //
+        if (!this.completed) {
+            p5.mousePressed = () => {
+                this.addAttractor(p5.mouseX, p5.mouseY, p5, false);
+                this.checkReadyState(p5.mouseX, p5.mouseY, p5);
+            }
         }
-        let responseData = axios.post('/posts/predictions/' + this.landgrass.dataset.id, {})
-            .then(response => this.assignPredictions(response.data));
-
-        console.log(this.predictions);
+        this.secondTimer = this.state.time;
+        // this.getPredictions();
+        // this.setPredictionCompleted();
     };
 
     draw = (p5, parentRef) => {
@@ -188,8 +291,33 @@ class Application extends React.Component {
         p5.fill(circleColor);
         p5.noStroke();
         p5.circle(width/2, height/2, circleDiameter);
-        // p5.stroke(255);
         p5.strokeWeight(0);
+
+        if (this.readyTimerState) {
+
+            // let circleColor = p5.color(5, 8, 163);
+            let circleColor = p5.color(200, 0, 0);
+            circleColor.setAlpha(128 + 128 * (p5.sin(p5.millis() / 1000) + 0.7));
+
+            p5.fill(circleColor);
+            p5.noStroke();
+            p5.circle(this.smCircleX, this.smCircleY, circleDiameter/4);
+            p5.strokeWeight(0);
+
+            Object.entries(this.state.options).forEach(([key, value]) => {
+                let angle = this.listAngles[countOptions][count];
+                angle = angle + p5.PI;
+
+                let x = (width/2) + radius * p5.cos(angle);
+                let y = (height/2) + radius * p5.sin(angle);
+
+                p5.fill(255);
+                p5.textSize(20);
+                p5.textAlign(p5.CENTER, p5.CENTER);
+                p5.text(value, x, y);
+                count++;
+            });
+        }
 
         p5.noStroke();
         p5.fill(this.timerTextColor);
@@ -197,27 +325,6 @@ class Application extends React.Component {
         p5.textAlign(p5.CENTER, p5.CENTER);
         if (!this.readyTimerState) {
             p5.text(this.state.target + '\n' + this.state.question, width/2, height/2);
-        }
-
-        if (this.readyTimerState) {
-            Object.entries(this.state.options).forEach(([key, value]) => {
-                // let angle = (countOptions - 2) * 180;
-                let angle = this.listAngles[countOptions][count];
-                angle = angle + p5.PI;
-
-                // if (countOptions === 2) {
-                // angle = 360;
-                // }
-                // angle = (angle / countOptions) * count;
-
-                let x = (width/2) + radius * p5.cos(angle);
-                let y = (height/2) + radius * p5.sin(angle);
-                p5.fill(255);
-                p5.textSize(20);
-                p5.textAlign(p5.CENTER, p5.CENTER);
-                p5.text(value, x, y);
-                count++;
-            });
         }
 
         if (this.readyTimerState && !this.finishState) {
@@ -237,15 +344,36 @@ class Application extends React.Component {
                 // hide attraction point stroke(0, 255, 0);
                 // p5.point(this.attractors[i].x, this.attractors[i].y);
             }
+            let particleSumX = 0;
+            let particleSumY = 0;
+            let particleLength = this.particles.length;
 
-            for (var i = 0; i < this.particles.length; i++) {
+            for (var i = 0; i < particleLength; i++) {
                 var particle = this.particles[i];
+                particleSumX += this.particles[0].pos.x;
+                particleSumY += this.particles[0].pos.y;
                 for (var j = 0; j < this.attractors.length; j++) {
                     particle.attracted(this.attractors[j]);
                 }
                 particle.update();
                 particle.show();
             }
+
+            let concentrationX = particleSumX / particleLength;
+            let concentrationY = particleSumY / particleLength;
+
+            if (this.smCircleX < concentrationX) {
+                this.smCircleX = this.smCircleX + 0.8;
+            } else {
+                this.smCircleX = this.smCircleX - 0.8;
+            }
+
+            if (this.smCircleY < concentrationY) {
+                this.smCircleY = this.smCircleY + 0.8;
+            } else {
+                this.smCircleY = this.smCircleY - 0.8;
+            }
+
         }
 
         // my button
@@ -263,12 +391,7 @@ class Application extends React.Component {
         }
 
         if (this.finishState) {
-            p5.noStroke();
-            p5.fill(this.timerTextColor);
-            p5.textSize(30);
-            p5.textAlign(p5.CENTER, p5.CENTER);
-            p5.text('FINISH', width/2, height/2);
-
+            this.displayPredictionResults(p5, width, height);
         }
     }
 

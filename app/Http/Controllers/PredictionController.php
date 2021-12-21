@@ -16,10 +16,10 @@ class PredictionController extends Controller
             'mouseY' => 'required|numeric|min:1',
             'time' =>   'required|numeric|min:1'
         ]);
+        $postId = request('postId');
+        $userId = auth()->user()->id;
 
-        $userId =  auth()->user()->id;
-
-        $predictionCount = Prediction::where('user_id', '=', $userId)->get()->count();
+        $predictionCount = Prediction::whereRaw('user_id=' . $userId . ' and post_id=' . $postId)->get()->count();
         $predictionCount = $predictionCount === 0 ? 1 : $predictionCount + 1;
 
         $post = Post::find(request('postId'));

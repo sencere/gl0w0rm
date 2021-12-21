@@ -50,6 +50,7 @@ class PostsController extends Controller
     public function getPostOptions($number) {
         $post = Post::find($number);
         $options = $post->options;
+        $time = $post->time;
         $optionArr = [];
         $dataArr = [];
 
@@ -62,7 +63,8 @@ class PostsController extends Controller
         $dataArr = [
             'target' => $post->target,
             'question' => $post->question,
-            'options' => $optionArr
+            'options' => $optionArr,
+            'time' => $time
         ];
 
         return $dataArr;
