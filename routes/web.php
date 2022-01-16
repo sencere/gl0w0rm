@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\PredictionController;
+use App\Http\Controllers\ResultController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/posts', [PostsController::class, 'store']);
     Route::post('/predictions', [PredictionController::class, 'store']);
     Route::post('/posts/predictions/{post_id}', [PostsController::class, 'getPostPredictions']);
+    Route::post('/results', [ResultController::class, 'store']);
+    Route::post('/results/result/{post_id}', [ResultController::class, 'getResult']);
 });

@@ -2272,7 +2272,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "options", {});
 
-    _defineProperty(_assertThisInitialized(_this), "listAngles", [0, 0, [3.141593, 6.283185], [1.570796, 3.926991, 5.4977871], [0.5235988, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 5.759587]]);
+    _defineProperty(_assertThisInitialized(_this), "listAngles", [0, 0, [3.141593, 6.283185], [1.570796, 3.926991, 5.4977871], [0.5235988, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 4.712389, 5.759587]]);
 
     _defineProperty(_assertThisInitialized(_this), "timerShown", false);
 
@@ -2309,12 +2309,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
         mouseX = parseInt(mouseX.toFixed(0));
         mouseY = parseInt(mouseY.toFixed(0));
-        var time = parseInt(_this.timer);
-
-        if (!botClick) {
-          _this.attractorCount++;
-        } // Simple POST request with a JSON body using axios
-
+        var time = parseInt(_this.timer); // Simple POST request with a JSON body using axios
 
         var data = {
           postId: parseInt(_this.landgrass.dataset.id),
@@ -2322,7 +2317,11 @@ var Application = /*#__PURE__*/function (_React$Component) {
           mouseY: mouseY,
           time: time
         };
-        axios__WEBPACK_IMPORTED_MODULE_6___default().post('/predictions', data);
+
+        if (!botClick) {
+          _this.attractorCount++;
+          axios__WEBPACK_IMPORTED_MODULE_6___default().post('/predictions', data);
+        }
       }
     });
 
@@ -2357,8 +2356,9 @@ var Application = /*#__PURE__*/function (_React$Component) {
           clearInterval(myVar); // this.startSecondTimer();
           // this.readyTimerState = true;
 
-          _this.timerTextColor = [0, 255, 0];
+          _this.timerTextColor = [255, 0, 0];
           _this.timer = 'GO!';
+          _this.secondTimer = _this.state.time;
 
           _this.getPredictions();
 
@@ -2372,8 +2372,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "startSecondTimer", function (p5) {
-      _this.timerTextColor = [255, 255, 255];
       var timer = _this.secondTimer;
+      _this.timerTextColor = [255, 255, 255];
       var width = _this.landgrass.clientWidth;
       var height = _this.landgrass.clientHeight;
       var myVar = setInterval(function () {
@@ -2423,6 +2423,34 @@ var Application = /*#__PURE__*/function (_React$Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "getResult", function (p5) {
+      var responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/results/result/' + _this.landgrass.dataset.id, {
+        postId: _this.landgrass.dataset.id
+      }).then(function (response) {
+        return _this.assignResult(response.data, p5);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "assignResult", function (predictions, p5) {
+      if (predictions.length) {
+        _this.displayOnlyResult(predictions.confidence, predictions.option, p5);
+
+        _this.setPredictionCompleted();
+
+        p5.noLoop();
+      } // let predictionsArr = [];
+      // 
+      // console.log('predictions');
+      // console.log(predictions);
+      // 
+      // Object.entries(predictions).forEach(([key, value]) => {
+      // predictionsArr[key] = value;
+      // })
+      // 
+      // this.predictions = predictionsArr;
+
+    });
+
     _defineProperty(_assertThisInitialized(_this), "assignPredictions", function (predictions) {
       var predictionsArr = [];
       Object.entries(predictions).forEach(function (_ref) {
@@ -2437,15 +2465,40 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "getSmallCircleCoordinates", function () {
       var count = _this.particles.length;
-      console.log(count);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "displayCircleMiddleText", function (p5, width, height, middleText) {
+    _defineProperty(_assertThisInitialized(_this), "displayOnlyResult", function (confidenceScore, middleText, p5) {
+      var width = _this.landgrass.clientWidth;
+      var height = _this.landgrass.clientHeight;
       p5.noStroke();
-      p5.fill(_this.timerTextColor);
+      p5.fill(0, 129, 255);
       p5.textSize(30);
       p5.textAlign(p5.CENTER, p5.CENTER);
       p5.text(middleText, width / 2, height / 2);
+      p5.textSize(20);
+      p5.textAlign(p5.CENTER, p5.CENTER);
+      p5.text('Confidence: ' + confidenceScore + '%', width / 2, height / 2 - height / 15);
+      p5.noLoop();
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "displayCircleMiddleText", function (p5, width, height, middleText, confidenceScore, optionKey) {
+      var confidence = parseFloat(confidenceScore.toFixed(2));
+      var option = parseInt(optionKey, 10);
+      p5.noStroke();
+      p5.fill(0, 129, 255);
+      p5.textSize(30);
+      p5.textAlign(p5.CENTER, p5.CENTER);
+      p5.text(middleText, width / 2, height / 2);
+      p5.textSize(20);
+      p5.textAlign(p5.CENTER, p5.CENTER);
+      p5.text('Confidence: ' + confidenceScore.toFixed(2) + '%', width / 2, height / 2 - height / 15); // Simple POST request with a JSON body using axios
+
+      var data = {
+        postId: parseInt(_this.landgrass.dataset.id),
+        confidence: confidence,
+        option: option
+      };
+      axios__WEBPACK_IMPORTED_MODULE_6___default().post('/results', data);
     });
 
     _defineProperty(_assertThisInitialized(_this), "displayPredictionResults", function (p5, width, height) {
@@ -2454,12 +2507,14 @@ var Application = /*#__PURE__*/function (_React$Component) {
       var circleDiameter = width / 2 - 1 / 20 * width;
       var radius = circleDiameter / 2;
       var resultArr = [];
-      var minValue = 1000;
+      var minValue = Math.pow(10, 5);
       var winner = '';
       var middleText = '';
-      var minDistance = 0;
       var distanceSum = 1;
       var percentagePerOption = 100 / countOptions;
+      var angle = _this.listAngles[countOptions][count];
+      var optionKey = 0;
+      angle = angle + p5.PI;
 
       if (_this.predictions.length > 0) {
         Object.entries(_this.state.options).forEach(function (_ref3) {
@@ -2471,45 +2526,24 @@ var Application = /*#__PURE__*/function (_React$Component) {
           angle = angle + p5.PI;
           var x = width / 2 + radius * p5.cos(angle);
           var y = height / 2 + radius * p5.sin(angle);
-          var positionTextX = x;
-          var positionTextY = y - 20; // -sum of all distances between prediction ball and prediction point
-          //
-
           var distance = p5.dist(x, y, _this.smCircleX, _this.smCircleY);
           distanceSum += distance;
 
           if (distance < minValue) {
             winner = value;
-            minDistance = distance;
+            minValue = distance;
+            optionKey = key;
           }
 
-          resultArr.push([distance, positionTextX, positionTextY]);
+          _this.minValue = distance;
           count++;
-        }); // resultArr.forEach(function(value, key) {
-        // let avgDistance = distanceSum / countOptions;
-        // let ratio = value[0] / avgDistance;
-        // let result = (ratio * percentagePerOption);
-        // let result = (ratio > 1) ? percentagePerOption - ((ratio - 1) * percentagePerOption) : (1 - ratio) * percentagePerOption;
-        // 
-        // 
-        // console.log(result);
-        // console.log(ratio);
-        // 
-        // p5.fill(0,0,255);
-        // p5.textSize(20);
-        // p5.textAlign(p5.CENTER, p5.CENTER);
-        // 
-        // p5.text(p5.random(0,1).toFixed(2), positionTextX, positionTextY);
-        // p5.text(Math.abs(radius - value[0]).toFixed(2) + '%', value[1], value[2]);
-        // });
+        });
+        var confidenceScore = (radius - minValue) * 100 / radius;
 
-        _this.displayCircleMiddleText(p5, width, height, winner);
+        _this.displayCircleMiddleText(p5, width, height, winner, confidenceScore, optionKey);
 
         p5.noLoop();
-        console.log(_this.predictions.length);
-      } // console.log(resultArr['test']);
-      // p5.noLoop();
-
+      }
     });
 
     _defineProperty(_assertThisInitialized(_this), "setup", function (p5, parentRef) {
@@ -2517,7 +2551,10 @@ var Application = /*#__PURE__*/function (_React$Component) {
       var mouseX = p5.mouseX;
       var mouseY = p5.mouseY;
       _this.smCircleX = landgrass.clientWidth / 2;
-      _this.smCircleY = landgrass.clientHeight / 2; // p5.frameRate(60);
+      _this.smCircleY = landgrass.clientHeight / 2;
+
+      _this.getResult(p5); // p5.frameRate(60);
+
 
       if (!_this.completed) {
         p5.mousePressed = function () {
@@ -2526,9 +2563,6 @@ var Application = /*#__PURE__*/function (_React$Component) {
           _this.checkReadyState(p5.mouseX, p5.mouseY, p5);
         };
       }
-
-      _this.secondTimer = _this.state.time; // this.getPredictions();
-      // this.setPredictionCompleted();
     });
 
     _defineProperty(_assertThisInitialized(_this), "draw", function (p5, parentRef) {
@@ -2549,7 +2583,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
       if (_this.readyTimerState) {
         // let circleColor = p5.color(5, 8, 163);
-        var _circleColor = p5.color(200, 0, 0);
+        var _circleColor = p5.color(217, 255, 255);
 
         _circleColor.setAlpha(128 + 128 * (p5.sin(p5.millis() / 1000) + 0.7));
 
@@ -2666,7 +2700,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
     // -interact with others predictions, which means,
     //  that you have to pull the data first (done)
     // -show winner (confidence level)
-    // -prediction
+    // -prediction (done)
     // -code clean up
     function () {
       var _componentDidMount = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
@@ -2795,10 +2829,13 @@ var Firefly = function Firefly(x, y, _p) {
   this.pos = _p.createVector(x, y);
   this.prev = _p.createVector(x, y);
   var angle = Math.random() * (2 * Math.PI);
-  var length = 1;
-  this.vel = _p.createVector(length * Math.cos(angle), length * Math.sin(angle)).setMag(_p.random(2, 5)); //p5.Vector.random2D();
+  var length = 1; // let colorArray = [p5.color(255, 204, 0, p5.random(200, 255)), p5.color(76, 255, 0, p5.random(200, 255)), p5.color(255, 77, 0, p5.random(200, 255)), p5.color(255, 126, 0, p5.random(200, 255))];
 
-  this.stroke = parseInt(_p.random(0, 10) % 2) ? _p.color(255, 204, 0, _p.random(200, 255)) : _p.color(136, 170, 0, _p.random(200, 255));
+  var colorArray = [_p.color(136, 170, 0, _p.random(200, 255)), _p.color(255, 204, 0, _p.random(200, 255))];
+  this.vel = _p.createVector(length * Math.cos(angle), length * Math.sin(angle)).setMag(_p.random(2, 5)); //p5.Vector.random2D();
+  // this.stroke = parseInt(p5.random(0,10) % 2) ?  p5.color(255, 204, 0, p5.random(200,255)): p5.color(136, 170, 0, p5.random(200,255));
+
+  this.stroke = colorArray[Math.floor(Math.random() * colorArray.length)];
   this.acc = _p.createVector();
 };
 
@@ -2862,9 +2899,9 @@ var StartButton = function StartButton(p5, width, height) {
   p5.noStroke();
 
   if (this.inside) {
-    p5.fill(200, 0, 0);
+    p5.fill(163, 4, 4);
   } else {
-    p5.fill(5, 84, 163);
+    p5.fill(4, 86, 163);
   }
 
   var rect = p5.rect(this.buttonX, this.buttonY, rectWidth, rectHeight, this.buttonRadius);

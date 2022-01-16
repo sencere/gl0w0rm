@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Option extends Model
+class Result extends Model
 {
     use HasFactory;
-    protected $fillable = ['option', 'post_id', 'user_id'];
+    protected $fillable = ['user_id', 'post_id', 'option_id', 'confidence'];
 
     public function post()
     {
@@ -20,8 +20,8 @@ class Option extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function result()
+    public function option()
     {
-        return $this->hasMany(Result::class);
+        return $this->belongsTo(Option::class);
     }
 }

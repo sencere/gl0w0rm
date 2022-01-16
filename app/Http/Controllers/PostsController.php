@@ -76,9 +76,15 @@ class PostsController extends Controller
         $attractorCount = Prediction::where('post_id', '=', 1)->get()->max('attractor');
 
         for($i = 0; $i < $attractorCount; $i++) {
-            $time = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))->get()->avg('time');
-            $mouseX = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))->get()->avg('mouseX');
-            $mouseY = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))->get()->avg('mouseY');
+            $time = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
+                ->get()
+                ->avg('time');
+            $mouseX = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
+                ->get()
+                ->avg('mouseX');
+            $mouseY = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
+                ->get()
+                ->avg('mouseY');
 
             $attractorAvg[intval($time)] = [
                 'mouseX' => $mouseX,

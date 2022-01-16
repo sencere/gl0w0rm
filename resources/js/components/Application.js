@@ -18,7 +18,7 @@ class Application extends React.Component {
     finishState = false;
     startButtonConfiguration;
     options = {};
-    listAngles = [0, 0, [3.141593, 6.283185], [1.570796, 3.926991, 5.4977871], [0.5235988, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 5.759587]];
+    listAngles = [0, 0, [3.141593, 6.283185], [1.570796, 3.926991, 5.4977871], [0.5235988, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 4.712389, 5.759587]];
     timerShown = false;
     timer = 3;
     timerTextColor = [255, 255, 255];
@@ -37,7 +37,7 @@ class Application extends React.Component {
     // -interact with others predictions, which means,
     //  that you have to pull the data first (done)
     // -show winner (confidence level)
-    // -prediction
+    // -prediction (done)
     // -code clean up
 
     async componentDidMount() {
@@ -69,10 +69,6 @@ class Application extends React.Component {
             mouseY = parseInt(mouseY.toFixed(0));
             let time = parseInt(this.timer);
 
-            if (!botClick) {
-                this.attractorCount++;
-            }
-
             // Simple POST request with a JSON body using axios
             const data = {
                 postId: parseInt(this.landgrass.dataset.id),
@@ -80,7 +76,11 @@ class Application extends React.Component {
                 mouseY: mouseY,
                 time: time
             };
-            axios.post('/predictions', data);
+
+            if (!botClick) {
+                this.attractorCount++;
+                axios.post('/predictions', data);
+            }
         }
     };
 
@@ -112,8 +112,9 @@ class Application extends React.Component {
                 clearInterval(myVar);
                 // this.startSecondTimer();
                 // this.readyTimerState = true;
-                this.timerTextColor = [0, 255, 0];
+                this.timerTextColor = [255, 0, 0];
                 this.timer = 'GO!';
+                this.secondTimer = this.state.time;
                 this.getPredictions();
                 setTimeout(() =>  {
                     this.startSecondTimer(p5);
@@ -124,8 +125,8 @@ class Application extends React.Component {
     };
 
     startSecondTimer = (p5) => {
-        this.timerTextColor = [255, 255, 255];
         let timer = this.secondTimer;
+        this.timerTextColor = [255, 255, 255];
         let width = this.landgrass.clientWidth;
         let height = this.landgrass.clientHeight;
         let myVar = setInterval(() => {
@@ -166,10 +167,35 @@ class Application extends React.Component {
     getPredictions = () => {
         let responseData = axios.post('/posts/predictions/' + this.landgrass.dataset.id, {})
             .then(response => this.assignPredictions(response.data));
-    }
+    };
+
+    getResult = (p5) => {
+        let responseData = axios.post('/results/result/' + this.landgrass.dataset.id, {postId: this.landgrass.dataset.id})
+            .then(response => this.assignResult(response.data, p5));
+    };
+
+    assignResult = (predictions, p5) => {
+        if (predictions.length) {
+            this.displayOnlyResult(predictions.confidence, predictions.option, p5);
+            this.setPredictionCompleted();
+            p5.noLoop();
+        }
+
+        // let predictionsArr = [];
+        // 
+        // console.log('predictions');
+        // console.log(predictions);
+        // 
+        // Object.entries(predictions).forEach(([key, value]) => {
+        // predictionsArr[key] = value;
+        // })
+        // 
+        // this.predictions = predictionsArr;
+    };
 
     assignPredictions = (predictions) => {
         let predictionsArr = [];
+
         Object.entries(predictions).forEach(([key, value]) => {
             predictionsArr[key] = value;
         })
@@ -179,15 +205,44 @@ class Application extends React.Component {
 
     getSmallCircleCoordinates = () => {
         let count = this.particles.length;
-        console.log(count);
     };
 
-    displayCircleMiddleText = (p5, width, height, middleText) => {
+
+    displayOnlyResult = (confidenceScore, middleText, p5) => {
+        let width = this.landgrass.clientWidth;
+        let height = this.landgrass.clientHeight;
         p5.noStroke();
-        p5.fill(this.timerTextColor);
+        p5.fill(0, 129, 255);
         p5.textSize(30);
         p5.textAlign(p5.CENTER, p5.CENTER);
         p5.text(middleText, width/2, height/2);
+
+        p5.textSize(20);
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.text('Confidence: ' + confidenceScore + '%', width/2, (height/2) - height/15);
+        p5.noLoop();
+    };
+
+    displayCircleMiddleText = (p5, width, height, middleText, confidenceScore, optionKey) => {
+        let confidence = parseFloat(confidenceScore.toFixed(2));
+        let option = parseInt(optionKey, 10);
+        p5.noStroke();
+        p5.fill(0, 129, 255);
+        p5.textSize(30);
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.text(middleText, width/2, height/2);
+
+        p5.textSize(20);
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.text('Confidence: ' + confidenceScore.toFixed(2) + '%', width/2, (height/2) - height/15);
+
+        // Simple POST request with a JSON body using axios
+        const data = {
+            postId: parseInt(this.landgrass.dataset.id),
+            confidence: confidence,
+            option: option
+        };
+        axios.post('/results', data);
     };
 
     displayPredictionResults = (p5, width, height) => {
@@ -196,12 +251,14 @@ class Application extends React.Component {
         let circleDiameter = (width/2) - (1/20 * width);
         let radius = circleDiameter/2;
         let resultArr = [];
-        let minValue = 1000;
+        let minValue = Math.pow(10,5);
         let winner = '';
         let middleText = '';
-        let minDistance = 0;
         let distanceSum = 1;
         let percentagePerOption = 100 / countOptions;
+        let angle = this.listAngles[countOptions][count];
+        let optionKey = 0;
+        angle = angle + p5.PI;
 
         if (this.predictions.length > 0) {
             Object.entries(this.state.options).forEach(([key, value]) => {
@@ -211,51 +268,23 @@ class Application extends React.Component {
                 let x = (width/2) + radius * p5.cos(angle);
                 let y = (height/2) + radius * p5.sin(angle);
 
-                let positionTextX = x;
-                let positionTextY = y - 20;
-
-
-                // -sum of all distances between prediction ball and prediction point
-                //
-                let distance =p5.dist(x, y, this.smCircleX, this.smCircleY);
+                let distance = p5.dist(x, y, this.smCircleX, this.smCircleY);
                 distanceSum += distance;
 
                 if (distance < minValue) {
                     winner = value;
-                    minDistance = distance;
+                    minValue = distance;
+                    optionKey = key;
                 }
 
-                resultArr.push([distance, positionTextX, positionTextY]); 
+                this.minValue = distance;
                 count++;
             });
+            let confidenceScore = (radius - minValue) * 100 / radius;
 
-            // resultArr.forEach(function(value, key) {
-                // let avgDistance = distanceSum / countOptions;
-                // let ratio = value[0] / avgDistance;
-                // let result = (ratio * percentagePerOption);
-                // let result = (ratio > 1) ? percentagePerOption - ((ratio - 1) * percentagePerOption) : (1 - ratio) * percentagePerOption;
-// 
-// 
-                // console.log(result);
-                // console.log(ratio);
-// 
-                // p5.fill(0,0,255);
-                // p5.textSize(20);
-                // p5.textAlign(p5.CENTER, p5.CENTER);
-// 
-                // p5.text(p5.random(0,1).toFixed(2), positionTextX, positionTextY);
-                // p5.text(Math.abs(radius - value[0]).toFixed(2) + '%', value[1], value[2]);
-            // });
-
-
-            this.displayCircleMiddleText(p5, width, height, winner);
+            this.displayCircleMiddleText(p5, width, height, winner, confidenceScore, optionKey);
             p5.noLoop();
-            console.log(this.predictions.length);
         }
-
-        // console.log(resultArr['test']);
-
-        // p5.noLoop();
     };
 
     setup = (p5, parentRef) => {
@@ -264,6 +293,8 @@ class Application extends React.Component {
         let mouseY = p5.mouseY;
         this.smCircleX = landgrass.clientWidth / 2;
         this.smCircleY = landgrass.clientHeight / 2;
+        this.getResult(p5);
+
         // p5.frameRate(60);
         if (!this.completed) {
             p5.mousePressed = () => {
@@ -271,9 +302,6 @@ class Application extends React.Component {
                 this.checkReadyState(p5.mouseX, p5.mouseY, p5);
             }
         }
-        this.secondTimer = this.state.time;
-        // this.getPredictions();
-        // this.setPredictionCompleted();
     };
 
     draw = (p5, parentRef) => {
@@ -296,7 +324,7 @@ class Application extends React.Component {
         if (this.readyTimerState) {
 
             // let circleColor = p5.color(5, 8, 163);
-            let circleColor = p5.color(200, 0, 0);
+            let circleColor = p5.color(217, 255, 255);
             circleColor.setAlpha(128 + 128 * (p5.sin(p5.millis() / 1000) + 0.7));
 
             p5.fill(circleColor);

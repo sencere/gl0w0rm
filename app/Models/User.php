@@ -47,6 +47,14 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    /**
+     * Get the result for the blog post.
+     */
+    public function results()
+    {
+        return $this->hasMany(Result::class);
+    }
+
     public function publish(Post $post)
     {
         $this->posts()->save($post);
