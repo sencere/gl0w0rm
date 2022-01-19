@@ -30,14 +30,9 @@ class Application extends React.Component {
     secondTimer = 10;
 
     // TODO
-    // -Ready Button (done)
-    // -request options and display (done)
-    // -send request (done)
-    // -limit time + add countdown (done)
-    // -interact with others predictions, which means,
-    //  that you have to pull the data first (done)
-    // -show winner (confidence level)
-    // -prediction (done)
+    // 1) check completed (yes / no )
+    // 2) yes: display results
+    // 3) no: do challenge (store results)
     // -code clean up
 
     async componentDidMount() {
@@ -45,9 +40,17 @@ class Application extends React.Component {
             .then(response => this.setState({
                 target: response.data.target,
                 question: response.data.question,
-                options: response.data.options, 
+                options: response.data.options,
                 time: response.data.time
             }));
+
+        let resultResponse = axios.post('/results/result/' + this.landgrass.dataset.id, {'postId': this.landgrass.dataset.id})
+            .then(response => this.setState({
+                result: response.data.result,
+                confidence: response.data.confidence,
+                option: response.data.option
+            }));
+
     };
 
     setPredictionCompleted = () => {
@@ -180,17 +183,6 @@ class Application extends React.Component {
             this.setPredictionCompleted();
             p5.noLoop();
         }
-
-        // let predictionsArr = [];
-        // 
-        // console.log('predictions');
-        // console.log(predictions);
-        // 
-        // Object.entries(predictions).forEach(([key, value]) => {
-        // predictionsArr[key] = value;
-        // })
-        // 
-        // this.predictions = predictionsArr;
     };
 
     assignPredictions = (predictions) => {
@@ -209,6 +201,7 @@ class Application extends React.Component {
 
 
     displayOnlyResult = (confidenceScore, middleText, p5) => {
+        // p5.loop();
         let width = this.landgrass.clientWidth;
         let height = this.landgrass.clientHeight;
         p5.noStroke();
@@ -220,7 +213,13 @@ class Application extends React.Component {
         p5.textSize(20);
         p5.textAlign(p5.CENTER, p5.CENTER);
         p5.text('Confidence: ' + confidenceScore + '%', width/2, (height/2) - height/15);
-        p5.noLoop();
+        p5.fill(255);
+        p5.textSize(30);
+        p5.text(this.state.target + '\n' + this.state.question, width/2, height/3);
+
+
+
+        // p5.noLoop();
     };
 
     displayCircleMiddleText = (p5, width, height, middleText, confidenceScore, optionKey) => {
@@ -287,6 +286,7 @@ class Application extends React.Component {
         }
     };
 
+
     setup = (p5, parentRef) => {
         p5.createCanvas(landgrass.clientWidth, landgrass.clientWidth).parent(parentRef);
         let mouseX = p5.mouseX;
@@ -295,16 +295,23 @@ class Application extends React.Component {
         this.smCircleY = landgrass.clientHeight / 2;
         this.getResult(p5);
 
+
+        console.log(this.state);
+
         // p5.frameRate(60);
         if (!this.completed) {
             p5.mousePressed = () => {
                 this.addAttractor(p5.mouseX, p5.mouseY, p5, false);
                 this.checkReadyState(p5.mouseX, p5.mouseY, p5);
-            }
+            };
         }
     };
 
     draw = (p5, parentRef) => {
+        if (this.state.result) {
+            this.setPredictionCompleted();
+        }
+
         let backgroundColor = [22, 22, 22];
         let circleColor = [20, 20, 20];
         let particles = this.particles;
@@ -321,8 +328,7 @@ class Application extends React.Component {
         p5.circle(width/2, height/2, circleDiameter);
         p5.strokeWeight(0);
 
-        if (this.readyTimerState) {
-
+        if (this.readyTimerState && !this.completed) {
             // let circleColor = p5.color(5, 8, 163);
             let circleColor = p5.color(217, 255, 255);
             circleColor.setAlpha(128 + 128 * (p5.sin(p5.millis() / 1000) + 0.7));
@@ -420,6 +426,14 @@ class Application extends React.Component {
 
         if (this.finishState) {
             this.displayPredictionResults(p5, width, height);
+        }
+
+
+        if (this.state.result) {
+            this.displayOnlyResult(this.state.confidence, this.state.option, p5);
+
+            p5.noLoop();
+            // p5.print('hello world');
         }
     }
 

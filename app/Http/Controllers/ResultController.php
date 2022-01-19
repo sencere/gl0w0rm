@@ -22,12 +22,18 @@ class ResultController extends Controller
             $option = $result->option()->get()->first()->option;
 
             return [
+                'result' => true,
                 'confidence' => $result->confidence,
                 'option' => $option
             ];
         }
 
-        response()->json(['success' => 'success'], 200);
+
+        return [
+            'result' => false,
+            'confidence' => 0,
+            'option' => 0
+        ];
     }
 
     /**
@@ -51,7 +57,7 @@ class ResultController extends Controller
         $userId =  auth()->user()->id;
         $post = Post::find(request('postId'));
         $result = Result::whereRaw('user_id=' .  $userId . ' and post_id=' . $post->id)->get()->first();
-        
+
         if (empty($result)) {
             $result = new Result([
                 'user_id' => $userId,

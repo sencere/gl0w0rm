@@ -2438,17 +2438,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
         _this.setPredictionCompleted();
 
         p5.noLoop();
-      } // let predictionsArr = [];
-      // 
-      // console.log('predictions');
-      // console.log(predictions);
-      // 
-      // Object.entries(predictions).forEach(([key, value]) => {
-      // predictionsArr[key] = value;
-      // })
-      // 
-      // this.predictions = predictionsArr;
-
+      }
     });
 
     _defineProperty(_assertThisInitialized(_this), "assignPredictions", function (predictions) {
@@ -2468,6 +2458,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "displayOnlyResult", function (confidenceScore, middleText, p5) {
+      // p5.loop();
       var width = _this.landgrass.clientWidth;
       var height = _this.landgrass.clientHeight;
       p5.noStroke();
@@ -2478,7 +2469,9 @@ var Application = /*#__PURE__*/function (_React$Component) {
       p5.textSize(20);
       p5.textAlign(p5.CENTER, p5.CENTER);
       p5.text('Confidence: ' + confidenceScore + '%', width / 2, height / 2 - height / 15);
-      p5.noLoop();
+      p5.fill(255);
+      p5.textSize(30);
+      p5.text(_this.state.target + '\n' + _this.state.question, width / 2, height / 3); // p5.noLoop();
     });
 
     _defineProperty(_assertThisInitialized(_this), "displayCircleMiddleText", function (p5, width, height, middleText, confidenceScore, optionKey) {
@@ -2553,8 +2546,9 @@ var Application = /*#__PURE__*/function (_React$Component) {
       _this.smCircleX = landgrass.clientWidth / 2;
       _this.smCircleY = landgrass.clientHeight / 2;
 
-      _this.getResult(p5); // p5.frameRate(60);
+      _this.getResult(p5);
 
+      console.log(_this.state); // p5.frameRate(60);
 
       if (!_this.completed) {
         p5.mousePressed = function () {
@@ -2566,6 +2560,10 @@ var Application = /*#__PURE__*/function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "draw", function (p5, parentRef) {
+      if (_this.state.result) {
+        _this.setPredictionCompleted();
+      }
+
       var backgroundColor = [22, 22, 22];
       var circleColor = [20, 20, 20];
       var particles = _this.particles;
@@ -2581,7 +2579,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       p5.circle(width / 2, height / 2, circleDiameter);
       p5.strokeWeight(0);
 
-      if (_this.readyTimerState) {
+      if (_this.readyTimerState && !_this.completed) {
         // let circleColor = p5.color(5, 8, 163);
         var _circleColor = p5.color(217, 255, 255);
 
@@ -2685,6 +2683,12 @@ var Application = /*#__PURE__*/function (_React$Component) {
       if (_this.finishState) {
         _this.displayPredictionResults(p5, width, height);
       }
+
+      if (_this.state.result) {
+        _this.displayOnlyResult(_this.state.confidence, _this.state.option, p5);
+
+        p5.noLoop(); // p5.print('hello world');
+      }
     });
 
     return _this;
@@ -2693,20 +2697,15 @@ var Application = /*#__PURE__*/function (_React$Component) {
   _createClass(Application, [{
     key: "componentDidMount",
     value: // TODO
-    // -Ready Button (done)
-    // -request options and display (done)
-    // -send request (done)
-    // -limit time + add countdown (done)
-    // -interact with others predictions, which means,
-    //  that you have to pull the data first (done)
-    // -show winner (confidence level)
-    // -prediction (done)
+    // 1) check completed (yes / no )
+    // 2) yes: display results
+    // 3) no: do challenge (store results)
     // -code clean up
     function () {
       var _componentDidMount = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
         var _this2 = this;
 
-        var responseData;
+        var responseData, resultResponse;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -2719,8 +2718,17 @@ var Application = /*#__PURE__*/function (_React$Component) {
                     time: response.data.time
                   });
                 });
+                resultResponse = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/results/result/' + this.landgrass.dataset.id, {
+                  'postId': this.landgrass.dataset.id
+                }).then(function (response) {
+                  return _this2.setState({
+                    result: response.data.result,
+                    confidence: response.data.confidence,
+                    option: response.data.option
+                  });
+                });
 
-              case 1:
+              case 2:
               case "end":
                 return _context.stop();
             }
