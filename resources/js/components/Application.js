@@ -4,7 +4,7 @@ import StartButton from "./StartButton";
 import axios from 'axios';
 
 class Application extends React.Component {
-    landgrass = document.getElementById('landgrass');
+    canvas = document.getElementById('landgrass');
     amountOfFireflies = 80;
     particles = [];
     attractors = [];
@@ -30,13 +30,10 @@ class Application extends React.Component {
     secondTimer = 10;
 
     // TODO
-    // 1) check completed (yes / no )
-    // 2) yes: display results
-    // 3) no: do challenge (store results)
     // -code clean up
 
     async componentDidMount() {
-        let responseData = axios.post('/posts/options/' + this.landgrass.dataset.id, {})
+        let responseData = axios.post('/posts/options/' + this.canvas.dataset.id, {})
             .then(response => this.setState({
                 target: response.data.target,
                 question: response.data.question,
@@ -44,13 +41,22 @@ class Application extends React.Component {
                 time: response.data.time
             }));
 
-        let resultResponse = axios.post('/results/result/' + this.landgrass.dataset.id, {'postId': this.landgrass.dataset.id})
+        let resultResponse = axios.post('/results/result/' + this.canvas.dataset.id, {'postId': this.canvas.dataset.id})
             .then(response => this.setState({
                 result: response.data.result,
                 confidence: response.data.confidence,
                 option: response.data.option
             }));
+    };
 
+    getPredictions = () => {
+        let responseData = axios.post('/posts/predictions/' + this.canvas.dataset.id, {})
+            .then(response => this.assignPredictions(response.data));
+    };
+
+    getResult = (p5) => {
+        let responseData = axios.post('/results/result/' + this.canvas.dataset.id, {postId: this.canvas.dataset.id})
+            .then(response => this.assignResult(response.data, p5));
     };
 
     setPredictionCompleted = () => {
@@ -64,7 +70,7 @@ class Application extends React.Component {
 
     addAttractor = (mouseX, mouseY, p5, botClick=true) => {
         if (this.attractorCount < this.attracorsAllowed &&
-            (mouseX > 0 && mouseX < this.landgrass.clientWidth && mouseY > 0 && mouseY < this.landgrass.clientHeight) &&
+            (mouseX > 0 && mouseX < this.canvas.clientWidth && mouseY > 0 && mouseY < this.canvas.clientHeight) &&
             this.readyAttractorState) {
             this.attractors.push(p5.createVector(mouseX, mouseY));
 
@@ -74,7 +80,7 @@ class Application extends React.Component {
 
             // Simple POST request with a JSON body using axios
             const data = {
-                postId: parseInt(this.landgrass.dataset.id),
+                postId: parseInt(this.canvas.dataset.id),
                 mouseX: mouseX,
                 mouseY: mouseY,
                 time: time
@@ -106,8 +112,8 @@ class Application extends React.Component {
     startFirstTimer = (p5) => {
         this.timerTextColor = [255, 0, 0];
         let timer = this.timer;
-        let width = this.landgrass.clientWidth;
-        let height = this.landgrass.clientHeight;
+        let width = this.canvas.clientWidth;
+        let height = this.canvas.clientHeight;
         let myVar = setInterval(() => {
             timer--;
             this.updateFirstTimer(timer);
@@ -130,8 +136,8 @@ class Application extends React.Component {
     startSecondTimer = (p5) => {
         let timer = this.secondTimer;
         this.timerTextColor = [255, 255, 255];
-        let width = this.landgrass.clientWidth;
-        let height = this.landgrass.clientHeight;
+        let width = this.canvas.clientWidth;
+        let height = this.canvas.clientHeight;
         let myVar = setInterval(() => {
             timer--;
             this.updateFirstTimer(timer);
@@ -156,8 +162,8 @@ class Application extends React.Component {
 
     startTimer = (p5) => {
         let seconds = this.seconds;
-        let width = this.landgrass.clientWidth;
-        let height = this.landgrass.clientHeight;
+        let width = this.canvas.clientWidth;
+        let height = this.canvas.clientHeight;
         let myVar = setInterval(() => {
             seconds -= 1;
             this.updateCounter(seconds);
@@ -165,16 +171,6 @@ class Application extends React.Component {
                 clearInterval(myVar);
             }
         }, 1000);
-    };
-
-    getPredictions = () => {
-        let responseData = axios.post('/posts/predictions/' + this.landgrass.dataset.id, {})
-            .then(response => this.assignPredictions(response.data));
-    };
-
-    getResult = (p5) => {
-        let responseData = axios.post('/results/result/' + this.landgrass.dataset.id, {postId: this.landgrass.dataset.id})
-            .then(response => this.assignResult(response.data, p5));
     };
 
     assignResult = (predictions, p5) => {
@@ -202,8 +198,8 @@ class Application extends React.Component {
 
     displayOnlyResult = (confidenceScore, middleText, p5) => {
         // p5.loop();
-        let width = this.landgrass.clientWidth;
-        let height = this.landgrass.clientHeight;
+        let width = this.canvas.clientWidth;
+        let height = this.canvas.clientHeight;
         p5.noStroke();
         p5.fill(0, 129, 255);
         p5.textSize(30);
@@ -237,7 +233,7 @@ class Application extends React.Component {
 
         // Simple POST request with a JSON body using axios
         const data = {
-            postId: parseInt(this.landgrass.dataset.id),
+            postId: parseInt(this.canvas.dataset.id),
             confidence: confidence,
             option: option
         };
@@ -288,15 +284,12 @@ class Application extends React.Component {
 
 
     setup = (p5, parentRef) => {
-        p5.createCanvas(landgrass.clientWidth, landgrass.clientWidth).parent(parentRef);
+        p5.createCanvas(this.canvas.clientWidth, this.canvas.clientWidth).parent(parentRef);
         let mouseX = p5.mouseX;
         let mouseY = p5.mouseY;
-        this.smCircleX = landgrass.clientWidth / 2;
-        this.smCircleY = landgrass.clientHeight / 2;
+        this.smCircleX = this.canvas.clientWidth / 2;
+        this.smCircleY = this.canvas.clientHeight / 2;
         this.getResult(p5);
-
-
-        console.log(this.state);
 
         // p5.frameRate(60);
         if (!this.completed) {
@@ -315,8 +308,8 @@ class Application extends React.Component {
         let backgroundColor = [22, 22, 22];
         let circleColor = [20, 20, 20];
         let particles = this.particles;
-        let width = landgrass.clientWidth;
-        let height = landgrass.clientHeight;
+        let width = this.canvas.clientWidth;
+        let height = this.canvas.clientHeight;
         let circleDiameter = (width/2) - (1/20 * width);
         let radius = circleDiameter/2;
         let countOptions = Object.keys(this.state.options).length;
@@ -364,7 +357,7 @@ class Application extends React.Component {
         if (this.readyTimerState && !this.finishState) {
             // console.log(Object.keys(this.state.options).length);
             // if (particles.length < this.amountOfFireflies) {
-            this.particles.push(new Firefly(p5.random(landgrass.clientWidth), p5.random(landgrass.clientHeight), p5));
+            this.particles.push(new Firefly(p5.random(this.canvas.clientWidth), p5.random(this.canvas.clientHeight), p5));
             // }
             //
             if (particles.length > this.amountOfFireflies) {
@@ -393,6 +386,7 @@ class Application extends React.Component {
                 particle.show();
             }
 
+            // smaller circle
             let concentrationX = particleSumX / particleLength;
             let concentrationY = particleSumY / particleLength;
 
@@ -412,7 +406,7 @@ class Application extends React.Component {
 
         // my button
         if (!this.readyButtonState) {
-            let startButton = new StartButton(p5, this.landgrass.clientWidth, this.landgrass.clientHeight);
+            let startButton = new StartButton(p5, this.canvas.clientWidth, this.canvas.clientHeight);
             this.startButtonConfiguration = startButton.getConfiguration();
         }
 
@@ -428,12 +422,10 @@ class Application extends React.Component {
             this.displayPredictionResults(p5, width, height);
         }
 
-
+        p5.print(this.state.result);
         if (this.state.result) {
             this.displayOnlyResult(this.state.confidence, this.state.option, p5);
-
             p5.noLoop();
-            // p5.print('hello world');
         }
     }
 

@@ -2150,9 +2150,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_Application__WEBPACK_IMPORTED_MODULE_2__["default"], {
-  favcol: "yellow"
-}), document.getElementById('landgrass'));
+react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_Application__WEBPACK_IMPORTED_MODULE_2__["default"], {}), document.getElementById('landgrass'));
 
 /***/ }),
 
@@ -2244,7 +2242,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _this = _super.call.apply(_super, [this].concat(args));
 
-    _defineProperty(_assertThisInitialized(_this), "landgrass", document.getElementById('landgrass'));
+    _defineProperty(_assertThisInitialized(_this), "canvas", document.getElementById('landgrass'));
 
     _defineProperty(_assertThisInitialized(_this), "amountOfFireflies", 80);
 
@@ -2292,6 +2290,20 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "secondTimer", 10);
 
+    _defineProperty(_assertThisInitialized(_this), "getPredictions", function () {
+      var responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/posts/predictions/' + _this.canvas.dataset.id, {}).then(function (response) {
+        return _this.assignPredictions(response.data);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "getResult", function (p5) {
+      var responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/results/result/' + _this.canvas.dataset.id, {
+        postId: _this.canvas.dataset.id
+      }).then(function (response) {
+        return _this.assignResult(response.data, p5);
+      });
+    });
+
     _defineProperty(_assertThisInitialized(_this), "setPredictionCompleted", function () {
       _this.readyButtonState = true;
       _this.readyTimerState = true;
@@ -2304,7 +2316,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "addAttractor", function (mouseX, mouseY, p5) {
       var botClick = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-      if (_this.attractorCount < _this.attracorsAllowed && mouseX > 0 && mouseX < _this.landgrass.clientWidth && mouseY > 0 && mouseY < _this.landgrass.clientHeight && _this.readyAttractorState) {
+      if (_this.attractorCount < _this.attracorsAllowed && mouseX > 0 && mouseX < _this.canvas.clientWidth && mouseY > 0 && mouseY < _this.canvas.clientHeight && _this.readyAttractorState) {
         _this.attractors.push(p5.createVector(mouseX, mouseY));
 
         mouseX = parseInt(mouseX.toFixed(0));
@@ -2312,7 +2324,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
         var time = parseInt(_this.timer); // Simple POST request with a JSON body using axios
 
         var data = {
-          postId: parseInt(_this.landgrass.dataset.id),
+          postId: parseInt(_this.canvas.dataset.id),
           mouseX: mouseX,
           mouseY: mouseY,
           time: time
@@ -2345,8 +2357,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "startFirstTimer", function (p5) {
       _this.timerTextColor = [255, 0, 0];
       var timer = _this.timer;
-      var width = _this.landgrass.clientWidth;
-      var height = _this.landgrass.clientHeight;
+      var width = _this.canvas.clientWidth;
+      var height = _this.canvas.clientHeight;
       var myVar = setInterval(function () {
         timer--;
 
@@ -2374,8 +2386,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "startSecondTimer", function (p5) {
       var timer = _this.secondTimer;
       _this.timerTextColor = [255, 255, 255];
-      var width = _this.landgrass.clientWidth;
-      var height = _this.landgrass.clientHeight;
+      var width = _this.canvas.clientWidth;
+      var height = _this.canvas.clientHeight;
       var myVar = setInterval(function () {
         timer--;
 
@@ -2404,8 +2416,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "startTimer", function (p5) {
       var seconds = _this.seconds;
-      var width = _this.landgrass.clientWidth;
-      var height = _this.landgrass.clientHeight;
+      var width = _this.canvas.clientWidth;
+      var height = _this.canvas.clientHeight;
       var myVar = setInterval(function () {
         seconds -= 1;
 
@@ -2415,20 +2427,6 @@ var Application = /*#__PURE__*/function (_React$Component) {
           clearInterval(myVar);
         }
       }, 1000);
-    });
-
-    _defineProperty(_assertThisInitialized(_this), "getPredictions", function () {
-      var responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/posts/predictions/' + _this.landgrass.dataset.id, {}).then(function (response) {
-        return _this.assignPredictions(response.data);
-      });
-    });
-
-    _defineProperty(_assertThisInitialized(_this), "getResult", function (p5) {
-      var responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/results/result/' + _this.landgrass.dataset.id, {
-        postId: _this.landgrass.dataset.id
-      }).then(function (response) {
-        return _this.assignResult(response.data, p5);
-      });
     });
 
     _defineProperty(_assertThisInitialized(_this), "assignResult", function (predictions, p5) {
@@ -2459,8 +2457,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "displayOnlyResult", function (confidenceScore, middleText, p5) {
       // p5.loop();
-      var width = _this.landgrass.clientWidth;
-      var height = _this.landgrass.clientHeight;
+      var width = _this.canvas.clientWidth;
+      var height = _this.canvas.clientHeight;
       p5.noStroke();
       p5.fill(0, 129, 255);
       p5.textSize(30);
@@ -2487,7 +2485,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       p5.text('Confidence: ' + confidenceScore.toFixed(2) + '%', width / 2, height / 2 - height / 15); // Simple POST request with a JSON body using axios
 
       var data = {
-        postId: parseInt(_this.landgrass.dataset.id),
+        postId: parseInt(_this.canvas.dataset.id),
         confidence: confidence,
         option: option
       };
@@ -2540,15 +2538,14 @@ var Application = /*#__PURE__*/function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "setup", function (p5, parentRef) {
-      p5.createCanvas(landgrass.clientWidth, landgrass.clientWidth).parent(parentRef);
+      p5.createCanvas(_this.canvas.clientWidth, _this.canvas.clientWidth).parent(parentRef);
       var mouseX = p5.mouseX;
       var mouseY = p5.mouseY;
-      _this.smCircleX = landgrass.clientWidth / 2;
-      _this.smCircleY = landgrass.clientHeight / 2;
+      _this.smCircleX = _this.canvas.clientWidth / 2;
+      _this.smCircleY = _this.canvas.clientHeight / 2;
 
-      _this.getResult(p5);
+      _this.getResult(p5); // p5.frameRate(60);
 
-      console.log(_this.state); // p5.frameRate(60);
 
       if (!_this.completed) {
         p5.mousePressed = function () {
@@ -2567,8 +2564,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
       var backgroundColor = [22, 22, 22];
       var circleColor = [20, 20, 20];
       var particles = _this.particles;
-      var width = landgrass.clientWidth;
-      var height = landgrass.clientHeight;
+      var width = _this.canvas.clientWidth;
+      var height = _this.canvas.clientHeight;
       var circleDiameter = width / 2 - 1 / 20 * width;
       var radius = circleDiameter / 2;
       var countOptions = Object.keys(_this.state.options).length;
@@ -2618,7 +2615,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       if (_this.readyTimerState && !_this.finishState) {
         // console.log(Object.keys(this.state.options).length);
         // if (particles.length < this.amountOfFireflies) {
-        _this.particles.push(new _Firefly__WEBPACK_IMPORTED_MODULE_4__["default"](p5.random(landgrass.clientWidth), p5.random(landgrass.clientHeight), p5)); // }
+        _this.particles.push(new _Firefly__WEBPACK_IMPORTED_MODULE_4__["default"](p5.random(_this.canvas.clientWidth), p5.random(_this.canvas.clientHeight), p5)); // }
         //
 
 
@@ -2648,7 +2645,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
           particle.update();
           particle.show();
-        }
+        } // smaller circle
+
 
         var concentrationX = particleSumX / particleLength;
         var concentrationY = particleSumY / particleLength;
@@ -2668,7 +2666,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
 
       if (!_this.readyButtonState) {
-        var startButton = new _StartButton__WEBPACK_IMPORTED_MODULE_5__["default"](p5, _this.landgrass.clientWidth, _this.landgrass.clientHeight);
+        var startButton = new _StartButton__WEBPACK_IMPORTED_MODULE_5__["default"](p5, _this.canvas.clientWidth, _this.canvas.clientHeight);
         _this.startButtonConfiguration = startButton.getConfiguration();
       }
 
@@ -2684,10 +2682,12 @@ var Application = /*#__PURE__*/function (_React$Component) {
         _this.displayPredictionResults(p5, width, height);
       }
 
+      p5.print(_this.state.result);
+
       if (_this.state.result) {
         _this.displayOnlyResult(_this.state.confidence, _this.state.option, p5);
 
-        p5.noLoop(); // p5.print('hello world');
+        p5.noLoop();
       }
     });
 
@@ -2697,9 +2697,6 @@ var Application = /*#__PURE__*/function (_React$Component) {
   _createClass(Application, [{
     key: "componentDidMount",
     value: // TODO
-    // 1) check completed (yes / no )
-    // 2) yes: display results
-    // 3) no: do challenge (store results)
     // -code clean up
     function () {
       var _componentDidMount = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
@@ -2710,7 +2707,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/posts/options/' + this.landgrass.dataset.id, {}).then(function (response) {
+                responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/posts/options/' + this.canvas.dataset.id, {}).then(function (response) {
                   return _this2.setState({
                     target: response.data.target,
                     question: response.data.question,
@@ -2718,8 +2715,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
                     time: response.data.time
                   });
                 });
-                resultResponse = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/results/result/' + this.landgrass.dataset.id, {
-                  'postId': this.landgrass.dataset.id
+                resultResponse = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/results/result/' + this.canvas.dataset.id, {
+                  'postId': this.canvas.dataset.id
                 }).then(function (response) {
                   return _this2.setState({
                     result: response.data.result,
