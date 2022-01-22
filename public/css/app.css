@@ -10019,3 +10019,16 @@ h3 {
     border-color: #dee2e6;
   }
 }
+.navbar {
+  justify-content: center;
+  background-color: #161616;
+}
+
+.navbar-brand {
+  color: #ffcc00;
+}
+
+.btn-purple, .btn-purple:hover, .btn-purple:active, .btn-purple:visited {
+  background-color: #3c4f9d !important;
+  color: white;
+}
