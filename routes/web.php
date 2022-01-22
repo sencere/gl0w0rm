@@ -23,6 +23,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/reload-captcha', [App\Http\Controllers\Auth\RegisterController::class, 'reloadCaptcha']);
 
 Route::group(['middleware' => ['auth']], function () {
     Route::post('/posts/options/{post_id}', [PostsController::class, 'getPostOptions']);

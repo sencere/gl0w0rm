@@ -2460,7 +2460,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       var width = _this.canvas.clientWidth;
       var height = _this.canvas.clientHeight;
       p5.noStroke();
-      p5.fill(0, 129, 255);
+      p5.fill(60, 79, 157);
       p5.textSize(30);
       p5.textAlign(p5.CENTER, p5.CENTER);
       p5.text(middleText, width / 2, height / 2);

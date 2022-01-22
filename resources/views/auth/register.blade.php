@@ -2,6 +2,17 @@
 
 @section('content')
 <div class="container">
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                        @endforeach
+            </ul>
+        </div>
+        <br />
+    @endif
+
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -60,7 +71,21 @@
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                             </div>
                         </div>
-
+                   <div class="form-group row">
+                            <label for="captcha" class="col-md-4 col-form-label text-md-right">Captcha</label>
+                            <div class="col-md-6 captcha">
+                                <span>{!! captcha_img() !!}</span>
+                                <button type="button" class="btn btn-danger" class="reload" id="reload">
+                                &#x21bb;
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="captcha" class="col-md-4 col-form-label text-md-right">Enter Captcha</label>
+                            <div class="col-md-6">
+                                <input id="captcha" type="text" class="form-control" placeholder="Enter Captcha" name="captcha">
+                            </div>
+                        </div>
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
@@ -74,4 +99,18 @@
         </div>
     </div>
 </div>
+
+<script>
+window.onload = function() {
+    $('#reload').click(function () {
+        $.ajax({
+        type: 'GET',
+            url: 'reload-captcha',
+            success: function (data) {
+                $(".captcha span").html(data.captcha);
+            }
+    });
+    });
+}
+</script>
 @endsection
