@@ -15,6 +15,12 @@
 
 .navbar-brand {
     color:#ffcc00;
+    font-weight: bold;
+}
+.navbar-brand a {
+    color:#ffcc00 !important;
+    font-weight: bold;
+    text-decoration:none;
 }
 
 .btn-purple, .btn-purple:hover, .btn-purple:active, .btn-purple:visited {

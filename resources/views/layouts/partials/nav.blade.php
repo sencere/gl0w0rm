@@ -10,16 +10,17 @@
         <div class="d-flex flex-nowrap p-2" style="margin-left:20px;">
             <div class="order-1">
                 <a href="/home">
-<img src="/logo.svg" alt="" width="50" height="50" class="d-inline-block align-text-top"> </a>
+                    <img src="/logo.svg" alt="" width="50" height="50" class="d-inline-block align-text-top">
+                </a>
             </div>
             <div class="order-2 p-3 navbar-brand">
-                {{ config('app.name', 'FIREFLY') }}
+                <a href="/home">
+                    {{ config('app.name', 'FIREFLY') }}
+                </a>
             </div>
         </div>
 
         {{--    SECTION 2    --}}
-
-
         <div class="p-3">
             <div class="container-fluid">
               <form class="form-inline" action="/search" method="get">
