@@ -14,11 +14,11 @@
 }
 
 .navbar-brand {
-    color:#ffcc00;
+    color: #ffcc00;
     font-weight: bold;
 }
 .navbar-brand a {
-    color:#ffcc00 !important;
+    color: #ffcc00 !important;
     font-weight: bold;
     text-decoration:none;
 }
@@ -33,4 +33,15 @@
 
 .card-cust {
     background-color: #161616;
+}
+
+.page-footer {
+    color: #fff;
+    background-color: #161616;
+}
+
+.page-footer a { color: #ffcc00; }
+
+main {
+    margin-bottom: 400px;
 }

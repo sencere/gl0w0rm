@@ -35,7 +35,7 @@ class PostsController extends Controller
         ]);
 
         $user_id =  auth()->user()->id;
-        $post = new Post(request(['target', 'question', 'time']));
+        $post = new Post(request(['target', 'topic_id', 'question', 'time']));
         auth()->user()->publish($post);
 
         foreach (request('addmore') as $value) {

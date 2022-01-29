@@ -23,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        view()->composer('layouts.partials.main', function($view) {
+            $view->with('breadcrumb', \App\Models\Post::archives());
+        });
     }
 }

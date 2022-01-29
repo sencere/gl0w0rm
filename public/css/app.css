@@ -10051,3 +10051,16 @@ h3 {
 .card-cust {
   background-color: #161616;
 }
+
+.page-footer {
+  color: #fff;
+  background-color: #161616;
+}
+
+.page-footer a {
+  color: #ffcc00;
+}
+
+main {
+  margin-bottom: 400px;
+}

@@ -13,6 +13,9 @@
             <label for="question">Question:</label>
             <input type="text" class="form-control" id="quastion" name="question">
         </div>
+
+        <input type="hidden" class="form-control" id="topic_id" name="topic_id" value="1">
+
         <div class="form-group">
             <label for="time">Time:</label>
             <input type="number" class="form-control" id="time" name="time" placeholder="60" min="30">

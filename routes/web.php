@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostsController;
 use App\Http\Controllers\PredictionController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\TopicController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,12 +28,17 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/reload-captcha', [App\Http\Controllers\Auth\RegisterController::class, 'reloadCaptcha']);
 
 Route::group(['middleware' => ['auth']], function () {
+    // API
     Route::post('/posts/options/{post_id}', [PostsController::class, 'getPostOptions']);
+    Route::post('/posts/predictions/{post_id}', [PostsController::class, 'getPostPredictions']);
+    Route::post('/results/result/{post_id}', [ResultController::class, 'getResult']);
+
     Route::get('/posts/create', [PostsController::class, 'create']);
+    Route::get('/posts/show', [PostsController::class, 'show']);
     Route::get('/posts/{post}', [PostsController::class, 'show']);
+    Route::get('/category/{name}', [CategoryController::class, 'index']);
+    Route::get('/topic/{id}', [TopicController::class, 'index']);
     Route::post('/posts', [PostsController::class, 'store']);
     Route::post('/predictions', [PredictionController::class, 'store']);
-    Route::post('/posts/predictions/{post_id}', [PostsController::class, 'getPostPredictions']);
     Route::post('/results', [ResultController::class, 'store']);
-    Route::post('/results/result/{post_id}', [ResultController::class, 'getResult']);
 });

@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-    @if($posts)
-        @foreach ($posts as $post)
+    @if($categories)
+        @foreach ($categories as $category)
             <div class="card mb-3">
               <div class="card-body card-cust">
-                <a class="link-text" href="{{ url('/posts/' . $post->id  ) }}"> 
-                    <h5 class="card-title">{{ $post->target }} {{ $post->question }}</h5>
+                <a class="link-text" href="{{ url('/category/' . $category->name  ) }}"> 
+                    <h5 class="card-title">{{ $category->name }}</h5>
                 </a>
-                <a href="{{ url('/posts/' . $post->id  ) }}" class="btn btn-purple">Enter</a>
+                <a href="{{ url('/category/' . $category->name  ) }}" class="btn btn-purple">Enter</a>
               </div>
             </div>
         @endforeach
