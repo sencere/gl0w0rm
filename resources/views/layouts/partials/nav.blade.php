@@ -49,6 +49,7 @@
 
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <a class="dropdown-item" href="/posts/show">Your posts</a>
+                        <a class="dropdown-item" href="#">Your channel</a>
                         <a class="dropdown-item" href="#">Settings</a>
 
                         <a class="dropdown-item" href="{{ url('/logout') }}"

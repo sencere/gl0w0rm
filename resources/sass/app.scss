@@ -7,6 +7,14 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+a {
+    color: #ffcc00;
+}
+
+a:hover {
+    color: #3c4f9d;
+}
+
 .navbar {
     justify-content: center;
     //    min-height: 60px;
@@ -28,9 +36,6 @@
     color: white;
 }
 
-.link-text  { color: #fff; }
-.link-text:hover  { color: #3c4f9d; }
-
 .card-cust {
     background-color: #161616;
 }
@@ -40,8 +45,10 @@
     background-color: #161616;
 }
 
-.page-footer a { color: #ffcc00; }
-
 main {
-    margin-bottom: 400px;
+    margin-bottom: 300px;
+}
+
+.register-headline {
+    text-align: center;
 }

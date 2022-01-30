@@ -10019,6 +10019,14 @@ h3 {
     border-color: #dee2e6;
   }
 }
+a {
+  color: #ffcc00;
+}
+
+a:hover {
+  color: #3c4f9d;
+}
+
 .navbar {
   justify-content: center;
   background-color: #161616;
@@ -10040,14 +10048,6 @@ h3 {
   color: white;
 }
 
-.link-text {
-  color: #fff;
-}
-
-.link-text:hover {
-  color: #3c4f9d;
-}
-
 .card-cust {
   background-color: #161616;
 }
@@ -10057,10 +10057,10 @@ h3 {
   background-color: #161616;
 }
 
-.page-footer a {
-  color: #ffcc00;
+main {
+  margin-bottom: 300px;
 }
 
-main {
-  margin-bottom: 400px;
+.register-headline {
+  text-align: center;
 }

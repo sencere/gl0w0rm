@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'channel',
         'password',
     ];
 
@@ -45,6 +46,11 @@ class User extends Authenticatable
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function channel()
+    {
+        return $this->hasMany(Channel::class);
     }
 
     /**
