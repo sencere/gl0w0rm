@@ -151,7 +151,6 @@ class Application extends React.Component {
                 this.timer = '';
                 this.finishState = true;
                 this.readyAttractorState = false;
-                console.log(this.readyButtonState, this.readyTimerState, this.readyAttractorState, this.finishState);
             }
         }, 1000);
     };
@@ -422,7 +421,6 @@ class Application extends React.Component {
             this.displayPredictionResults(p5, width, height);
         }
 
-        p5.print(this.state.result);
         if (this.state.result) {
             this.displayOnlyResult(this.state.confidence, this.state.option, p5);
             p5.noLoop();

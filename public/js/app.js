@@ -2150,7 +2150,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_Application__WEBPACK_IMPORTED_MODULE_2__["default"], {}), document.getElementById('landgrass'));
+var landgrass = document.getElementById('landgrass');
+
+if (landgrass === null) {
+  react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_Application__WEBPACK_IMPORTED_MODULE_2__["default"], {}), landgrass);
+}
 
 /***/ }),
 
@@ -2403,7 +2407,6 @@ var Application = /*#__PURE__*/function (_React$Component) {
           _this.timer = '';
           _this.finishState = true;
           _this.readyAttractorState = false;
-          console.log(_this.readyButtonState, _this.readyTimerState, _this.readyAttractorState, _this.finishState);
         }
       }, 1000);
     });
@@ -2681,8 +2684,6 @@ var Application = /*#__PURE__*/function (_React$Component) {
       if (_this.finishState) {
         _this.displayPredictionResults(p5, width, height);
       }
-
-      p5.print(_this.state.result);
 
       if (_this.state.result) {
         _this.displayOnlyResult(_this.state.confidence, _this.state.option, p5);

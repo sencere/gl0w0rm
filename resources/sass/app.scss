@@ -7,48 +7,5 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-a {
-    color: #ffcc00;
-}
-
-a:hover {
-    color: #3c4f9d;
-}
-
-.navbar {
-    justify-content: center;
-    //    min-height: 60px;
-    background-color: #161616;
-}
-
-.navbar-brand {
-    color: #ffcc00;
-    font-weight: bold;
-}
-.navbar-brand a {
-    color: #ffcc00 !important;
-    font-weight: bold;
-    text-decoration:none;
-}
-
-.btn-purple, .btn-purple:hover, .btn-purple:active, .btn-purple:visited {
-    background-color: #3c4f9d !important;
-    color: white;
-}
-
-.card-cust {
-    background-color: #161616;
-}
-
-.page-footer {
-    color: #fff;
-    background-color: #161616;
-}
-
-main {
-    margin-bottom: 300px;
-}
-
-.register-headline {
-    text-align: center;
-}
+// style
+@import 'style';

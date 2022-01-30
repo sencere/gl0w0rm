@@ -2,4 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Application from './Application';
 
-ReactDOM.render(<Application />, document.getElementById('landgrass'));
+var landgrass = document.getElementById('landgrass');
+
+if (landgrass === null) {
+    ReactDOM.render(<Application />, landgrass);
+}
