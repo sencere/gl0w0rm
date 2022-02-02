@@ -2086,6 +2086,8 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 __webpack_require__(/*! ./components/Application */ "./resources/js/components/Application.js");
 
+__webpack_require__(/*! ./components/PostBar */ "./resources/js/components/PostBar.js");
+
 __webpack_require__(/*! ./components/App */ "./resources/js/components/App.js");
 
 /***/ }),
@@ -2150,11 +2152,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var landgrass = document.getElementById('landgrass');
-
-if (landgrass === null) {
-  react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_Application__WEBPACK_IMPORTED_MODULE_2__["default"], {}), landgrass);
-}
+react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_Application__WEBPACK_IMPORTED_MODULE_2__["default"], {}), landgrass);
 
 /***/ }),
 
@@ -2175,11 +2173,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_p5__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-p5 */ "./node_modules/react-p5/build/index.js");
 /* harmony import */ var react_p5__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react_p5__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _Firefly__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Firefly */ "./resources/js/components/Firefly.js");
-/* harmony import */ var _StartButton__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./StartButton */ "./resources/js/components/StartButton.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _PostBar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./PostBar */ "./resources/js/components/PostBar.js");
+/* harmony import */ var _Firefly__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Firefly */ "./resources/js/components/Firefly.js");
+/* harmony import */ var _StartButton__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./StartButton */ "./resources/js/components/StartButton.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 
@@ -2221,6 +2220,8 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
 
 
 
@@ -2295,13 +2296,13 @@ var Application = /*#__PURE__*/function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "secondTimer", 10);
 
     _defineProperty(_assertThisInitialized(_this), "getPredictions", function () {
-      var responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/posts/predictions/' + _this.canvas.dataset.id, {}).then(function (response) {
+      var responseData = axios__WEBPACK_IMPORTED_MODULE_7___default().post('/posts/predictions/' + _this.canvas.dataset.id, {}).then(function (response) {
         return _this.assignPredictions(response.data);
       });
     });
 
     _defineProperty(_assertThisInitialized(_this), "getResult", function (p5) {
-      var responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/results/result/' + _this.canvas.dataset.id, {
+      var responseData = axios__WEBPACK_IMPORTED_MODULE_7___default().post('/results/result/' + _this.canvas.dataset.id, {
         postId: _this.canvas.dataset.id
       }).then(function (response) {
         return _this.assignResult(response.data, p5);
@@ -2336,7 +2337,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
         if (!botClick) {
           _this.attractorCount++;
-          axios__WEBPACK_IMPORTED_MODULE_6___default().post('/predictions', data);
+          axios__WEBPACK_IMPORTED_MODULE_7___default().post('/predictions', data);
         }
       }
     });
@@ -2463,7 +2464,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       var width = _this.canvas.clientWidth;
       var height = _this.canvas.clientHeight;
       p5.noStroke();
-      p5.fill(60, 79, 157);
+      p5.fill(0, 129, 255);
       p5.textSize(30);
       p5.textAlign(p5.CENTER, p5.CENTER);
       p5.text(middleText, width / 2, height / 2);
@@ -2492,7 +2493,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
         confidence: confidence,
         option: option
       };
-      axios__WEBPACK_IMPORTED_MODULE_6___default().post('/results', data);
+      axios__WEBPACK_IMPORTED_MODULE_7___default().post('/results', data);
     });
 
     _defineProperty(_assertThisInitialized(_this), "displayPredictionResults", function (p5, width, height) {
@@ -2618,7 +2619,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       if (_this.readyTimerState && !_this.finishState) {
         // console.log(Object.keys(this.state.options).length);
         // if (particles.length < this.amountOfFireflies) {
-        _this.particles.push(new _Firefly__WEBPACK_IMPORTED_MODULE_4__["default"](p5.random(_this.canvas.clientWidth), p5.random(_this.canvas.clientHeight), p5)); // }
+        _this.particles.push(new _Firefly__WEBPACK_IMPORTED_MODULE_5__["default"](p5.random(_this.canvas.clientWidth), p5.random(_this.canvas.clientHeight), p5)); // }
         //
 
 
@@ -2669,7 +2670,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
 
       if (!_this.readyButtonState) {
-        var startButton = new _StartButton__WEBPACK_IMPORTED_MODULE_5__["default"](p5, _this.canvas.clientWidth, _this.canvas.clientHeight);
+        var startButton = new _StartButton__WEBPACK_IMPORTED_MODULE_6__["default"](p5, _this.canvas.clientWidth, _this.canvas.clientHeight);
         _this.startButtonConfiguration = startButton.getConfiguration();
       }
 
@@ -2708,7 +2709,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                responseData = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/posts/options/' + this.canvas.dataset.id, {}).then(function (response) {
+                responseData = axios__WEBPACK_IMPORTED_MODULE_7___default().post('/posts/options/' + this.canvas.dataset.id, {}).then(function (response) {
                   return _this2.setState({
                     target: response.data.target,
                     question: response.data.question,
@@ -2716,7 +2717,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
                     time: response.data.time
                   });
                 });
-                resultResponse = axios__WEBPACK_IMPORTED_MODULE_6___default().post('/results/result/' + this.canvas.dataset.id, {
+                resultResponse = axios__WEBPACK_IMPORTED_MODULE_7___default().post('/results/result/' + this.canvas.dataset.id, {
                   'postId': this.canvas.dataset.id
                 }).then(function (response) {
                   return _this2.setState({
@@ -2743,9 +2744,11 @@ var Application = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)((react_p5__WEBPACK_IMPORTED_MODULE_3___default()), {
-        setup: this.setup,
-        draw: this.draw
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsxs)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)((react_p5__WEBPACK_IMPORTED_MODULE_3___default()), {
+          setup: this.setup,
+          draw: this.draw
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_PostBar__WEBPACK_IMPORTED_MODULE_4__["default"], {})]
       });
     }
   }]);
@@ -2846,6 +2849,220 @@ var Firefly = function Firefly(x, y, _p) {
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Firefly);
+
+/***/ }),
+
+/***/ "./resources/js/components/PostBar.js":
+/*!********************************************!*\
+  !*** ./resources/js/components/PostBar.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
+
+
+var PostBar = /*#__PURE__*/function (_React$Component) {
+  _inherits(PostBar, _React$Component);
+
+  var _super = _createSuper(PostBar);
+
+  function PostBar() {
+    var _this;
+
+    _classCallCheck(this, PostBar);
+
+    _this = _super.call(this);
+
+    _defineProperty(_assertThisInitialized(_this), "subscribe", function () {
+      axios__WEBPACK_IMPORTED_MODULE_2___default().post('/subscription/' + _this.state.slug).then(function () {
+        return console.log('Subscribed');
+      });
+
+      _this.setState({
+        status: 'subscribed'
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "unsubscribe", function () {
+      axios__WEBPACK_IMPORTED_MODULE_2___default()["delete"]('/subscription/' + _this.state.slug).then(function () {
+        return console.log('UnSubscribed');
+      });
+
+      _this.setState({
+        status: 'unsubscribed'
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "focus", function () {
+      _this.setState({
+        subscribedText: 'Unsubscribe'
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "unfocus", function () {
+      _this.setState({
+        subscribedText: 'Subscribed'
+      });
+    });
+
+    _this.state = {
+      status: 'hidden',
+      subscribedText: 'Subscribed',
+      slug: '',
+      'channelName': '',
+      imageFileName: ''
+    };
+    return _this;
+  }
+
+  _createClass(PostBar, [{
+    key: "componentDidMount",
+    value: function () {
+      var _componentDidMount = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+        var _this2 = this;
+
+        var canvas, postId, responseData;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                canvas = document.getElementById('landgrass');
+                postId = landgrass.dataset.id;
+                responseData = axios__WEBPACK_IMPORTED_MODULE_2___default().post('/subscription/status/' + postId, {}).then(function (response) {
+                  return _this2.setState({
+                    status: response.data.status,
+                    slug: response.data.slug,
+                    channelName: response.data.channelName,
+                    imageFileName: response.data.imageFileName
+                  });
+                });
+
+              case 3:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+
+      function componentDidMount() {
+        return _componentDidMount.apply(this, arguments);
+      }
+
+      return componentDidMount;
+    }()
+  }, {
+    key: "render",
+    value: function render() {
+      var imageUrl = '/medium/' + this.state.imageFileName;
+
+      if (this.state.status === 'hidden') {
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {});
+      } else if (this.state.status === 'subscribed') {
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          className: "d-flex",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+            className: "p-2",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
+              href: "#",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+                src: imageUrl
+              })
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+            className: "user-link",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
+              href: "#",
+              children: this.state.channelName
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+            className: "p-2 ml-auto",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+              className: "btn btn-danger",
+              onMouseEnter: this.focus,
+              onMouseLeave: this.unfocus,
+              onClick: this.unsubscribe,
+              children: this.state.subscribedText
+            })
+          })]
+        });
+      } else if (this.state.status === 'unsubscribed') {
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          className: "d-flex",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+            className: "p-2",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
+              href: "#",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+                src: imageUrl
+              })
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+            className: "user-link",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
+              href: "#",
+              children: this.state.channelName
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+            className: "p-2 ml-auto",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+              className: "btn btn-purple",
+              onClick: this.subscribe,
+              children: "Subscribe"
+            })
+          })]
+        });
+      }
+    }
+  }]);
+
+  return PostBar;
+}(react__WEBPACK_IMPORTED_MODULE_1__.Component);
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PostBar);
 
 /***/ }),
 

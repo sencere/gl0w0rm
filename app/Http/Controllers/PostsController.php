@@ -13,8 +13,10 @@ class PostsController extends Controller
         $this->middleware('auth')->except(['index', 'show']);
     }
 
-    public function index(Posts $post) {
-        $posts = $post->filterPost();
+    public function index() {
+        $user_id =  auth()->user()->id;
+        $posts = Post::where('user_id', $user_id)->get();
+
         return view('posts.index', compact('posts'));
     }
 
@@ -73,7 +75,7 @@ class PostsController extends Controller
     public function getPostPredictions($postId) {
         $postId = intval($postId);
         $attractorAvg = [];
-        $attractorCount = Prediction::where('post_id', '=', 1)->get()->max('attractor');
+        $attractorCount = Prediction::where('post_id', '=', $postId)->get()->max('attractor');
 
         for($i = 0; $i < $attractorCount; $i++) {
             $time = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))

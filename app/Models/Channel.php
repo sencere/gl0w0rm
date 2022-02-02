@@ -26,11 +26,6 @@ class Channel extends Model
         return 'slug';
     }
 
-    public function videos()
-    {
-        return $this->hasMany(Video::class);
-    }
-
     public function getImage()
     {
         // if (!$this->image_filename) {
@@ -49,10 +44,5 @@ class Channel extends Model
     public function subscriptionCount()
     {
         return $this->subscriptions->count();
-    }
-
-    public function totalVideoViews()
-    {
-        return $this->hasManyThrough(VideoView::class, Video::class)->count();
     }
 }

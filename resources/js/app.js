@@ -13,4 +13,5 @@ require('./bootstrap');
  */
 
 require('./components/Application');
+require('./components/PostBar');
 require('./components/App');

@@ -1,8 +1,3 @@
-<!-- Image and text -->
-<!--<nav class="navbar fixed-top navbar-toggleable-md navbar-expand-lg scrolling-navbar double-nav">
-    <img src="{{ asset('/logo.svg') }}" style="width:50px;position:relative; padding-left:5px;" />
-    <label class="navbar-brand">{{ config('app.name', 'FIREFLY') }}</label>
-</nav> -->
 <nav class="navbar fixed-top navbar-toggleable-md navbar-expand-lg scrolling-navbar double-nav">
     <div class="d-flex justify-content-center bd-highlight">
         {{--    SECTION 1    --}}
@@ -48,10 +43,9 @@
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="/posts/show">Your posts</a>
-                        <a class="dropdown-item" href="#">Your channel</a>
-                        <a class="dropdown-item" href="#">Settings</a>
-
+                        <a class="dropdown-item" href="/posts/index">Your posts</a>
+                        <a class="dropdown-item" href="{{ url('/channel/' . $channel->slug) }}">Your channel</a>
+                        <a class="dropdown-item" href="{{ url('/channel/' . $channel->slug . '/edit') }}">Settings</a>
                         <a class="dropdown-item" href="{{ url('/logout') }}"
                             onclick="event.preventDefault();
                             document.getElementById('logout-form').submit();">
@@ -74,14 +68,3 @@
         </div>
     </div>
 </nav>
-<!--
-<nav class="navbar fixed-top navbar-toggleable-md navbar-expand-lg scrolling-navbar double-nav">
- <img src="{{ asset('/logo.svg') }}" style="width:50px;position:relative; padding-left:5px;" />
-            <a class="navbar-brand" href="{{ url('home') }}">
-                {{ config('app.name', 'FIREFLY') }}
-            </a>
-</nav> -->
-<!--
-<nav class="navbar navbar-default" role="navigation">
-    </nav>
--->

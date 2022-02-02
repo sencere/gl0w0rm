@@ -17,7 +17,7 @@ class TopicController extends Controller
             'id' => 'required|numeric'
         ])->validate();
 
-       $topic = \App\Models\Topic::find(request('id'))->first(); 
+       $topic = \App\Models\Topic::find(request('id'));
        $posts = $topic->posts;
         return view('topic.show', compact('posts'));
     }

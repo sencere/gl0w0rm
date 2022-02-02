@@ -1,9 +1,23 @@
-@extends('layouts.master')
+@extends('layouts.app')
 
 @section('content')
-    @foreach ($posts as $post)
-        @include('posts.post')
-    @endforeach
+    <h1>Your Posts</h1>
+    @if($posts)
+        @foreach ($posts as $post)
+            <div class="card mb-3">
+              <div class="card-body card-cust">
+                <a class="link-text" href="{{ url('/posts/' . $post->id  ) }}"> 
+                    <h5 class="card-title">{{ $post->target }} {{ $post->question }}</h5>
+                </a>
+                <a href="{{ url('/posts/' . $post->id  ) }}" class="btn btn-purple">Enter</a>
+              </div>
+            </div>
+        @endforeach
+    @endif
 
-    @include('posts.nav')
+    @if (session('status'))
+        <div class="alert" role="alert">
+            {{ session('status') }}
+        </div>
+    @endif
 @endsection

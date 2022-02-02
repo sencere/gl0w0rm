@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $this->hasMany(Channel::class);
     }
 
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
     /**
      * Get the result for the blog post.
      */

@@ -1,4 +1,8 @@
-import React from "react"; import ReactDOM from 'react-dom'; import Sketch from "react-p5";
+import React from "react"; 
+import ReactDOM from 'react-dom'; 
+import Sketch from "react-p5";
+import Button from './PostBar';
+
 import Firefly from './Firefly';
 import StartButton from "./StartButton";
 import axios from 'axios';
@@ -200,7 +204,7 @@ class Application extends React.Component {
         let width = this.canvas.clientWidth;
         let height = this.canvas.clientHeight;
         p5.noStroke();
-        p5.fill(60, 79, 157);
+        p5.fill(0, 129, 255);
         p5.textSize(30);
         p5.textAlign(p5.CENTER, p5.CENTER);
         p5.text(middleText, width/2, height/2);
@@ -429,7 +433,10 @@ class Application extends React.Component {
 
     render() {
         return (
-            <Sketch setup={this.setup} draw={this.draw} />
+            <div>
+                <Sketch setup={this.setup} draw={this.draw} />
+                <Button />
+            </div>
         );
     }
 }
