@@ -9,6 +9,7 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\ChannelSettingsController;
 use App\Http\Controllers\ChannelSubscriptionController;
+use App\Http\Controllers\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,7 +34,7 @@ Route::get('/reload-captcha', [App\Http\Controllers\Auth\RegisterController::cla
 Route::get('/subscription/{channel}', 'ChannelSubscriptionController@show');
 Route::get('/channel/{channel}', [ChannelController::class, 'show']);
 
-
+Route::get('/search', [SearchController::class, 'index']);
 
 Route::get('medium/{filename}', function ($filename)
 {
