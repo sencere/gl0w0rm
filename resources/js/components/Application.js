@@ -320,6 +320,7 @@ class Application extends React.Component {
         let radius = circleDiameter/2;
         let countOptions = Object.keys(this.state.options).length;
         let count = 0;
+        let radiusSmallerCircle = 10;
 
         p5.background(backgroundColor);
         p5.fill(circleColor);
@@ -373,7 +374,7 @@ class Application extends React.Component {
             for (var i = 0; i < this.attractors.length; i++) {
                 p5.fill(240,10,10,150);
                 p5.noStroke();
-                p5.circle(this.attractors[i].x, this.attractors[i].y, 10);
+                p5.circle(this.attractors[i].x, this.attractors[i].y, radiusSmallerCircle);
                 // hide attraction point stroke(0, 255, 0);
                 // p5.point(this.attractors[i].x, this.attractors[i].y);
             }
@@ -395,20 +396,31 @@ class Application extends React.Component {
             // smaller circle
             let concentrationX = particleSumX / particleLength;
             let concentrationY = particleSumY / particleLength;
-            let movingFactor = 0.1;
+            let movingFactor = 0.05;
+            let rememberMovingFactor = 0;
+            const allowedDistance = 2.5*radiusSmallerCircle;
+            let distanceConcentCircl = p5.dist(concentrationX, concentrationY, this.smCircleX, this.smCircleY);
 
-            if (this.smCircleX < concentrationX) {
-                this.smCircleX = this.smCircleX + 0.2;
+            if (allowedDistance < distanceConcentCircl) {
+                rememberMovingFactor = movingFactor;
+                movingFactor = 0.8;
             } else {
-                this.smCircleX = this.smCircleX - 0.2;
+                movingFactor = rememberMovingFactor;
             }
 
-            if (this.smCircleY < concentrationY) {
-                this.smCircleY = this.smCircleY + 0.2;
-            } else {
-                this.smCircleY = this.smCircleY - 0.2;
-            }
+            if (this.readyAttractorState) {
+                if (this.smCircleX < concentrationX) {
+                    this.smCircleX = this.smCircleX + movingFactor;
+                } else {
+                    this.smCircleX = this.smCircleX - movingFactor;
+                }
 
+                if (this.smCircleY < concentrationY) {
+                    this.smCircleY = this.smCircleY + movingFactor;
+                } else {
+                    this.smCircleY = this.smCircleY - movingFactor;
+                }
+            }
         }
 
         // my button

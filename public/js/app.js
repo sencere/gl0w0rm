@@ -2592,6 +2592,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       var radius = circleDiameter / 2;
       var countOptions = Object.keys(_this.state.options).length;
       var count = 0;
+      var radiusSmallerCircle = 10;
       p5.background(backgroundColor);
       p5.fill(circleColor);
       p5.noStroke();
@@ -2648,7 +2649,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
         for (var i = 0; i < _this.attractors.length; i++) {
           p5.fill(240, 10, 10, 150);
           p5.noStroke();
-          p5.circle(_this.attractors[i].x, _this.attractors[i].y, 10); // hide attraction point stroke(0, 255, 0);
+          p5.circle(_this.attractors[i].x, _this.attractors[i].y, radiusSmallerCircle); // hide attraction point stroke(0, 255, 0);
           // p5.point(this.attractors[i].x, this.attractors[i].y);
         }
 
@@ -2672,18 +2673,30 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
         var concentrationX = particleSumX / particleLength;
         var concentrationY = particleSumY / particleLength;
-        var movingFactor = 0.1;
+        var movingFactor = 0.05;
+        var rememberMovingFactor = 0;
+        var allowedDistance = 2.5 * radiusSmallerCircle;
+        var distanceConcentCircl = p5.dist(concentrationX, concentrationY, _this.smCircleX, _this.smCircleY);
 
-        if (_this.smCircleX < concentrationX) {
-          _this.smCircleX = _this.smCircleX + 0.2;
+        if (allowedDistance < distanceConcentCircl) {
+          rememberMovingFactor = movingFactor;
+          movingFactor = 0.8;
         } else {
-          _this.smCircleX = _this.smCircleX - 0.2;
+          movingFactor = rememberMovingFactor;
         }
 
-        if (_this.smCircleY < concentrationY) {
-          _this.smCircleY = _this.smCircleY + 0.2;
-        } else {
-          _this.smCircleY = _this.smCircleY - 0.2;
+        if (_this.readyAttractorState) {
+          if (_this.smCircleX < concentrationX) {
+            _this.smCircleX = _this.smCircleX + movingFactor;
+          } else {
+            _this.smCircleX = _this.smCircleX - movingFactor;
+          }
+
+          if (_this.smCircleY < concentrationY) {
+            _this.smCircleY = _this.smCircleY + movingFactor;
+          } else {
+            _this.smCircleY = _this.smCircleY - movingFactor;
+          }
         }
       } // my button
 
