@@ -11,6 +11,7 @@ class PostBar extends React.Component {
             slug: '',
             'channelName': '',
             imageFileName: '',
+            userId : ''
         };
     }
 
@@ -44,7 +45,8 @@ class PostBar extends React.Component {
                 status: response.data.status,
                 slug: response.data.slug,
                 channelName: response.data.channelName,
-                imageFileName: response.data.imageFileName
+                imageFileName: response.data.imageFileName,
+                userId: response.data.userId
             }));
     };
 
@@ -52,17 +54,31 @@ class PostBar extends React.Component {
         const imageUrl = '/medium/' + this.state.imageFileName;
 
         if (this.state.status === 'hidden') {
-            return (<div></div>);
-        } else if (this.state.status === 'subscribed') {
-            return (
-                <div className='d-flex'>
+            return (<div className='d-flex'>
                     <div className='p-2'>
-                        <a href="#">
+                        <a href={"/user/" + this.state.userId}>
                             <img src={imageUrl} />
                         </a>
                     </div>
                     <div className='user-link'>
-                        <a href="#">
+                        <a href={"/user/" + this.state.userId}>
+                            {this.state.channelName}
+                        </a>
+                    </div>
+                    <div className='p-2 ml-auto'>
+                    </div>
+                </div>
+);
+        } else if (this.state.status === 'subscribed') {
+            return (
+                <div className='d-flex'>
+                    <div className='p-2'>
+                        <a href={"/user/" + this.state.userId}>
+                            <img src={imageUrl} />
+                        </a>
+                    </div>
+                    <div className='user-link'>
+                        <a href={"/user/" + this.state.userId}>
                             {this.state.channelName}
                         </a>
                     </div>
@@ -77,12 +93,13 @@ class PostBar extends React.Component {
             return (
                 <div className='d-flex'>
                     <div className='p-2'>
-                        <a href="#">
+                        <a href={"/user/" + this.state.userId}>
+                            <img src={imageUrl} />
                             <img src={imageUrl} />
                         </a>
                     </div>
                     <div className='user-link'>
-                        <a href="#">
+                        <a href={"/user/" + this.state.userId}>
                             {this.state.channelName}
                         </a>
                     </div>

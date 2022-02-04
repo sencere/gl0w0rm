@@ -48,6 +48,11 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    public function topics()
+    {
+        return $this->hasMany(Post::class);
+    }
+
     public function channel()
     {
         return $this->hasMany(Channel::class);
@@ -69,5 +74,10 @@ class User extends Authenticatable
     public function publish(Post $post)
     {
         $this->posts()->save($post);
+    }
+
+    public function createTopic(Topic $topic)
+    {
+        $this->topics()->save($topic);
     }
 }

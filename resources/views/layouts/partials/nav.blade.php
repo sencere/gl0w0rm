@@ -43,6 +43,7 @@
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="/topic/create">Create a new topic</a>
                         <a class="dropdown-item" href="/posts/index">Your posts</a>
                         <a class="dropdown-item" href="{{ url('/channel/' . $channel->slug) }}">Your channel</a>
                         <a class="dropdown-item" href="{{ url('/channel/' . $channel->slug . '/edit') }}">Settings</a>

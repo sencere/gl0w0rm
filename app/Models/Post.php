@@ -63,6 +63,10 @@ class Post extends Model
         }
 
         if ($arr[1] === 'topic') {
+            $checkArray = ['create', 'store'];
+            if (in_array($arr[2], $checkArray)) {
+                return;
+            }
             $topic = Topic::find($arr[2]);
             $breadcrumbArray = ['category' => $topic->category, 'topic' => $topic, 'post' => ''];
         }

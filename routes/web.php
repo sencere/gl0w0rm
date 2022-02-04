@@ -10,6 +10,7 @@ use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\ChannelSettingsController;
 use App\Http\Controllers\ChannelSubscriptionController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +66,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/posts/index', [PostsController::class, 'index']);
     Route::get('/posts/create', [PostsController::class, 'create']);
     Route::get('/posts/{post}', [PostsController::class, 'show']);
+
+    Route::get('/topic/create', [TopicController::class, 'create']);
+    Route::post('/topics', [TopicController::class, 'store']);
 
     Route::get('/user/{user}', [UserController::class, 'show']);
 

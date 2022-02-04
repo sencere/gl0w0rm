@@ -71,7 +71,8 @@ class ChannelSubscriptionController extends Controller
             'status' => $subscriptionStatus,
             'slug' => $channel->slug,
             'channelName' => $channel->name,
-            'imageFileName' => $channel->image_filename
+            'imageFileName' => $channel->image_filename,
+            'userId' => $userId
         ];
     }
 

@@ -9,6 +9,7 @@ class Topic extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['category_id', 'user_id', 'name'];
     /**
      * Get the posts for the topic.
      */

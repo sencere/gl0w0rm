@@ -11,11 +11,10 @@ class SearchController extends Controller
     public function index(Request $request)
     {
         if (!$request->q) {
-            return redirect('/');
+            return redirect('/home');
         }
 
         $posts = Post::where('question', 'LIKE', '%' . $request->q . '%')
-                    ->orWhere('target', 'LIKE', '%' . $request->q . '%')
                     ->get();
 
         return view('search.index', [
