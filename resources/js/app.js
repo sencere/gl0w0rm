@@ -12,6 +12,8 @@ require('./bootstrap');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-require('./components/Application');
-require('./components/PostBar');
 require('./components/App');
+require('./components/Application');
+require('./components/Create');
+require('./components/PostBar');
+

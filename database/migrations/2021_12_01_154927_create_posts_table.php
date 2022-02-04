@@ -17,7 +17,6 @@ class CreatePostsTable extends Migration
             $table->id();
             $table->integer('user_id')->unsigned();
             $table->integer('topic_id');
-            $table->string('target');
             $table->string('question');
             $table->integer('time');
             $table->timestamps();

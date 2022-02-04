@@ -11,7 +11,7 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['target',  'topic_id', 'question', 'time', 'user_id'];
+    protected $fillable = ['topic_id', 'question', 'time', 'user_id'];
 
     public function options()
     {

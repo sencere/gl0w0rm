@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Prediction;
+use App\Models\Topic;
+
 
 class PostsController extends Controller
 {
@@ -25,22 +27,24 @@ class PostsController extends Controller
     }
 
     public function create() {
-        return view('posts.create');
+        $topics = Topic::all();
+        return view('posts.create', compact('topics'));
     }
 
     public function store() {
         $this->validate(request(), [
-            'target' => 'required',
+            'topic_id' => 'required|numeric|min:1',
             'question' => 'required',
             'time' => 'required|numeric|min:30',
-            'addmore' => 'required',
+            'option'    => 'required|array|min:2',
+            'option.*'  => 'required|string|distinct|min:2',
         ]);
 
         $user_id =  auth()->user()->id;
-        $post = new Post(request(['target', 'topic_id', 'question', 'time']));
+        $post = new Post(request(['topic_id', 'question', 'time']));
         auth()->user()->publish($post);
 
-        foreach (request('addmore') as $value) {
+        foreach (request('option') as $value) {
             $post->addOption($value, $user_id);
         }
 
@@ -55,6 +59,7 @@ class PostsController extends Controller
         $time = $post->time;
         $optionArr = [];
         $dataArr = [];
+        $target = Topic::find($post->topic_id);
 
         if (isset($options)) {
             foreach ($options as $value) {
@@ -63,7 +68,7 @@ class PostsController extends Controller
         }
 
         $dataArr = [
-            'target' => $post->target,
+            'target' => $target->name,
             'question' => $post->question,
             'options' => $optionArr,
             'time' => $time

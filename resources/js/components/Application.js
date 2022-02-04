@@ -304,8 +304,11 @@ class Application extends React.Component {
     };
 
     draw = (p5, parentRef) => {
+        p5.print(this.state.result);
         if (this.state.result) {
             this.setPredictionCompleted();
+        } else if (this.state.result === null) {
+            return;
         }
 
         let backgroundColor = [22, 22, 22];
@@ -392,17 +395,18 @@ class Application extends React.Component {
             // smaller circle
             let concentrationX = particleSumX / particleLength;
             let concentrationY = particleSumY / particleLength;
+            let movingFactor = 0.1;
 
             if (this.smCircleX < concentrationX) {
-                this.smCircleX = this.smCircleX + 0.8;
+                this.smCircleX = this.smCircleX + 0.2;
             } else {
-                this.smCircleX = this.smCircleX - 0.8;
+                this.smCircleX = this.smCircleX - 0.2;
             }
 
             if (this.smCircleY < concentrationY) {
-                this.smCircleY = this.smCircleY + 0.8;
+                this.smCircleY = this.smCircleY + 0.2;
             } else {
-                this.smCircleY = this.smCircleY - 0.8;
+                this.smCircleY = this.smCircleY - 0.2;
             }
 
         }
