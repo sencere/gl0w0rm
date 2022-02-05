@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<h4>Topic</h4>
     @if($topics)
         @foreach ($topics as $topic)
             <div class="card mb-3">
