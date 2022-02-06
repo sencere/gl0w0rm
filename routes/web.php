@@ -74,7 +74,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Navigation
     Route::get('/category/{name}', [CategoryController::class, 'index']);
-    Route::get('/topic/{id}', [TopicController::class, 'index']);
+    Route::get('/topic/{id}/{page}', [TopicController::class, 'index']);
     Route::post('/posts', [PostsController::class, 'store']);
 
     Route::get('/channel/{channel}/edit', [ChannelSettingsController::class, 'edit']);

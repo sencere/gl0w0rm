@@ -43,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
                 $posts = \DB::table('posts')
                     ->whereIn('user_id', $subscriptionUserIdArray)
                     ->latest()
+                    ->limit(5)
                     ->get();
 
                 $view->with('posts', $posts);

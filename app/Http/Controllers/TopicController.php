@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Topic;
+use App\Models\Post;
 
 class TopicController extends Controller
 {
@@ -13,15 +14,30 @@ class TopicController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(Request $request)
+    public function index(Request $request, $topicId, $page)
     {
+        $elementsPerPage = 10;
         validator($request->route()->parameters(), [
-            'id' => 'required|numeric'
+            'id' => 'required|numeric',
+            'page' => 'required|numeric'
         ])->validate();
 
-        $topic = \App\Models\Topic::find(request('id'));
-        $posts = $topic->posts;
-        return view('topic.show', compact('posts'));
+        $posts = Topic::where('topic_id', $topicId)
+            ->leftJoin('posts', 'topics.id', '=', 'posts.topic_id');
+
+        $count = $posts->count();
+        $maxPages = (int)floor($count / $elementsPerPage);
+
+        $posts = $posts->skip(($page - 1) * $elementsPerPage)->limit($elementsPerPage)->get();
+
+        $data = [
+            'posts' => $posts,
+            'maxPages' => $maxPages,
+            'page' => $page,
+            'topicId' => $topicId,
+        ];
+
+        return view('topic.show', $data);
     }
 
     /**
