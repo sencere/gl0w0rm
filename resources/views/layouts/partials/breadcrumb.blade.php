@@ -9,7 +9,7 @@
         </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="/topic/{{!empty($breadcrumb['topic']) ? $breadcrumb['topic']->id : ''}}">{{!empty($breadcrumb['topic']) ? $breadcrumb['topic']->name : ''}}</a>
+      <a class="nav-link" href="/topic/{{!empty($breadcrumb['topic']) ? $breadcrumb['topic']->id . '/1' : ''}}">{{!empty($breadcrumb['topic']) ? $breadcrumb['topic']->name : ''}}</a>
     </li>
     <li class="nav-item">
       <a class="nav-link disabled" href="#">{{!empty($breadcrumb['post']) ? $breadcrumb['post'] : ''}}</a>

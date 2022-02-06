@@ -23,7 +23,8 @@ class TopicController extends Controller
         ])->validate();
 
         $posts = Topic::where('topic_id', $topicId)
-            ->leftJoin('posts', 'topics.id', '=', 'posts.topic_id');
+            ->leftJoin('posts', 'topics.id', '=', 'posts.topic_id')
+            ->orderBy('posts.created_at', 'desc');
 
         $count = $posts->count();
         $maxPages = (int)floor($count / $elementsPerPage);
