@@ -23,7 +23,6 @@ class Application extends React.Component {
     startButtonConfiguration;
     options = {};
     listAngles = [0, 0, [3.141593, 6.283185], [1.570796, 3.926991, 5.4977871], [0.5235988, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 4.712389, 5.759587]];
-    timerShown = false;
     timer = 3;
     timerTextColor = [255, 255, 255];
     predictions = [];
@@ -151,7 +150,6 @@ class Application extends React.Component {
 
             if (timer < 1) {
                 clearInterval(myVar);
-                // this.startSecondTimer();
                 this.timer = '';
                 this.finishState = true;
                 this.readyAttractorState = false;
@@ -304,7 +302,6 @@ class Application extends React.Component {
     };
 
     draw = (p5, parentRef) => {
-        p5.print(this.state.result);
         if (this.state.result) {
             this.setPredictionCompleted();
         } else if (this.state.result === null) {
@@ -362,11 +359,8 @@ class Application extends React.Component {
         }
 
         if (this.readyTimerState && !this.finishState) {
-            // console.log(Object.keys(this.state.options).length);
-            // if (particles.length < this.amountOfFireflies) {
             this.particles.push(new Firefly(p5.random(this.canvas.clientWidth), p5.random(this.canvas.clientHeight), p5));
-            // }
-            //
+
             if (particles.length > this.amountOfFireflies) {
                 particles.splice(0, 1);
             }
@@ -375,8 +369,6 @@ class Application extends React.Component {
                 p5.fill(240,10,10,150);
                 p5.noStroke();
                 p5.circle(this.attractors[i].x, this.attractors[i].y, radiusSmallerCircle);
-                // hide attraction point stroke(0, 255, 0);
-                // p5.point(this.attractors[i].x, this.attractors[i].y);
             }
             let particleSumX = 0;
             let particleSumY = 0;
