@@ -2291,8 +2291,6 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "listAngles", [0, 0, [3.141593, 6.283185], [1.570796, 3.926991, 5.4977871], [0.5235988, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 4.712389, 5.759587]]);
 
-    _defineProperty(_assertThisInitialized(_this), "timerShown", false);
-
     _defineProperty(_assertThisInitialized(_this), "timer", 3);
 
     _defineProperty(_assertThisInitialized(_this), "timerTextColor", [255, 255, 255]);
@@ -2417,11 +2415,11 @@ var Application = /*#__PURE__*/function (_React$Component) {
         }
 
         if (timer < 1) {
-          clearInterval(myVar); // this.startSecondTimer();
-
+          clearInterval(myVar);
           _this.timer = '';
           _this.finishState = true;
           _this.readyAttractorState = false;
+          _this.predictions = _this.attractors;
         }
       }, 1000);
     });
@@ -2575,8 +2573,6 @@ var Application = /*#__PURE__*/function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "draw", function (p5, parentRef) {
-      p5.print(_this.state.result);
-
       if (_this.state.result) {
         _this.setPredictionCompleted();
       } else if (_this.state.result === null) {
@@ -2636,11 +2632,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       }
 
       if (_this.readyTimerState && !_this.finishState) {
-        // console.log(Object.keys(this.state.options).length);
-        // if (particles.length < this.amountOfFireflies) {
-        _this.particles.push(new _Firefly__WEBPACK_IMPORTED_MODULE_5__["default"](p5.random(_this.canvas.clientWidth), p5.random(_this.canvas.clientHeight), p5)); // }
-        //
-
+        _this.particles.push(new _Firefly__WEBPACK_IMPORTED_MODULE_5__["default"](p5.random(_this.canvas.clientWidth), p5.random(_this.canvas.clientHeight), p5));
 
         if (particles.length > _this.amountOfFireflies) {
           particles.splice(0, 1);
@@ -2649,8 +2641,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
         for (var i = 0; i < _this.attractors.length; i++) {
           p5.fill(240, 10, 10, 150);
           p5.noStroke();
-          p5.circle(_this.attractors[i].x, _this.attractors[i].y, radiusSmallerCircle); // hide attraction point stroke(0, 255, 0);
-          // p5.point(this.attractors[i].x, this.attractors[i].y);
+          p5.circle(_this.attractors[i].x, _this.attractors[i].y, radiusSmallerCircle);
         }
 
         var particleSumX = 0;

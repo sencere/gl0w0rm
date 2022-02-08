@@ -153,6 +153,8 @@ class Application extends React.Component {
                 this.timer = '';
                 this.finishState = true;
                 this.readyAttractorState = false;
+
+                this.predictions = this.attractors;
             }
         }, 1000);
     };
