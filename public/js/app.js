@@ -2307,6 +2307,10 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "secondTimer", 10);
 
+    _defineProperty(_assertThisInitialized(_this), "variance", 0);
+
+    _defineProperty(_assertThisInitialized(_this), "mean", 0);
+
     _defineProperty(_assertThisInitialized(_this), "getPredictions", function () {
       var responseData = axios__WEBPACK_IMPORTED_MODULE_7___default().post('/posts/predictions/' + _this.canvas.dataset.id, {}).then(function (response) {
         return _this.assignPredictions(response.data);
@@ -2455,9 +2459,9 @@ var Application = /*#__PURE__*/function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_this), "assignPredictions", function (predictions) {
+    _defineProperty(_assertThisInitialized(_this), "assignPredictions", function (data) {
       var predictionsArr = [];
-      Object.entries(predictions).forEach(function (_ref) {
+      Object.entries(data.predictions).forEach(function (_ref) {
         var _ref2 = _slicedToArray(_ref, 2),
             key = _ref2[0],
             value = _ref2[1];
@@ -2465,6 +2469,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
         predictionsArr[key] = value;
       });
       _this.predictions = predictionsArr;
+      _this.mean = data.mean;
+      _this.variance = data.variance;
     });
 
     _defineProperty(_assertThisInitialized(_this), "getSmallCircleCoordinates", function () {
@@ -2669,11 +2675,15 @@ var Application = /*#__PURE__*/function (_React$Component) {
         var allowedDistance = 2.5 * radiusSmallerCircle;
         var distanceConcentCircl = p5.dist(concentrationX, concentrationY, _this.smCircleX, _this.smCircleY);
 
-        if (allowedDistance < distanceConcentCircl) {
-          rememberMovingFactor = movingFactor;
-          movingFactor = 0.8;
+        if (_this.mean === 0 && _this.variance === 0) {
+          if (allowedDistance < distanceConcentCircl) {
+            rememberMovingFactor = movingFactor;
+            movingFactor = 0.8;
+          } else {
+            movingFactor = rememberMovingFactor;
+          }
         } else {
-          movingFactor = rememberMovingFactor;
+          movingFactor = 4 * Math.pow(Math.exp(1), -1 * Math.pow(_this.secondTimer - _this.mean, 2) / _this.variance);
         }
 
         if (_this.readyAttractorState) {
@@ -3176,13 +3186,11 @@ var PostBar = /*#__PURE__*/function (_React$Component) {
           className: "d-flex",
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
             className: "p-2",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("a", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
               href: "/user/" + this.state.userId,
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
                 src: imageUrl
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-                src: imageUrl
-              })]
+              })
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
             className: "user-link",

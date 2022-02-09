@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Prediction;
 use App\Models\Topic;
-
+use App\Models\Result;
+use Phpml\Clustering\KMeans;
 
 class PostsController extends Controller
 {
@@ -81,25 +82,79 @@ class PostsController extends Controller
 
     public function getPostPredictions($postId) {
         $postId = intval($postId);
+        $sumOfSquares = 0;
+        $variance = 0;
+        $mean = 0;
+        $attractorArray = [];
         $attractorAvg = [];
+        $returnData = [];
+        $timeArray = [];
+        $cluster = [];
         $attractorCount = Prediction::where('post_id', '=', $postId)->get()->max('attractor');
+        $resultCount = Result::where('post_id', $postId)->count();
+        $predictions =  Prediction::where('post_id', $postId)->get();
+        $time =  Prediction::where('post_id', $postId)->get();
+
+        foreach ($predictions as $prediction) {
+            array_push($attractorArray, [$prediction->mouseX, $prediction->mouseY]);
+            array_push($timeArray, $prediction->time);
+        }
+
+        if (count($timeArray) > 0 && $resultCount > 2) {
+            $mean = round(array_sum($timeArray) / count($timeArray), 2);
+
+            foreach ($timeArray as $value) {
+                $sumOfSquares += $value = pow($mean - $value, 2);
+            }
+
+            $variance = round($sumOfSquares / (count($timeArray) - 1), 2);
+        }
+
+        if ($resultCount > 2) {
+            $kmeans = new KMeans(10);
+            $cluster = $kmeans->cluster($attractorArray);
+        }
+
+        foreach ($cluster as $attractors) {
+            $x = [];
+            $y = [];
+            foreach ($attractors as $attractor) {
+                array_push($x, $attractor[0]);
+                array_push($y, $attractor[1]);
+            }
+
+            if (count($x) > 0 && count($y) > 0) {
+                array_push($attractorAvg, [round(array_sum($x)/count($x)), round(array_sum($y)/count($y))]);
+            }
+        }
 
         for($i = 0; $i < $attractorCount; $i++) {
             $time = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
                 ->get()
                 ->avg('time');
-            $mouseX = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
-                ->get()
-                ->avg('mouseX');
-            $mouseY = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
-                ->get()
-                ->avg('mouseY');
 
-            $attractorAvg[intval($time)] = [
+            if ($resultCount < 3) {
+                $mouseX = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
+                    ->get()
+                    ->avg('mouseX');
+                $mouseY = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
+                    ->get()
+                    ->avg('mouseY');
+            } else {
+                $mouseX = $attractorAvg[$i][0];
+                $mouseY = $attractorAvg[$i][1];
+            }
+
+            $returnData[intval($time)] = [
                 'mouseX' => $mouseX,
                 'mouseY' => $mouseY
             ];
         }
-        return $attractorAvg;
+
+        return [
+            'variance' => $variance,
+            'mean' => $mean,
+            'predictions' => $returnData
+        ];
     }
 }

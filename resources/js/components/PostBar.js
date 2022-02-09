@@ -95,7 +95,6 @@ class PostBar extends React.Component {
                     <div className='p-2'>
                         <a href={"/user/" + this.state.userId}>
                             <img src={imageUrl} />
-                            <img src={imageUrl} />
                         </a>
                     </div>
                     <div className='user-link'>

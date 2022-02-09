@@ -12,7 +12,8 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.3",
-        "mews/captcha": "^3.2"
+        "mews/captcha": "^3.2",
+        "php-ai/php-ml": "^0.9.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

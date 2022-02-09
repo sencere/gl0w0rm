@@ -1,0 +1,219 @@
+diff --git a/app/Http/Controllers/HomeController.php b/app/Http/Controllers/HomeController.php
+index 18f0c15..db8b76d 100644
+--- a/app/Http/Controllers/HomeController.php
++++ b/app/Http/Controllers/HomeController.php
+@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
+ 
+ use Illuminate\Http\Request;
+ use App\Models\Category;
++use Phpml\Classification\KNearestNeighbors;
+ 
+ class HomeController extends Controller
+ {
+diff --git a/app/Http/Controllers/PostsController.php b/app/Http/Controllers/PostsController.php
+index 611ee78..ddd2e56 100644
+--- a/app/Http/Controllers/PostsController.php
++++ b/app/Http/Controllers/PostsController.php
+@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
+ use App\Models\Post;
+ use App\Models\Prediction;
+ use App\Models\Topic;
+-
++use App\Models\Result;
++use Phpml\Clustering\KMeans;
+ 
+ class PostsController extends Controller
+ {
+@@ -81,25 +82,45 @@ class PostsController extends Controller
+ 
+     public function getPostPredictions($postId) {
+         $postId = intval($postId);
++        $attractorArray = [];
+         $attractorAvg = [];
++        $returnData = [];
+         $attractorCount = Prediction::where('post_id', '=', $postId)->get()->max('attractor');
++        $resultCount = Result::where('post_id', $postId)->count();
++        $predictions =  Prediction::where('post_id', $postId)->get();
++dd($resultCount);
++        foreach ($predictions as $prediction) {
++            array_push($attractorArray, [$prediction->mouseX, $prediction->mouseY]);
++        }
++
++        $kmeans = new KMeans(10);
++        $cluster = $kmeans->cluster($attractorArray);
++
++        foreach ($cluster as $attractors) {
++            $x = [];
++            $y = [];
++            foreach ($attractors as $attractor) {
++                array_push($x, $attractor[0]);
++                array_push($y, $attractor[1]);
++            }
++            array_push($attractorAvg, [round(array_sum($x)/count($x)), round(array_sum($y)/count($y))]);
++        }
+ 
+         for($i = 0; $i < $attractorCount; $i++) {
+             $time = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
+                 ->get()
+                 ->avg('time');
+-            $mouseX = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
+-                ->get()
+-                ->avg('mouseX');
+-            $mouseY = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
+-                ->get()
+-                ->avg('mouseY');
+ 
+-            $attractorAvg[intval($time)] = [
+-                'mouseX' => $mouseX,
+-                'mouseY' => $mouseY
++            if ($resultCount < 3) {
++
++            }
++
++            $returnData[intval($time)] = [
++                'mouseX' => $attractorAvg[$i][0],
++                'mouseY' => $attractorAvg[$i][1]
+             ];
+         }
+-        return $attractorAvg;
++
++        return $return Data;
+     }
+ }
+diff --git a/composer.json b/composer.json
+index 0f32949..fabef55 100644
+--- a/composer.json
++++ b/composer.json
+@@ -12,7 +12,8 @@
+         "laravel/sanctum": "^2.11",
+         "laravel/tinker": "^2.5",
+         "laravel/ui": "^3.3",
+-        "mews/captcha": "^3.2"
++        "mews/captcha": "^3.2",
++        "php-ai/php-ml": "^0.9.0"
+     },
+     "require-dev": {
+         "facade/ignition": "^2.5",
+diff --git a/composer.lock b/composer.lock
+index 432457f..0686c6d 100644
+--- a/composer.lock
++++ b/composer.lock
+@@ -4,7 +4,7 @@
+         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+         "This file is @generated automatically"
+     ],
+-    "content-hash": "e78a9b6443c875148044f1239bd22b35",
++    "content-hash": "4dfd3a01532ad40e47f5918612b56292",
+     "packages": [
+         {
+             "name": "asm89/stack-cors",
+@@ -2342,6 +2342,63 @@
+             },
+             "time": "2021-04-09T13:42:10+00:00"
+         },
++        {
++            "name": "php-ai/php-ml",
++            "version": "0.9.0",
++            "source": {
++                "type": "git",
++                "url": "https://gitlab.com/php-ai/php-ml.git",
++                "reference": "fd8b70629e16ed67307fe150ba25738449b9a6b2"
++            },
++            "dist": {
++                "type": "zip",
++                "url": "https://gitlab.com/api/v4/projects/php-ai%2Fphp-ml/repository/archive.zip?sha=fd8b70629e16ed67307fe150ba25738449b9a6b2",
++                "reference": "fd8b70629e16ed67307fe150ba25738449b9a6b2",
++                "shasum": ""
++            },
++            "require": {
++                "php": "^7.2"
++            },
++            "require-dev": {
++                "phpbench/phpbench": "^0.16.0",
++                "phpstan/phpstan": "^0.12",
++                "phpstan/phpstan-phpunit": "^0.12",
++                "phpstan/phpstan-strict-rules": "^0.12",
++                "phpunit/phpunit": "^8.0",
++                "symplify/easy-coding-standard": "^6.0"
++            },
++            "type": "library",
++            "autoload": {
++                "psr-4": {
++                    "Phpml\\": "src/"
++                }
++            },
++            "notification-url": "https://packagist.org/downloads/",
++            "license": [
++                "MIT"
++            ],
++            "authors": [
++                {
++                    "name": "Arkadiusz Kondas",
++                    "email": "arkadiusz.kondas@gmail.com"
++                }
++            ],
++            "description": "PHP-ML - Machine Learning library for PHP",
++            "homepage": "https://github.com/php-ai/php-ml",
++            "keywords": [
++                "Neural network",
++                "artificial intelligence",
++                "computational learning theory",
++                "data science",
++                "feature extraction",
++                "machine learning",
++                "pattern recognition"
++            ],
++            "support": {
++                "issues": "https://gitlab.com/api/v4/projects/19024967/issues"
++            },
++            "time": "2020-05-27T09:52:59+00:00"
++        },
+         {
+             "name": "phpoption/phpoption",
+             "version": "1.8.0",
+diff --git a/public/js/app.js b/public/js/app.js
+index f741d81..448f2af 100644
+--- a/public/js/app.js
++++ b/public/js/app.js
+@@ -3176,13 +3176,11 @@ var PostBar = /*#__PURE__*/function (_React$Component) {
+           className: "d-flex",
+           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+             className: "p-2",
+-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("a", {
++            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("a", {
+               href: "/user/" + this.state.userId,
+-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+-                src: imageUrl
+-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
++              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+                 src: imageUrl
+-              })]
++              })
+             })
+           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+             className: "user-link",
+diff --git a/resources/js/components/PostBar.js b/resources/js/components/PostBar.js
+index 7e67009..1d90895 100644
+--- a/resources/js/components/PostBar.js
++++ b/resources/js/components/PostBar.js
+@@ -95,7 +95,6 @@ class PostBar extends React.Component {
+                     <div className='p-2'>
+                         <a href={"/user/" + this.state.userId}>
+                             <img src={imageUrl} />
+-                            <img src={imageUrl} />
+                         </a>
+                     </div>
+                     <div className='user-link'>
+diff --git a/routes/web.php b/routes/web.php
+index 7d13e1a..709a423 100644
+--- a/routes/web.php
++++ b/routes/web.php
+@@ -57,7 +57,7 @@ Route::get('medium/{filename}', function ($filename)
+ Route::group(['middleware' => ['auth']], function () {
+     // API
+     Route::post('/posts/options/{post_id}', [PostsController::class, 'getPostOptions']);
+-    Route::post('/posts/predictions/{post_id}', [PostsController::class, 'getPostPredictions']);
++    Route::post('posts/predictions/{post_id}', [PostsController::class, 'getPostPredictions']);
+     Route::post('/results/result/{post_id}', [ResultController::class, 'getResult']);
+     Route::post('/results', [ResultController::class, 'store']);
+     Route::post('/predictions', [PredictionController::class, 'store']);

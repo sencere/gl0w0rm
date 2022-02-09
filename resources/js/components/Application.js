@@ -31,6 +31,8 @@ class Application extends React.Component {
     smCircleX = 0;
     smCircleY = 0;
     secondTimer = 10;
+    variance = 0;
+    mean = 0;
 
     // TODO
     // -code clean up
@@ -184,14 +186,16 @@ class Application extends React.Component {
         }
     };
 
-    assignPredictions = (predictions) => {
+    assignPredictions = (data) => {
         let predictionsArr = [];
 
-        Object.entries(predictions).forEach(([key, value]) => {
+        Object.entries(data.predictions).forEach(([key, value]) => {
             predictionsArr[key] = value;
         })
 
         this.predictions = predictionsArr;
+        this.mean = data.mean;
+        this.variance = data.variance;
     };
 
     getSmallCircleCoordinates = () => {
@@ -395,11 +399,15 @@ class Application extends React.Component {
             const allowedDistance = 2.5*radiusSmallerCircle;
             let distanceConcentCircl = p5.dist(concentrationX, concentrationY, this.smCircleX, this.smCircleY);
 
-            if (allowedDistance < distanceConcentCircl) {
-                rememberMovingFactor = movingFactor;
-                movingFactor = 0.8;
+            if (this.mean === 0 && this.variance === 0) {
+                if (allowedDistance < distanceConcentCircl) {
+                    rememberMovingFactor = movingFactor;
+                    movingFactor = 0.8;
+                } else {
+                    movingFactor = rememberMovingFactor;
+                }
             } else {
-                movingFactor = rememberMovingFactor;
+                movingFactor = 4 * Math.pow(Math.exp(1),(-1 * Math.pow(this.secondTimer - this.mean, 2)/this.variance));
             }
 
             if (this.readyAttractorState) {
