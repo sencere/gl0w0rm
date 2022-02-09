@@ -2336,8 +2336,9 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "addAttractor", function (mouseX, mouseY, p5) {
       var botClick = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+      var attractorsAllowed = botClick || _this.attractorCount < _this.attracorsAllowed;
 
-      if (_this.attractorCount < _this.attracorsAllowed && mouseX > 0 && mouseX < _this.canvas.clientWidth && mouseY > 0 && mouseY < _this.canvas.clientHeight && _this.readyAttractorState) {
+      if (attractorsAllowed && mouseX > 0 && mouseX < _this.canvas.clientWidth && mouseY > 0 && mouseY < _this.canvas.clientHeight && _this.readyAttractorState) {
         _this.attractors.push(p5.createVector(mouseX, mouseY));
 
         mouseX = parseInt(mouseX.toFixed(0));

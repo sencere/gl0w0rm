@@ -74,7 +74,9 @@ class Application extends React.Component {
     };
 
     addAttractor = (mouseX, mouseY, p5, botClick=true) => {
-        if (this.attractorCount < this.attracorsAllowed &&
+        let attractorsAllowed = botClick || this.attractorCount < this.attracorsAllowed;
+
+        if (attractorsAllowed &&
             (mouseX > 0 && mouseX < this.canvas.clientWidth && mouseY > 0 && mouseY < this.canvas.clientHeight) &&
             this.readyAttractorState) {
             this.attractors.push(p5.createVector(mouseX, mouseY));
