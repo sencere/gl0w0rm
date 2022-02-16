@@ -2086,9 +2086,8 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 __webpack_require__(/*! ./components/App */ "./resources/js/components/App.js");
 
-__webpack_require__(/*! ./components/Application */ "./resources/js/components/Application.js");
+__webpack_require__(/*! ./components/Application */ "./resources/js/components/Application.js"); // require('./components/Create');
 
-__webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module './components/Create'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 __webpack_require__(/*! ./components/PostBar */ "./resources/js/components/PostBar.js");
 
@@ -2149,9 +2148,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var _Application__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Application */ "./resources/js/components/Application.js");
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './Create'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 
 
 
@@ -2159,13 +2156,7 @@ Object(function webpackMissingModule() { var e = new Error("Cannot find module '
 var landgrass = document.getElementById('landgrass');
 
 if (landgrass !== null) {
-  react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_Application__WEBPACK_IMPORTED_MODULE_2__["default"], {}), landgrass);
-}
-
-var create = document.getElementById('create');
-
-if (create !== null) {
-  react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(Object(function webpackMissingModule() { var e = new Error("Cannot find module './Create'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()), {}), create);
+  react_dom__WEBPACK_IMPORTED_MODULE_1__.render( /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_Application__WEBPACK_IMPORTED_MODULE_2__["default"], {}), landgrass);
 }
 
 /***/ }),
@@ -2289,7 +2280,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "options", {});
 
-    _defineProperty(_assertThisInitialized(_this), "listAngles", [0, 0, [3.141593, 6.283185], [1.570796, 3.926991, 5.4977871], [0.5235988, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 4.712389, 5.759587]]);
+    _defineProperty(_assertThisInitialized(_this), "listAngles", []);
 
     _defineProperty(_assertThisInitialized(_this), "timer", 3);
 
@@ -2429,27 +2420,6 @@ var Application = /*#__PURE__*/function (_React$Component) {
       }, 1000);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "sleep", function (ms) {
-      return new Promise(function (resolve) {
-        return setTimeout(resolve, ms);
-      });
-    });
-
-    _defineProperty(_assertThisInitialized(_this), "startTimer", function (p5) {
-      var seconds = _this.seconds;
-      var width = _this.canvas.clientWidth;
-      var height = _this.canvas.clientHeight;
-      var myVar = setInterval(function () {
-        seconds -= 1;
-
-        _this.updateCounter(seconds);
-
-        if (seconds <= 1) {
-          clearInterval(myVar);
-        }
-      }, 1000);
-    });
-
     _defineProperty(_assertThisInitialized(_this), "assignResult", function (predictions, p5) {
       if (predictions.length) {
         _this.displayOnlyResult(predictions.confidence, predictions.option, p5);
@@ -2562,6 +2532,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "setup", function (p5, parentRef) {
       p5.createCanvas(_this.canvas.clientWidth, _this.canvas.clientWidth).parent(parentRef);
+      var angles = 6;
       var mouseX = p5.mouseX;
       var mouseY = p5.mouseY;
       _this.smCircleX = _this.canvas.clientWidth / 2;
@@ -2576,7 +2547,27 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
           _this.checkReadyState(p5.mouseX, p5.mouseY, p5);
         };
+      } // calculate listAngles
+
+
+      for (var i = 0; i <= angles; i++) {
+        var innerArray = [];
+
+        if (i > 1) {
+          for (var j = 0; j < i; j++) {
+            var angle = 0;
+            angle = 2 * j * (180 / i) + 90;
+            angle = angle * p5.PI / 180;
+            innerArray.push(angle);
+          }
+
+          _this.listAngles.push(innerArray);
+        } else {
+          _this.listAngles.push(innerArray.length);
+        }
       }
+
+      p5.print(_this.listAngles);
     });
 
     _defineProperty(_assertThisInitialized(_this), "draw", function (p5, parentRef) {
@@ -2600,7 +2591,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       p5.fill(circleColor);
       p5.noStroke();
       p5.circle(width / 2, height / 2, circleDiameter);
-      p5.strokeWeight(0);
+      p5.strokeWeight(0); // DISPLAY OPTION LOGIC + DISPLAY SMALLER CIRCLE
 
       if (_this.readyTimerState && !_this.completed) {
         // let circleColor = p5.color(5, 8, 163);
@@ -2611,16 +2602,16 @@ var Application = /*#__PURE__*/function (_React$Component) {
         p5.fill(_circleColor);
         p5.noStroke();
         p5.circle(_this.smCircleX, _this.smCircleY, circleDiameter / 4);
-        p5.strokeWeight(0);
+        p5.strokeWeight(0); // display of options
+
         Object.entries(_this.state.options).forEach(function (_ref5) {
           var _ref6 = _slicedToArray(_ref5, 2),
               key = _ref6[0],
               value = _ref6[1];
 
           var angle = _this.listAngles[countOptions][count];
-          angle = angle + p5.PI;
-          var x = width / 2 + radius * p5.cos(angle);
-          var y = height / 2 + radius * p5.sin(angle);
+          var x = width / 2 + radius * p5.cos(-1 * angle);
+          var y = height / 2 + radius * p5.sin(-1 * angle);
           p5.fill(255);
           p5.textSize(20);
           p5.textAlign(p5.CENTER, p5.CENTER);
@@ -2732,9 +2723,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
   _createClass(Application, [{
     key: "componentDidMount",
-    value: // TODO
-    // -code clean up
-    function () {
+    value: function () {
       var _componentDidMount = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
         var _this2 = this;
 

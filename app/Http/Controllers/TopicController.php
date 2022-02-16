@@ -22,7 +22,7 @@ class TopicController extends Controller
             'page' => 'required|numeric'
         ])->validate();
 
-        $posts = Topic::where('topic_id', $topicId)
+        $posts = Topic::whereRaw('topic_id=' . $topicId . ' and deleted_at=null')
             ->leftJoin('posts', 'topics.id', '=', 'posts.topic_id')
             ->orderBy('posts.created_at', 'desc');
 

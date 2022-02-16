@@ -14,6 +14,6 @@ require('./bootstrap');
 
 require('./components/App');
 require('./components/Application');
-require('./components/Create');
+// require('./components/Create');
 require('./components/PostBar');
 

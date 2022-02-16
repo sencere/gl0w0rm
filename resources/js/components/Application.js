@@ -1,4 +1,4 @@
-import React from "react"; 
+import React from "react";
 import ReactDOM from 'react-dom'; 
 import Sketch from "react-p5";
 import Button from './PostBar';
@@ -22,7 +22,7 @@ class Application extends React.Component {
     finishState = false;
     startButtonConfiguration;
     options = {};
-    listAngles = [0, 0, [3.141593, 6.283185], [1.570796, 3.926991, 5.4977871], [0.5235988, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 5.759587], [0.5235988, 1.570796, 2.617994, 3.665191, 4.712389, 5.759587]];
+    listAngles = [];
     timer = 3;
     timerTextColor = [255, 255, 255];
     predictions = [];
@@ -33,9 +33,6 @@ class Application extends React.Component {
     secondTimer = 10;
     variance = 0;
     mean = 0;
-
-    // TODO
-    // -code clean up
 
     async componentDidMount() {
         let responseData = axios.post('/posts/options/' + this.canvas.dataset.id, {})
@@ -163,23 +160,6 @@ class Application extends React.Component {
         }, 1000);
     };
 
-    sleep = (ms) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    };
-
-    startTimer = (p5) => {
-        let seconds = this.seconds;
-        let width = this.canvas.clientWidth;
-        let height = this.canvas.clientHeight;
-        let myVar = setInterval(() => {
-            seconds -= 1;
-            this.updateCounter(seconds);
-            if (seconds <= 1) {
-                clearInterval(myVar);
-            }
-        }, 1000);
-    };
-
     assignResult = (predictions, p5) => {
         if (predictions.length) {
             this.displayOnlyResult(predictions.confidence, predictions.option, p5);
@@ -294,6 +274,7 @@ class Application extends React.Component {
 
     setup = (p5, parentRef) => {
         p5.createCanvas(this.canvas.clientWidth, this.canvas.clientWidth).parent(parentRef);
+        let angles = 6;
         let mouseX = p5.mouseX;
         let mouseY = p5.mouseY;
         this.smCircleX = this.canvas.clientWidth / 2;
@@ -307,6 +288,25 @@ class Application extends React.Component {
                 this.checkReadyState(p5.mouseX, p5.mouseY, p5);
             };
         }
+
+        // calculate listAngles
+        for (let i = 0; i <= angles; i++) {
+            let innerArray = [];
+
+            if (i > 1) {
+                for (var j = 0;j < i; j++) {
+                    let angle = 0;
+                    angle = (2 * (j) * (180 / i)) + 90;
+                    angle = angle * p5.PI / 180;
+                    innerArray.push(angle);
+                }
+
+                this.listAngles.push(innerArray);
+            } else {
+                this.listAngles.push(innerArray.length);
+            }
+        }
+        p5.print(this.listAngles);
     };
 
     draw = (p5, parentRef) => {
@@ -333,6 +333,7 @@ class Application extends React.Component {
         p5.circle(width/2, height/2, circleDiameter);
         p5.strokeWeight(0);
 
+        // DISPLAY OPTION LOGIC + DISPLAY SMALLER CIRCLE
         if (this.readyTimerState && !this.completed) {
             // let circleColor = p5.color(5, 8, 163);
             let circleColor = p5.color(217, 255, 255);
@@ -343,12 +344,11 @@ class Application extends React.Component {
             p5.circle(this.smCircleX, this.smCircleY, circleDiameter/4);
             p5.strokeWeight(0);
 
+            // display of options
             Object.entries(this.state.options).forEach(([key, value]) => {
                 let angle = this.listAngles[countOptions][count];
-                angle = angle + p5.PI;
-
-                let x = (width/2) + radius * p5.cos(angle);
-                let y = (height/2) + radius * p5.sin(angle);
+                let x = (width/2) + radius * p5.cos(-1 * angle);
+                let y = (height/2) + radius * p5.sin(-1 * angle);
 
                 p5.fill(255);
                 p5.textSize(20);
@@ -454,8 +454,8 @@ class Application extends React.Component {
     render() {
         return (
             <div>
-                <Sketch setup={this.setup} draw={this.draw} />
-                <Button />
+            <Sketch setup={this.setup} draw={this.draw} />
+            <Button />
             </div>
         );
     }

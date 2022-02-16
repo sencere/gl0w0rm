@@ -16,7 +16,7 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         validator($request->route()->parameters(), [
-            'name' => 'required|regex:([a-z]+)'
+            'name' => 'required|regex:([a-zA-Z]+)'
         ])->validate();
 
        $category = \App\Models\Category::where('name', '=', request('name'))->first(); 

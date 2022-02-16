@@ -66,6 +66,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/posts/index', [PostsController::class, 'index']);
     Route::get('/posts/create', [PostsController::class, 'create']);
     Route::get('/posts/{post}', [PostsController::class, 'show']);
+    Route::get('/posts/delete/{id}', [PostsController::class, 'delete']);
 
     Route::get('/topic/create', [TopicController::class, 'create']);
     Route::post('/topics', [TopicController::class, 'store']);

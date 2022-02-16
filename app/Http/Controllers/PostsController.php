@@ -56,6 +56,16 @@ class PostsController extends Controller
         return redirect()->home();
     }
 
+    public function delete(Post $post) {
+        $user_id =  auth()->user()->id;
+
+        if ($user_id === $post->first()->user_id) {
+            $post->first()->delete();
+        }
+
+        return redirect()->back();
+    }
+
     public function getPostOptions($number) {
         $post = Post::find($number);
         $options = $post->options;
