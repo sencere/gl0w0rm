@@ -11,7 +11,7 @@ class PredictionController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'postId' => 'required|numeric|min:1|max:20',
+            'postId' => 'required|numeric|min:1',
             'mouseX' => 'required|numeric|min:1',
             'mouseY' => 'required|numeric|min:1',
             'time' =>   'required|numeric|min:1'
