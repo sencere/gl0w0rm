@@ -72,7 +72,7 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
             'captcha' => $data['captcha'],
         ]);
-
+        // $user->assignRole('permission:role-create');
         $user->channel()->create([
             'name' => $data['channel_name'],
             'slug' => uniqid(true),

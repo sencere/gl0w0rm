@@ -85,4 +85,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/subscription/{channel}', [ChannelSubscriptionController::class, 'delete']);
 
     Route::post('/subscription/status/{post_id}', [ChannelSubscriptionController::class, 'getSubscriptionStatus']);
+
+    Route::resource('roles', RoleController::class);
+    Route::resource('users', UserController::class);
 });
