@@ -23,7 +23,6 @@
               </form>
            </div>
         </div>
-
         {{--    SECTION 2    --}}
         <div class="d-flex flex-nowrap p-3">
             @if (Auth::guest())
@@ -41,8 +40,10 @@
                     <a class="btn btn-purple dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ Auth::user()->name }} 
                     </a>
-
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        @if(Auth::user()->roles->pluck('name')->first() === 'Admin')
+                            <a class="dropdown-item" href="/admin">Admin Panel</a>
+                        @endif
                         <a class="dropdown-item" href="/topic/create">Create a new topic</a>
                         <a class="dropdown-item" href="/posts/index">Your posts</a>
                         <a class="dropdown-item" href="{{ url('/channel/' . $channel->slug) }}">Your channel</a>

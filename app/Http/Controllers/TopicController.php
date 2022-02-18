@@ -22,7 +22,8 @@ class TopicController extends Controller
             'page' => 'required|numeric'
         ])->validate();
 
-        $posts = Topic::whereRaw('topic_id=' . $topicId . ' and deleted_at=null')
+        $posts = Topic::whereRaw('topic_id=' . $topicId)
+            ->whereNull('posts.deleted_at')
             ->leftJoin('posts', 'topics.id', '=', 'posts.topic_id')
             ->orderBy('posts.created_at', 'desc');
 
@@ -64,7 +65,6 @@ class TopicController extends Controller
             'name' => 'required',
         ]);
 
-        $userId =  auth()->user()->id;
         $topic = new Topic(request(['category_id', 'name']));
 
         auth()->user()->createTopic($topic);
@@ -72,5 +72,4 @@ class TopicController extends Controller
         session()->flash('message', 'Your topic has now been published.');
         return back();
     }
-
 }

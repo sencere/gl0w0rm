@@ -11,6 +11,7 @@ use App\Http\Controllers\ChannelSettingsController;
 use App\Http\Controllers\ChannelSubscriptionController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,14 @@ Route::get('/subscription/{channel}', 'ChannelSubscriptionController@show');
 Route::get('/channel/{channel}', [ChannelController::class, 'show']);
 
 Route::get('/search', [SearchController::class, 'index']);
+Route::get('/admin', [AdminController::class, 'index']);
+Route::get('/admin/user', [AdminController::class, 'user']);
+Route::get('/admin/post', [AdminController::class, 'post']);
+
+Route::get('/admin/category', [AdminController::class, 'category']);
+Route::post('/category', [CategoryController::class, 'store']);
+
+
 
 Route::get('medium/{filename}', function ($filename)
 {

@@ -54,6 +54,11 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    public function categories()
+    {
+        return $this->hasMany(Post::class);
+    }
+
     public function channel()
     {
         return $this->hasMany(Channel::class);
@@ -81,4 +86,10 @@ class User extends Authenticatable
     {
         $this->topics()->save($topic);
     }
+
+    public function createCategory(Category $category)
+    {
+        $this->categories()->save($category);
+    }
+
 }
