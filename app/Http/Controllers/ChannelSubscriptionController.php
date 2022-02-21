@@ -57,16 +57,16 @@ class ChannelSubscriptionController extends Controller
         $subscriptionStatus = "unsubscribed";
         $voteStatus = "";
         $userId =  auth()->user()->id;
-        $views = PostView::where('post_id', $post->first()->id)->count();
+        $views = PostView::where('post_id', $post->id)->count();
         // $thumbsUpCount 
-        $channel = $post->first()->user->channel->first();
+        $channel = $post->user->channel->first();
         $subscription = Subscription::whereRaw('channel_id = ' . $channel->id . ' and user_id = ' . $userId)->get();
-        $votesAllowed = $post->first()->allow_votes;
-        $upVotesCount = Vote::whereRaw('voteable_id = ' . $post->first()->id . ' and type = "up"')->count();
-        $downVotesCount = Vote::whereRaw('voteable_id = ' . $post->first()->id . ' and type = "down"')->count();
-        $voteStatus = Vote::whereRaw('voteable_id = ' . $post->first()->id . ' and user_id = ' . $userId);
-        $voteStatus = $voteStatus->count() ? $voteStatus->first()->type : "";
 
+        $votesAllowed = $post->allow_votes;
+        $upVotesCount = Vote::whereRaw('voteable_id = ' . $post->id . ' and type = "up"')->count();
+        $downVotesCount = Vote::whereRaw('voteable_id = ' . $post->id . ' and type = "down"')->count();
+        $voteStatus = Vote::whereRaw('voteable_id = ' . $post->id . ' and user_id = ' . $userId);
+        $voteStatus = $voteStatus->count() ? $voteStatus->first()->type : "";
         if ($subscription->count() > 0) {
             $subscriptionStatus = 'subscribed';
         }
@@ -88,28 +88,4 @@ class ChannelSubscriptionController extends Controller
             'voteStatus' => $voteStatus,
         ];
     }
-
-    // public function show(Request $request, Post $post)
-    // {
-        // $response = [
-            // 'up' => null,
-            // 'down' => null,
-            // 'can_vote' => $post->fist()->votesAllowed(),
-            // 'user_vote' => null,
-        // ];
-// 
-        // if ($video->votesAllowed()) {
-            // $response['up'] = $post->upVotes()->count();
-            // $response['down'] = $post->downVotes()->count();
-        // }
-// 
-        // if ($request->user()) {
-            // $voteFromUser = $post->voteFromUser($request->user())->first();
-            // $response['user_vote'] = $voteFromUser ? $voteFromUser->type : null;
-        // }
-// 
-        // return response()->json([
-            // 'data' => $response
-        // ], 200);
-    // }
 }

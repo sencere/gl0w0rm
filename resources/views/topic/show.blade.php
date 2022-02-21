@@ -1,8 +1,8 @@
 @extends('layouts.app')
 @section('content')
     @if($posts)
+        <h4>Post</h4>
         @foreach ($posts as $post)
-            <h4>Post</h4>
             <div class="card mb-3">
               <div class="card-body card-cust">
                 <a class="link-text" href="{{ url('/posts/' . $post->id  ) }}"> 

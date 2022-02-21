@@ -44,6 +44,6 @@
     </div>
   </div>
   <div class="footer-copyright text-center py-3">© 2022 Copyright:
-    <a href="https://sprklink.net/"> sprklink.net</a>
+    <a href="https://link.net/"> link.net</a>
   </div>
 </footer>

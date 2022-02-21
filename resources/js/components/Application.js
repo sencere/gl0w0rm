@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from 'react-dom'; 
 import Sketch from "react-p5";
-import Button from './PostBar';
+import PostBar from './PostBar';
 import Firefly from './Firefly';
 import StartButton from "./StartButton";
 import axios from 'axios';
@@ -32,9 +32,10 @@ class Application extends React.Component {
     secondTimer = 10;
     variance = 0;
     mean = 0;
+    loading = false;
 
     async componentDidMount() {
-        let responseData = axios.post('/posts/options/' + this.canvas.dataset.id, {})
+        await axios.post('/posts/options/' + this.canvas.dataset.id, {})
             .then(response => this.setState({
                 target: response.data.target,
                 question: response.data.question,
@@ -42,7 +43,7 @@ class Application extends React.Component {
                 time: response.data.time
             }));
 
-        let resultResponse = axios.post('/results/result/' + this.canvas.dataset.id, {'postId': this.canvas.dataset.id})
+        await axios.post('/results/result/' + this.canvas.dataset.id, {'postId': this.canvas.dataset.id})
             .then(response => this.setState({
                 result: response.data.result,
                 confidence: response.data.confidence,
@@ -51,13 +52,28 @@ class Application extends React.Component {
     };
 
     getPredictions = () => {
-        let responseData = axios.post('/posts/predictions/' + this.canvas.dataset.id, {})
+        axios.post('/posts/predictions/' + this.canvas.dataset.id, {})
             .then(response => this.assignPredictions(response.data));
     };
 
     getResult = (p5) => {
-        let responseData = axios.post('/results/result/' + this.canvas.dataset.id, {postId: this.canvas.dataset.id})
+        axios.post('/results/result/' + this.canvas.dataset.id, {postId: this.canvas.dataset.id})
             .then(response => this.assignResult(response.data, p5));
+    };
+
+    sleep = (milliSeconds, p5) => {
+        // interval for checking early looping
+        let myInterval = setInterval(() => {
+            if(this.loading) {
+                p5.loop();
+            }
+        }, 1000);
+
+        // timeout for start the loop again (loading funciton)
+        setTimeout(function() {
+            clearInterval(myInterval);
+            p5.loop()
+        }, milliSeconds);
     };
 
     setPredictionCompleted = () => {
@@ -165,6 +181,8 @@ class Application extends React.Component {
             this.setPredictionCompleted();
             p5.noLoop();
         }
+
+        this.loading = true;
     };
 
     assignPredictions = (data) => {
@@ -246,10 +264,8 @@ class Application extends React.Component {
         if (this.predictions.length > 0) {
             Object.entries(this.state.options).forEach(([key, value]) => {
                 let angle = this.listAngles[countOptions][count];
-                angle = angle + p5.PI;
-
-                let x = (width/2) + radius * p5.cos(angle);
-                let y = (height/2) + radius * p5.sin(angle);
+                let x = (width/2) + radius * p5.cos(-1 * angle);
+                let y = (height/2) + radius * p5.sin(-1 * angle);
 
                 let distance = p5.dist(x, y, this.smCircleX, this.smCircleY);
                 distanceSum += distance;
@@ -272,7 +288,9 @@ class Application extends React.Component {
 
 
     setup = (p5, parentRef) => {
-        p5.createCanvas(this.canvas.clientWidth, this.canvas.clientWidth).parent(parentRef);
+        let width = this.canvas.clientWidth;
+        let height = this.canvas.clientHeight;
+        p5.createCanvas(width, width).parent(parentRef);
         let angles = 6;
         let mouseX = p5.mouseX;
         let mouseY = p5.mouseY;
@@ -305,6 +323,13 @@ class Application extends React.Component {
                 this.listAngles.push(innerArray.length);
             }
         }
+
+        p5.fill(16);
+        p5.textSize(20);
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.text('Loading...', width/2, width/2);
+        this.sleep(20000, p5);
+        p5.noLoop();
     };
 
     draw = (p5, parentRef) => {
@@ -453,7 +478,7 @@ class Application extends React.Component {
         return (
             <div>
             <Sketch setup={this.setup} draw={this.draw} />
-            <Button />
+            <PostBar />
             </div>
         );
     }

@@ -5,7 +5,11 @@
 
     <div class='d-flex'>
         <div class='p-2'>
-            <img src="{{ $channel->getImage() }}" alt="{{ $channel->name }} image" class="media-object">
+            @if ($channel->getImage() !== '/medium/')
+                <img src="{{ $channel->getImage() }}" class="media-object">
+            @else
+                <img src="/fallback.png" class="media-object">
+            @endif
         </div>
         <div class='user-link'>
             {{ $channel->name }}

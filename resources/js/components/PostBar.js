@@ -126,6 +126,7 @@ class PostBar extends React.Component {
 
     render() {
         const imageUrl = '/medium/' + this.state.imageFileName;
+        const fallBackImage = '/fallback.png';
         let slug = this.state.slug;
         let userId = this.state.userId;
         let subscribeButton = "";
@@ -140,39 +141,33 @@ class PostBar extends React.Component {
         if (this.state.votesAllowed) {
             if (this.state.voteStatus === 'up') {
                 votesRender = <>
-                        <span onClick={this.thumbsRemoveUp}><ThumbsUpFill size="20" /></span>
+                        <span onClick={this.thumbsRemoveUp} className="thumb"><ThumbsUpFill size="20" /></span>
                         {this.state.upVotesCount}
-                        <span onClick={this.thumbsAddDown}><ThumbsDown size="20" /></span>
+                        <span onClick={this.thumbsAddDown} className="thumb"><ThumbsDown size="20" /></span>
                         {this.state.downVotesCount}
                     </>
             } else if (this.state.voteStatus === 'down') {
                 votesRender = <>
-                        <span onClick={this.thumbsAddUp}><ThumbsUp size="20" /></span>
+                        <span onClick={this.thumbsAddUp} className="thumb"><ThumbsUp size="20" /></span>
                         {this.state.upVotesCount}
-                        <span onClick={this.thumbsRemoveDown}><ThumbsDownFill size="20" /></span>
+                        <span onClick={this.thumbsRemoveDown} className="thumb"><ThumbsDownFill size="20" /></span>
                         {this.state.downVotesCount}
 
                     </>
             } else {
-// <span onClick={this.thumbsAddUp}><ThumbsUpFill size="20" /></span>
-// <span onClick={this.thumbsRemoveUp}><ThumbsUp size="20" /></span>
-// 
-// <span onClick={this.thumbsAddDown}><ThumbsDownFill size="20" /></span>
-// <span onClick={this.thumbsRemoveDown}><ThumbsDown size="20" /></span>
-
-            votesRender = <>
-                    <span onClick={this.thumbsAddUp}><ThumbsUp size="20" /></span>
-                    {this.state.upVotesCount}
-                    <span onClick={this.thumbsAddDown}><ThumbsDown size="20" /></span>
-                    {this.state.downVotesCount}
-                </>;
+                votesRender = <>
+                        <span onClick={this.thumbsAddUp} className="thumb"><ThumbsUp size="20" /></span>
+                        {this.state.upVotesCount}
+                        <span onClick={this.thumbsAddDown} className="thumb"><ThumbsDown size="20" /></span>
+                        {this.state.downVotesCount}
+                    </>;
             }
         }
 
         return (<div className='d-flex'>
                     <div className='p-2'>
                         <a href={"/user/" + this.state.userId}>
-                            <img src={imageUrl} />
+                            {this.state.imageFileName ? <img src={imageUrl} /> : <img src={fallBackImage} /> }
                         </a>
                     </div>
                     <div className='p-2 user-link'>

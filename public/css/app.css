@@ -10076,3 +10076,7 @@ main {
   color: #161616 !important;
   font-weight: bold;
 }
+
+.thumb {
+  cursor: pointer;
+}

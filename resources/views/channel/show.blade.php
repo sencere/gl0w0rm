@@ -6,7 +6,11 @@
         <div class="panel-body">
                    <div class="media">
                         <div class="media-left">
-                            <img src="{{ $channel->getImage() }}" alt="{{ $channel->name }} image" class="media-object">
+                            @if ($channel->getImage() !== '/medium/')
+                                <img src="{{ $channel->getImage() }}" class="media-object">
+                            @else
+                                <img src="/fallback.png" class="media-object">
+                            @endif
                         </div>
                         <div class="media-body">
                             {{ $channel->name }}
