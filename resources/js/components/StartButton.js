@@ -33,8 +33,6 @@ class StartButton {
         } else {
             p5.text('Ready?', rectWidth/2, rectHeight/2 + 5);
         }
-
-
     };
 
     getConfiguration = () => {

@@ -12,11 +12,8 @@ class Firefly {
         this.prev = p5.createVector(x, y);
         let angle = Math.random() * (2*Math.PI);
         let length = 1;
-        // let colorArray = [p5.color(255, 204, 0, p5.random(200, 255)), p5.color(76, 255, 0, p5.random(200, 255)), p5.color(255, 77, 0, p5.random(200, 255)), p5.color(255, 126, 0, p5.random(200, 255))];
         let colorArray = [p5.color(136, 170, 0, p5.random(200, 255)), p5.color(255, 204, 0, p5.random(200, 255))];
-
-        this.vel = p5.createVector(length * Math.cos(angle), length*Math.sin(angle)).setMag(p5.random(2,5)); //p5.Vector.random2D();
-        // this.stroke = parseInt(p5.random(0,10) % 2) ?  p5.color(255, 204, 0, p5.random(200,255)): p5.color(136, 170, 0, p5.random(200,255));
+        this.vel = p5.createVector(length * Math.cos(angle), length*Math.sin(angle)).setMag(p5.random(2,5));
         this.stroke = colorArray[Math.floor(Math.random() * colorArray.length)];
         this.acc = p5.createVector();
     }

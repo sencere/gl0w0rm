@@ -12,6 +12,8 @@ use App\Http\Controllers\ChannelSubscriptionController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PostVoteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +27,7 @@ use App\Http\Controllers\AdminController;
  */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('home');
 });
 
 Auth::routes();
@@ -85,7 +87,12 @@ Route::group(['middleware' => ['auth']], function () {
     // Navigation
     Route::get('/category/{name}', [CategoryController::class, 'index']);
     Route::get('/topic/{id}/{page}', [TopicController::class, 'index']);
+
     Route::post('/posts', [PostsController::class, 'store']);
+    Route::post('/posts/{post}/comment', [CommentController::class, 'store']);
+
+    Route::post('/posts/{post}/votes', [PostVoteController::class, 'create']);
+    Route::delete('/posts/{post}/votes', [PostVoteController::class, 'remove']); 
 
     Route::get('/channel/{channel}/edit', [ChannelSettingsController::class, 'edit']);
     Route::put('/channel/{channel}/edit', [ChannelSettingsController::class, 'update']);

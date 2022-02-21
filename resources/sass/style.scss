@@ -36,6 +36,12 @@ a:hover {
     background-color: #161616;
 }
 
+.add-comment {
+    text-align: right;
+}
+
+
+
 main {
     margin-bottom: 300px;
 }
@@ -46,4 +52,9 @@ main {
 
 .user-link a {
     color: #161616 !important;
+}
+
+.comments a {
+    color: #161616 !important;
+    font-weight: bold;
 }

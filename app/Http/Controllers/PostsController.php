@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Prediction;
@@ -11,14 +12,7 @@ use Phpml\Clustering\KMeans;
 
 class PostsController extends Controller
 {
-    public function __construct()
-    {
-        // $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index','store']]);
-        // $this->middleware('permission:role-create', ['only' => ['create','store']]);
-        // $this->middleware('permission:role-edit', ['only' => ['edit','update']]);
-        // $this->middleware('permission:role-delete', ['only' => ['destroy']]);
-        $this->middleware('auth')->except(['index', 'show']);
-    }
+    const BUFFER = 3600;
 
     public function index() {
         $user_id =  auth()->user()->id;
@@ -29,7 +23,15 @@ class PostsController extends Controller
         return view('posts.index', compact('posts'));
     }
 
-    public function show(Post $post) {
+    public function show(Request $request, Post $post) {
+        $user = auth()->user();
+        $lastUserView = $post->views()->latestByUser($user)->first();
+        if (!$this->withinBuffer($lastUserView)) {
+            $post->views()->create([
+                'user_id' => $user->id ? $user->id : null,
+                'ip' => $request->ip(),
+            ]);
+        }
         return view('posts.show', compact('post'));
     }
 
@@ -170,5 +172,10 @@ class PostsController extends Controller
             'mean' => $mean,
             'predictions' => $returnData
         ];
+    }
+
+    protected function withinBuffer($view)
+    {
+        return $view && $view->created_at->diffInSeconds(Carbon::now()) < self::BUFFER;
     }
 }

@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from 'react-dom'; 
 import Sketch from "react-p5";
 import Button from './PostBar';
-
 import Firefly from './Firefly';
 import StartButton from "./StartButton";
 import axios from 'axios';
@@ -306,7 +305,6 @@ class Application extends React.Component {
                 this.listAngles.push(innerArray.length);
             }
         }
-        p5.print(this.listAngles);
     };
 
     draw = (p5, parentRef) => {

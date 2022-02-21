@@ -14,6 +14,11 @@ require('./bootstrap');
 
 require('./components/App');
 require('./components/Application');
-// require('./components/Create');
 require('./components/PostBar');
 
+// Icons
+require('./components/icons/EyeIcon');
+require('./components/icons/ThumbsUp');
+require('./components/icons/ThumbsUpFill');
+require('./components/icons/ThumbsDown');
+require('./components/icons/ThumbsDownFill');

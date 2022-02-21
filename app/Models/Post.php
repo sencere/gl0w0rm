@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Topic;
-use App\Models\Post;
 
 class Post extends Model
 {
@@ -50,6 +48,52 @@ class Post extends Model
     public function results()
     {
         return $this->hasMany(Result::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function addComment($body)
+    {
+        $userId = auth()->user()->id;
+
+        $this->comments()->create([
+            'body' => $body,
+            'user_id' => $userId,
+            'post_id' => $this->id
+        ]);
+    }
+
+    public function views()
+    {
+        return $this->hasMany(PostView::class);
+    }
+
+    public function votes()
+    {
+        return $this->morphMany(Vote::class, 'voteable');
+    }
+
+    public function upVotes()
+    {
+        return $this->votes->where('type', 'up');
+    }
+
+    public function downVotes()
+    {
+        return $this->votes->where('type', 'down');
+    }
+
+    public function voteFromUser(User $user)
+    {
+        return $this->votes->where('user_id', $user->id);
+    }
+
+    public function viewCount()
+    {
+        return $this->views->count();
     }
 
     public static function archives()

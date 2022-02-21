@@ -50,7 +50,7 @@
                                 <input type="file" name="image" id="image">
                             </div>
 
-                            <button class="btn btn-primary" type="submit">Update</button>
+                            <button class="btn btn-purple" type="submit">Update</button>
 
                             {{ csrf_field() }}
                             {{ method_field('PUT') }}

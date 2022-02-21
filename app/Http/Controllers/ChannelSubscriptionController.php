@@ -6,7 +6,9 @@ use App\Models\Channel;
 use App\Http\Requests;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Models\PostView;
 use App\Models\Subscription;
+use App\Models\Vote;
 
 class ChannelSubscriptionController extends Controller
 {
@@ -50,20 +52,26 @@ class ChannelSubscriptionController extends Controller
         return response()->json(null, 200);
     }
 
-    public function getSubscriptionStatus(Request $request, $postId)
+    public function getSubscriptionStatus(Post $post)
     {
-        $subscriptionStatus = 'unsubscribed';
+        $subscriptionStatus = "unsubscribed";
+        $voteStatus = "";
         $userId =  auth()->user()->id;
-
-        $post = Post::find($postId);
-        $channel = $post->user->channel->first();
+        $views = PostView::where('post_id', $post->first()->id)->count();
+        // $thumbsUpCount 
+        $channel = $post->first()->user->channel->first();
         $subscription = Subscription::whereRaw('channel_id = ' . $channel->id . ' and user_id = ' . $userId)->get();
+        $votesAllowed = $post->first()->allow_votes;
+        $upVotesCount = Vote::whereRaw('voteable_id = ' . $post->first()->id . ' and type = "up"')->count();
+        $downVotesCount = Vote::whereRaw('voteable_id = ' . $post->first()->id . ' and type = "down"')->count();
+        $voteStatus = Vote::whereRaw('voteable_id = ' . $post->first()->id . ' and user_id = ' . $userId);
+        $voteStatus = $voteStatus->count() ? $voteStatus->first()->type : "";
 
         if ($subscription->count() > 0) {
             $subscriptionStatus = 'subscribed';
         }
 
-        if ($post->user_id === $userId) {
+        if ($post->first()->user_id === $userId) {
             $subscriptionStatus = 'hidden';
         }
 
@@ -72,8 +80,36 @@ class ChannelSubscriptionController extends Controller
             'slug' => $channel->slug,
             'channelName' => $channel->name,
             'imageFileName' => $channel->image_filename,
-            'userId' => $userId
+            'userId' => $userId,
+            'views' => $views,
+            'votesAllowed' => $votesAllowed,
+            'upVotesCount' => $upVotesCount,
+            'downVotesCount' => $downVotesCount,
+            'voteStatus' => $voteStatus,
         ];
     }
 
+    // public function show(Request $request, Post $post)
+    // {
+        // $response = [
+            // 'up' => null,
+            // 'down' => null,
+            // 'can_vote' => $post->fist()->votesAllowed(),
+            // 'user_vote' => null,
+        // ];
+// 
+        // if ($video->votesAllowed()) {
+            // $response['up'] = $post->upVotes()->count();
+            // $response['down'] = $post->downVotes()->count();
+        // }
+// 
+        // if ($request->user()) {
+            // $voteFromUser = $post->voteFromUser($request->user())->first();
+            // $response['user_vote'] = $voteFromUser ? $voteFromUser->type : null;
+        // }
+// 
+        // return response()->json([
+            // 'data' => $response
+        // ], 200);
+    // }
 }

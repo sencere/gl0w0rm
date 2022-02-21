@@ -2,28 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\Orderable;
 
 class Comment extends Model
 {
-    use SoftDeletes, Orderable;
+    use HasFactory;
+    protected $fillable = ['body', 'post_id', 'user_id'];
 
-    protected $fillable = [
-        'body',
-        'user_id',
-        'reply_id',
-    ];
-
-    public function commentable()
+    public function post()
     {
-        return $this->morphTo();
-    }
-
-    public function replies()
-    {
-        return $this->hasMany(Comment::class, 'reply_id', 'id');
+        return $this->belongsTo(Post::class);
     }
 
     public function user()

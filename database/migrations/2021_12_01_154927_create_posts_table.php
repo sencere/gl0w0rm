@@ -19,6 +19,8 @@ class CreatePostsTable extends Migration
             $table->integer('topic_id');
             $table->string('question');
             $table->integer('time');
+            $table->boolean('allow_votes')->default(false);
+            $table->boolean('allow_comments')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });
