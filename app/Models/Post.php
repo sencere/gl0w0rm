@@ -117,7 +117,7 @@ class Post extends Model
         }
 
         if ($arr[1] === 'posts') {
-            $checkArray = ['index', 'create', 'show'];
+            $checkArray = ['index', 'create', 'show', 'settings'];
             if (in_array($arr[2], $checkArray)) {
                 return;
             }

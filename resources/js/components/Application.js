@@ -288,6 +288,7 @@ class Application extends React.Component {
 
 
     setup = (p5, parentRef) => {
+        p5.textFont('Nunito');
         let width = this.canvas.clientWidth;
         let height = this.canvas.clientHeight;
         p5.createCanvas(width, width).parent(parentRef);

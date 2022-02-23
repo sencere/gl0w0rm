@@ -25,4 +25,5 @@
         </div>
     </form>
     @include('layouts.errors')
+    @include('layouts.flash')
 @endsection

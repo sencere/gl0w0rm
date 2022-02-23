@@ -10,6 +10,7 @@
                     <h5 class="card-title">{{ $post->target }} {{ $post->question }}</h5>
                 </a>
                 <a href="{{ url('/posts/' . $post->id  ) }}" class="btn btn-purple">Enter</a>
+                <a href="{{ url('/posts/settings/' . $post->id  ) }}" class="btn btn-success">Settings</a>
                 <a href="{{ url('/posts/delete/' . $post->id  ) }}" class="btn btn-danger">Delete</a>
               </div>
             </div>

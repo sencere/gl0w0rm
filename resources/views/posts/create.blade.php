@@ -58,23 +58,24 @@
     </form>
 
     <script type="text/javascript">
-    window.onload = function() {
-        $(document).ready(function() {
-            $(".add-more").click(function(){
-                if($(".control-group").length < 6) {
-                    var html = $("#copy-fields").parent().html();
-                    $(".after-add-more").append("<div>" + html + "</div>");
-                }
-            });
+        window.onload = function() {
+            $(document).ready(function() {
+                $(".add-more").click(function(){
+                    if($(".control-group").length < 6) {
+                        var html = $("#copy-fields").parent().html();
+                        $(".after-add-more").append("<div>" + html + "</div>");
+                    }
+                });
 
-            $("body").on("click",".remove",function(){
-                if($(".control-group").length > 2) {
-                   $(this).parents(".control-group").parent().parent().remove(); 
-                    console.log($selector);
-                }
+                $("body").on("click",".remove",function(){
+                    if($(".control-group").length > 2) {
+                       $(this).parents(".control-group").parent().parent().remove(); 
+                        console.log($selector);
+                    }
+                });
             });
-        });
-    };
+        };
     </script>
+    @include('layouts.flash')
     @include('layouts.errors')
 @endsection

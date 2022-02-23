@@ -50,6 +50,10 @@ Route::post('/category', [CategoryController::class, 'store']);
 
 Route::get('medium/{filename}', function ($filename)
 {
+    validator(request()->route()->parameters(), [
+        'filename' => 'required|regex:([a-zA-Z0-9]+)'
+    ])->validate();
+
     $path = storage_path('uploads/' . $filename);
 
     if (!File::exists($path)) {
@@ -89,7 +93,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/topic/{id}/{page}', [TopicController::class, 'index']);
 
     Route::post('/posts', [PostsController::class, 'store']);
+    Route::get('/posts/settings/{post}', [PostsController::class, 'showUpdate']);
+    Route::post('/posts/settings/{post}', [PostsController::class, 'update']);
     Route::post('/posts/{post}/comment', [CommentController::class, 'store']);
+    Route::get('/comment/delete/{id}', [CommentController::class, 'delete']);
 
     Route::post('/posts/{post}/votes', [PostVoteController::class, 'create']);
     Route::delete('/posts/{post}/votes', [PostVoteController::class, 'remove']); 

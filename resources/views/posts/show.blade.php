@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <h4>{{ $post->target }} {{$post->question}}</h4>
+    <h4>[{{ $post->topic->name }}] {{$post->question}}</h4>
     <div id="landgrass" data-id="{{ $post->id }}"></div>
     @include('layouts.errors')
 @endsection
@@ -28,7 +28,7 @@
                                 <a href="/user/{{ $comment->user->id }}">{{$comment->user->name }}</a>: {{ $comment->body }}<br />
                                 <strong>{{ $comment->created_at->diffForHumans() }}</strong>
                                 @if (\Auth::user()->id === $comment->user_id)
-                                    | <a href="#">delete</a>
+                                    <a href="/comment/delete/{{ $comment->id }}">delete</a>
                                 @endif
                             </li>
                         @endforeach

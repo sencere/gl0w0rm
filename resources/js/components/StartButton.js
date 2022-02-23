@@ -21,7 +21,7 @@ class StartButton {
         if (this.inside){
             p5.fill(163, 4, 4);
         } else {
-            p5.fill(4,86,163);
+            p5.fill(58, 79, 153);
         }
         let rect = p5.rect(this.buttonX, this.buttonY, rectWidth, rectHeight, this.buttonRadius);
         p5.fill(255);

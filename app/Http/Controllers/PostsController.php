@@ -14,16 +14,18 @@ class PostsController extends Controller
 {
     const BUFFER = 3600;
 
-    public function index() {
+    public function index()
+    {
         $user_id =  auth()->user()->id;
         $posts = Post::where('user_id', $user_id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('posts.index', compact('posts'));
+            return view('posts.index', compact('posts'));
     }
 
-    public function show(Request $request, Post $post) {
+    public function show(Request $request, Post $post)
+    {
         $user = auth()->user();
         $lastUserView = $post->views()->latestByUser($user)->first();
         if (!$this->withinBuffer($lastUserView)) {
@@ -35,12 +37,14 @@ class PostsController extends Controller
         return view('posts.show', compact('post'));
     }
 
-    public function create() {
+    public function create()
+    {
         $topics = Topic::all();
         return view('posts.create', compact('topics'));
     }
 
-    public function store() {
+    public function store()
+    {
         $this->validate(request(), [
             'topic_id' => 'required|numeric|min:1',
             'question' => 'required',
@@ -49,26 +53,54 @@ class PostsController extends Controller
             'option.*'  => 'required|string|distinct|min:2',
         ]);
 
-        $user_id =  auth()->user()->id;
+        $userId =  auth()->user()->id;
         $post = new Post(request(['topic_id', 'question', 'time']));
         auth()->user()->publish($post);
 
         foreach (request('option') as $value) {
-            $post->addOption($value, $user_id);
+            $post->addOption($value, $userId);
         }
 
         session()->flash('message', 'Your post has now been published.');
-
-        return redirect()->home();
+        return redirect()->back();
     }
 
-    public function delete(Post $post) {
-        $user_id =  auth()->user()->id;
+    public function delete(Post $post)
+    {
+        $userId =  auth()->user()->id;
 
-        if ($user_id === $post->first()->user_id) {
+        if ($userId === $post->first()->user_id) {
             $post->first()->delete();
         }
 
+        return redirect()->back();
+    }
+
+    public function showUpdate(Post $post)
+    {
+        $userId = auth()->user()->id;
+
+        if ($userId !== $post->first()->user_id) {
+            abort(404);
+        }
+
+        return view('posts.settings', compact('post'));
+    }
+
+    public function update(Post $post)
+    {
+        $userId = auth()->user()->id;
+
+        if ($userId !== $post->first()->user_id) {
+            abort(404);
+        }
+
+        $post->allow_votes = (request('votes') ? 1 : 0);
+        $post->allow_comments = (request('comments') ? 1 : 0);
+
+        $post->save();
+
+        session()->flash('message', 'Your post has been updated.');
         return redirect()->back();
     }
 

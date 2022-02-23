@@ -1,4 +1,9 @@
 {
     "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css"
+    "/css/app.css": "/css/app.css",
+    "/cyrillic-ext.woff2": "/cyrillic-ext.woff2",
+    "/cyrillic.woff2": "/cyrillic.woff2",
+    "/latin-ext.woff2": "/latin-ext.woff2",
+    "/latin.woff2": "/latin.woff2",
+    "/vietnamese.woff2": "/vietnamese.woff2"
 }

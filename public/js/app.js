@@ -2101,6 +2101,8 @@ __webpack_require__(/*! ./components/icons/ThumbsDown */ "./resources/js/compone
 
 __webpack_require__(/*! ./components/icons/ThumbsDownFill */ "./resources/js/components/icons/ThumbsDownFill.js");
 
+__webpack_require__(/*! ./vanilla.js */ "./resources/js/vanilla.js");
+
 /***/ }),
 
 /***/ "./resources/js/bootstrap.js":
@@ -2587,6 +2589,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "setup", function (p5, parentRef) {
+      p5.textFont('Nunito');
       var width = _this.canvas.clientWidth;
       var height = _this.canvas.clientHeight;
       p5.createCanvas(width, width).parent(parentRef);
@@ -3361,7 +3364,7 @@ var StartButton = function StartButton(p5, width, height) {
   if (this.inside) {
     p5.fill(163, 4, 4);
   } else {
-    p5.fill(4, 86, 163);
+    p5.fill(58, 79, 153);
   }
 
   var rect = p5.rect(this.buttonX, this.buttonY, rectWidth, rectHeight, this.buttonRadius);
@@ -3750,6 +3753,16 @@ var ThumbsUpFill = /*#__PURE__*/function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0__.Component);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbsUpFill);
+
+/***/ }),
+
+/***/ "./resources/js/vanilla.js":
+/*!*********************************!*\
+  !*** ./resources/js/vanilla.js ***!
+  \*********************************/
+/***/ (() => {
+
+
 
 /***/ }),
 
