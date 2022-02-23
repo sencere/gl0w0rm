@@ -43,11 +43,13 @@ class Application extends React.Component {
                 time: response.data.time
             }));
 
-        await axios.post('/results/result/' + this.canvas.dataset.id, {'postId': this.canvas.dataset.id})
+        await axios.post('/results/result/' + this.canvas.dataset.id, {})
             .then(response => this.setState({
                 result: response.data.result,
                 confidence: response.data.confidence,
-                option: response.data.option
+                option: response.data.option,
+                circleX: response.data.circleX,
+                circleY: response.data.circleY
             }));
     };
 
@@ -138,8 +140,6 @@ class Application extends React.Component {
             this.updateFirstTimer(timer);
             if (timer < 1) {
                 clearInterval(myVar);
-                // this.startSecondTimer();
-                // this.readyTimerState = true;
                 this.timerTextColor = [255, 0, 0];
                 this.timer = 'GO!';
                 this.secondTimer = this.state.time;
@@ -177,7 +177,7 @@ class Application extends React.Component {
 
     assignResult = (predictions, p5) => {
         if (predictions.length) {
-            this.displayOnlyResult(predictions.confidence, predictions.option, p5);
+            this.displayOnlyResult(predictions.confidence, predictions.option, circleX, circleY, p5);
             this.setPredictionCompleted();
             p5.noLoop();
         }
@@ -202,31 +202,78 @@ class Application extends React.Component {
     };
 
 
-    displayOnlyResult = (confidenceScore, middleText, p5) => {
-        // p5.loop();
+    displayOnlyResult = (confidenceScore, middleText, circleX, circleY, p5) => {
         let width = this.canvas.clientWidth;
         let height = this.canvas.clientHeight;
-        p5.noStroke();
-        p5.fill(0, 129, 255);
-        p5.textSize(30);
-        p5.textAlign(p5.CENTER, p5.CENTER);
-        p5.text(middleText, width/2, height/2);
+        let count = 0;
+        this.smCircleX = circleX;
+        this.smCircleY = circleY;
+        let countOptions = Object.keys(this.state.options).length;
+        let circleDiameter = (width/2) - (1/20 * width);
+        let radius = circleDiameter/2;
+        let minValue = Math.pow(10,5);
+        let winner = '';
+        let distanceSum = 1;
+        let optionKey = 0;
 
+        Object.entries(this.state.options).forEach(([key, value]) => {
+            let angle = this.listAngles[countOptions][count];
+            let x = (width/2) + radius * p5.cos(-1 * angle);
+            let y = (height/2) + radius * p5.sin(-1 * angle);
+
+            let distance = p5.dist(x, y, this.smCircleX, this.smCircleY);
+            distanceSum += distance;
+
+            if (distance < minValue) {
+                winner = value;
+                minValue = distance;
+                optionKey = key;
+            }
+            // 
+            this.minValue = distance;
+            count++;
+        });
+
+        let crowdConfidenceScore = (radius - minValue) * 100 / radius;
+        crowdConfidenceScore = parseFloat(crowdConfidenceScore.toFixed(2));
+
+        // QUESTION
+        p5.textSize(30);
+        p5.text(this.state.target + '\n' + this.state.question, width/2, height/4);
+
+        // CROWD PREDICTION
+        p5.fill(255, 204, 0);
         p5.textSize(20);
         p5.textAlign(p5.CENTER, p5.CENTER);
-        p5.text('Confidence: ' + confidenceScore + '%', width/2, (height/2) - height/15);
-        p5.fill(255);
+        p5.text('Confidence: ' + crowdConfidenceScore + '%', width/2, (height/2) - height/15);
+
+        p5.noStroke();
         p5.textSize(30);
-        p5.text(this.state.target + '\n' + this.state.question, width/2, height/3);
+        p5.textAlign(p5.CENTER, p5.CENTER);
+        p5.text('Crowd prediction: \n' + middleText, width/2, height/2);
 
 
+        // YOUR PREDICTION
+        // p5.fill(0, 129, 255);
+        // p5.textSize(20);
+        // p5.textAlign(p5.CENTER, p5.CENTER);
+        // p5.text('Confidence: ' + confidenceScore + '%', width/2, (height/2) - height/25);
+// 
+        // p5.noStroke();
+        // p5.textSize(30);
+        // p5.textAlign(p5.CENTER, p5.CENTER);
+        // p5.text('Your prediction: \n' + middleText, width/2, height/1.5);
+// 
 
-        // p5.noLoop();
+
+        p5.noLoop();
     };
 
     displayCircleMiddleText = (p5, width, height, middleText, confidenceScore, optionKey) => {
         let confidence = parseFloat(confidenceScore.toFixed(2));
         let option = parseInt(optionKey, 10);
+        let smCircleX = this.smCircleX;
+        let smCircleY = this.smCircleY;
         p5.noStroke();
         p5.fill(0, 129, 255);
         p5.textSize(30);
@@ -241,7 +288,9 @@ class Application extends React.Component {
         const data = {
             postId: parseInt(this.canvas.dataset.id),
             confidence: confidence,
-            option: option
+            option: option,
+            circleX: smCircleX,
+            circleY: smCircleY
         };
         axios.post('/results', data);
     };
@@ -470,7 +519,7 @@ class Application extends React.Component {
         }
 
         if (this.state.result) {
-            this.displayOnlyResult(this.state.confidence, this.state.option, p5);
+            this.displayOnlyResult(this.state.confidence, this.state.option, this.state.circleX, this.state.circleY, p5);
             p5.noLoop();
         }
     }

@@ -8,15 +8,18 @@ use Illuminate\Http\Request;
 
 class ResultController extends Controller
 {
-    public function getResult(Request $request)
+    public function getResult(Request $request, Post $post)
     {
-        $this->validate(request(), [
-            'postId'     => 'required|numeric|min:1|max:20',
-        ]);
-
         $userId =  auth()->user()->id;
-        $post = Post::find(request('postId'));
-        $result = Result::whereRaw('user_id=' .  $userId . ' and post_id=' . $post->id)->get()->first();
+        $postId = $post->first()->id;
+        $result = Result::whereRaw('user_id=' .  $userId . ' and post_id=' . $postId)->get()->first();
+
+        $circleX = Result::where('post_id', $postId)
+                    ->get()
+                    ->avg('circleX');
+        $circleY = Result::where('post_id', $postId)
+                    ->get()
+                    ->avg('circleY');
 
         if (!empty($result)) {
             $option = $result->option()->get()->first()->option;
@@ -24,10 +27,11 @@ class ResultController extends Controller
             return [
                 'result' => true,
                 'confidence' => $result->confidence,
-                'option' => $option
+                'option' => $option,
+                'circleX' => $circleX,
+                'circleY' => $circleY,
             ];
         }
-
 
         return [
             'result' => false,
@@ -49,11 +53,15 @@ class ResultController extends Controller
             'confidence' => 'required|regex:/^\d+(\.\d{1,2})?$/',
             'option'     => 'required|numeric|min:1',
             'postId'     => 'required|numeric|min:1|max:20',
+            'circleX'     => 'required|numeric|min:1',
+            'circleY'     => 'required|numeric|min:1',
         ]);
 
         $postId = request('postId');
         $confidence = request('confidence');
         $option = request('option');
+        $circleX = request('circleX');
+        $circleY = request('circleY');
         $userId =  auth()->user()->id;
         $post = Post::find(request('postId'));
         $result = Result::whereRaw('user_id=' .  $userId . ' and post_id=' . $post->id)->get()->first();
@@ -63,7 +71,9 @@ class ResultController extends Controller
                 'user_id' => $userId,
                 'post_id' => $post->id,
                 'option_id' => $option,
-                'confidence' => $confidence
+                'confidence' => $confidence,
+                'circleX' => $circleX,
+                'circleY' => $circleY
             ]);
             $result->save();
         }

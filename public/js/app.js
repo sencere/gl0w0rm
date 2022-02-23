@@ -2433,9 +2433,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
         _this.updateFirstTimer(timer);
 
         if (timer < 1) {
-          clearInterval(myVar); // this.startSecondTimer();
-          // this.readyTimerState = true;
-
+          clearInterval(myVar);
           _this.timerTextColor = [255, 0, 0];
           _this.timer = 'GO!';
           _this.secondTimer = _this.state.time;
@@ -2477,7 +2475,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "assignResult", function (predictions, p5) {
       if (predictions.length) {
-        _this.displayOnlyResult(predictions.confidence, predictions.option, p5);
+        _this.displayOnlyResult(predictions.confidence, predictions.option, circleX, circleY, p5);
 
         _this.setPredictionCompleted();
 
@@ -2505,26 +2503,73 @@ var Application = /*#__PURE__*/function (_React$Component) {
       var count = _this.particles.length;
     });
 
-    _defineProperty(_assertThisInitialized(_this), "displayOnlyResult", function (confidenceScore, middleText, p5) {
-      // p5.loop();
+    _defineProperty(_assertThisInitialized(_this), "displayOnlyResult", function (confidenceScore, middleText, circleX, circleY, p5) {
       var width = _this.canvas.clientWidth;
       var height = _this.canvas.clientHeight;
-      p5.noStroke();
-      p5.fill(0, 129, 255);
+      var count = 0;
+      _this.smCircleX = circleX;
+      _this.smCircleY = circleY;
+      var countOptions = Object.keys(_this.state.options).length;
+      var circleDiameter = width / 2 - 1 / 20 * width;
+      var radius = circleDiameter / 2;
+      var minValue = Math.pow(10, 5);
+      var winner = '';
+      var distanceSum = 1;
+      var optionKey = 0;
+      Object.entries(_this.state.options).forEach(function (_ref3) {
+        var _ref4 = _slicedToArray(_ref3, 2),
+            key = _ref4[0],
+            value = _ref4[1];
+
+        var angle = _this.listAngles[countOptions][count];
+        var x = width / 2 + radius * p5.cos(-1 * angle);
+        var y = height / 2 + radius * p5.sin(-1 * angle);
+        var distance = p5.dist(x, y, _this.smCircleX, _this.smCircleY);
+        distanceSum += distance;
+
+        if (distance < minValue) {
+          winner = value;
+          minValue = distance;
+          optionKey = key;
+        } // 
+
+
+        _this.minValue = distance;
+        count++;
+      });
+      var crowdConfidenceScore = (radius - minValue) * 100 / radius;
+      crowdConfidenceScore = parseFloat(crowdConfidenceScore.toFixed(2)); // QUESTION
+
       p5.textSize(30);
-      p5.textAlign(p5.CENTER, p5.CENTER);
-      p5.text(middleText, width / 2, height / 2);
+      p5.text(_this.state.target + '\n' + _this.state.question, width / 2, height / 4); // CROWD PREDICTION
+
+      p5.fill(255, 204, 0);
       p5.textSize(20);
       p5.textAlign(p5.CENTER, p5.CENTER);
-      p5.text('Confidence: ' + confidenceScore + '%', width / 2, height / 2 - height / 15);
-      p5.fill(255);
+      p5.text('Confidence: ' + crowdConfidenceScore + '%', width / 2, height / 2 - height / 15);
+      p5.noStroke();
       p5.textSize(30);
-      p5.text(_this.state.target + '\n' + _this.state.question, width / 2, height / 3); // p5.noLoop();
+      p5.textAlign(p5.CENTER, p5.CENTER);
+      p5.text('Crowd prediction: \n' + middleText, width / 2, height / 2); // YOUR PREDICTION
+      // p5.fill(0, 129, 255);
+      // p5.textSize(20);
+      // p5.textAlign(p5.CENTER, p5.CENTER);
+      // p5.text('Confidence: ' + confidenceScore + '%', width/2, (height/2) - height/25);
+      // 
+      // p5.noStroke();
+      // p5.textSize(30);
+      // p5.textAlign(p5.CENTER, p5.CENTER);
+      // p5.text('Your prediction: \n' + middleText, width/2, height/1.5);
+      // 
+
+      p5.noLoop();
     });
 
     _defineProperty(_assertThisInitialized(_this), "displayCircleMiddleText", function (p5, width, height, middleText, confidenceScore, optionKey) {
       var confidence = parseFloat(confidenceScore.toFixed(2));
       var option = parseInt(optionKey, 10);
+      var smCircleX = _this.smCircleX;
+      var smCircleY = _this.smCircleY;
       p5.noStroke();
       p5.fill(0, 129, 255);
       p5.textSize(30);
@@ -2537,7 +2582,9 @@ var Application = /*#__PURE__*/function (_React$Component) {
       var data = {
         postId: parseInt(_this.canvas.dataset.id),
         confidence: confidence,
-        option: option
+        option: option,
+        circleX: smCircleX,
+        circleY: smCircleY
       };
       axios__WEBPACK_IMPORTED_MODULE_7___default().post('/results', data);
     });
@@ -2558,10 +2605,10 @@ var Application = /*#__PURE__*/function (_React$Component) {
       angle = angle + p5.PI;
 
       if (_this.predictions.length > 0) {
-        Object.entries(_this.state.options).forEach(function (_ref3) {
-          var _ref4 = _slicedToArray(_ref3, 2),
-              key = _ref4[0],
-              value = _ref4[1];
+        Object.entries(_this.state.options).forEach(function (_ref5) {
+          var _ref6 = _slicedToArray(_ref5, 2),
+              key = _ref6[0],
+              value = _ref6[1];
 
           var angle = _this.listAngles[countOptions][count];
           var x = width / 2 + radius * p5.cos(-1 * angle);
@@ -2670,10 +2717,10 @@ var Application = /*#__PURE__*/function (_React$Component) {
         p5.circle(_this.smCircleX, _this.smCircleY, circleDiameter / 4);
         p5.strokeWeight(0); // display of options
 
-        Object.entries(_this.state.options).forEach(function (_ref5) {
-          var _ref6 = _slicedToArray(_ref5, 2),
-              key = _ref6[0],
-              value = _ref6[1];
+        Object.entries(_this.state.options).forEach(function (_ref7) {
+          var _ref8 = _slicedToArray(_ref7, 2),
+              key = _ref8[0],
+              value = _ref8[1];
 
           var angle = _this.listAngles[countOptions][count];
           var x = width / 2 + radius * p5.cos(-1 * angle);
@@ -2778,7 +2825,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       }
 
       if (_this.state.result) {
-        _this.displayOnlyResult(_this.state.confidence, _this.state.option, p5);
+        _this.displayOnlyResult(_this.state.confidence, _this.state.option, _this.state.circleX, _this.state.circleY, p5);
 
         p5.noLoop();
       }
@@ -2809,13 +2856,13 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
               case 2:
                 _context.next = 4;
-                return axios__WEBPACK_IMPORTED_MODULE_7___default().post('/results/result/' + this.canvas.dataset.id, {
-                  'postId': this.canvas.dataset.id
-                }).then(function (response) {
+                return axios__WEBPACK_IMPORTED_MODULE_7___default().post('/results/result/' + this.canvas.dataset.id, {}).then(function (response) {
                   return _this2.setState({
                     result: response.data.result,
                     confidence: response.data.confidence,
-                    option: response.data.option
+                    option: response.data.option,
+                    circleX: response.data.circleX,
+                    circleY: response.data.circleY
                   });
                 });
 

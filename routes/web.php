@@ -73,7 +73,7 @@ Route::group(['middleware' => ['auth']], function () {
     // API
     Route::post('/posts/options/{post_id}', [PostsController::class, 'getPostOptions']);
     Route::post('/posts/predictions/{post_id}', [PostsController::class, 'getPostPredictions']);
-    Route::post('/results/result/{post_id}', [ResultController::class, 'getResult']);
+    Route::post('/results/result/{post}', [ResultController::class, 'getResult']);
     Route::post('/results', [ResultController::class, 'store']);
     Route::post('/predictions', [PredictionController::class, 'store']);
     // END API

@@ -19,6 +19,8 @@ class CreateResultsTable extends Migration
             $table->integer('post_id');
             $table->integer('option_id');
             $table->decimal('confidence', $precision = 8, $scale = 2);
+            $table->integer('circleX');
+            $table->integer('circleY');
             $table->timestamps();
         });
     }
