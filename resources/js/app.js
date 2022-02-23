@@ -22,4 +22,3 @@ require('./components/icons/ThumbsUp');
 require('./components/icons/ThumbsUpFill');
 require('./components/icons/ThumbsDown');
 require('./components/icons/ThumbsDownFill');
-require('./vanilla.js');

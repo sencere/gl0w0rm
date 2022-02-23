@@ -40,6 +40,11 @@ a:hover {
     text-align: right;
 }
 
+.dropdown-item.active, .dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #3c4f9d;
+}
 
 main {
     margin-bottom: 300px;

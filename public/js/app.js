@@ -2101,8 +2101,6 @@ __webpack_require__(/*! ./components/icons/ThumbsDown */ "./resources/js/compone
 
 __webpack_require__(/*! ./components/icons/ThumbsDownFill */ "./resources/js/components/icons/ThumbsDownFill.js");
 
-__webpack_require__(/*! ./vanilla.js */ "./resources/js/vanilla.js");
-
 /***/ }),
 
 /***/ "./resources/js/bootstrap.js":
@@ -3753,16 +3751,6 @@ var ThumbsUpFill = /*#__PURE__*/function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_0__.Component);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbsUpFill);
-
-/***/ }),
-
-/***/ "./resources/js/vanilla.js":
-/*!*********************************!*\
-  !*** ./resources/js/vanilla.js ***!
-  \*********************************/
-/***/ (() => {
-
-
 
 /***/ }),
 

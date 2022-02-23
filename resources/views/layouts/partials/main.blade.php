@@ -1,6 +1,6 @@
-<main class="py-4 pt-5 mt-5">
+<main>
     @include ('layouts.partials.breadcrumb')
-    <div class="container pt-3">
+    <div class="container mt-3">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
@@ -15,9 +15,9 @@
     <div class="container pt-3">
         <div class="row justify-content-center">
             <div class="col-md-8">
-            @yield('comments')
+                @yield('subscription')
+                @yield('comments')
             </div>
-
         </div>
     </div>
 </main>

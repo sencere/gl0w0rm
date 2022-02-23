@@ -69,8 +69,7 @@
 
                 $("body").on("click",".remove",function(){
                     if($(".control-group").length > 2) {
-                       $(this).parents(".control-group").parent().parent().remove(); 
-                        console.log($selector);
+                       $(this).parents(".control-group").parent().parent().remove();
                     }
                 });
             });

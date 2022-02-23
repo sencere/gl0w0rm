@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm bg-light navbar-light">
+<nav class="navbar navbar-expand-sm bg-light navbar-light mt-5 pt-5">
   <ul class="navbar-nav">
     <li class="nav-item active">
       <a class="nav-link" href="/home">Home</a>

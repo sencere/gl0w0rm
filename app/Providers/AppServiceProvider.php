@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        view()->composer('layouts.partials.subscription', function ($view) {
+        view()->composer('home', function ($view) {
             $subscriptionUserIdArray = [];
             $user = \Auth::user();
             $subscriptions = \App\Models\Subscription::where('user_id', $user->id)

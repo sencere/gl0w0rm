@@ -15,11 +15,11 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
-<body>
-    <div id="app">
-        @include ('layouts.partials.nav')
-        @include ('layouts.partials.main')
-        @include ('layouts.partials.footer')
-    </div>
-</body>
+    <body>
+        <div id="app">
+            @include ('layouts.partials.nav')
+            @include ('layouts.partials.main')
+            @include ('layouts.partials.footer')
+        </div>
+    </body>
 </html>
