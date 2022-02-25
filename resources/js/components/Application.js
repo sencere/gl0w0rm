@@ -215,7 +215,6 @@ class Application extends React.Component {
         let winner = '';
         let distanceSum = 1;
         let optionKey = 0;
-
         Object.entries(this.state.options).forEach(([key, value]) => {
             let angle = this.listAngles[countOptions][count];
             let x = (width/2) + radius * p5.cos(-1 * angle);
@@ -251,21 +250,6 @@ class Application extends React.Component {
         p5.textSize(30);
         p5.textAlign(p5.CENTER, p5.CENTER);
         p5.text('Crowd prediction: \n' + middleText, width/2, height/2);
-
-
-        // YOUR PREDICTION
-        // p5.fill(0, 129, 255);
-        // p5.textSize(20);
-        // p5.textAlign(p5.CENTER, p5.CENTER);
-        // p5.text('Confidence: ' + confidenceScore + '%', width/2, (height/2) - height/25);
-// 
-        // p5.noStroke();
-        // p5.textSize(30);
-        // p5.textAlign(p5.CENTER, p5.CENTER);
-        // p5.text('Your prediction: \n' + middleText, width/2, height/1.5);
-// 
-
-
         p5.noLoop();
     };
 

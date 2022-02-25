@@ -11,6 +11,7 @@ class ResultController extends Controller
     public function getResult(Request $request, Post $post)
     {
         $userId =  auth()->user()->id;
+        $pointsArray = [];
         $postId = $post->first()->id;
         $result = Result::whereRaw('user_id=' .  $userId . ' and post_id=' . $postId)->get()->first();
 
