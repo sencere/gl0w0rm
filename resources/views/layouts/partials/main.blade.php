@@ -12,16 +12,6 @@
 
         </div>
     </div>
-    <div class="container pt-3">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                 <div class="card">
-                    <div class="card-body">
-                        @yield('subscription')
-                        @yield('comments')
-                     </div>
-                </div>
-           </div>
-        </div>
-    </div>
+    @yield('subscription')
+    @yield('comments')
 </main>
