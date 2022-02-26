@@ -33,6 +33,7 @@ class Application extends React.Component {
     variance = 0;
     mean = 0;
     loading = false;
+    circleMiddlePoint = {x: 0, y: 0};
 
     async componentDidMount() {
         await axios.post('/posts/options/' + this.canvas.dataset.id, {})
@@ -331,6 +332,8 @@ class Application extends React.Component {
         this.smCircleX = this.canvas.clientWidth / 2;
         this.smCircleY = this.canvas.clientHeight / 2;
         this.getResult(p5);
+        this.circleMiddlePoint.x = width / 2;
+        this.circleMiddlePoint.y = height / 2;
 
         // p5.frameRate(60);
         if (!this.completed) {
@@ -384,6 +387,7 @@ class Application extends React.Component {
         let count = 0;
         let radiusSmallerCircle = 10;
 
+        // BIG CIRCLE
         p5.background(backgroundColor);
         p5.fill(circleColor);
         p5.noStroke();

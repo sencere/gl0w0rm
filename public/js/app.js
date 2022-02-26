@@ -2343,6 +2343,11 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "loading", false);
 
+    _defineProperty(_assertThisInitialized(_this), "circleMiddlePoint", {
+      x: 0,
+      y: 0
+    });
+
     _defineProperty(_assertThisInitialized(_this), "getPredictions", function () {
       axios__WEBPACK_IMPORTED_MODULE_7___default().post('/posts/predictions/' + _this.canvas.dataset.id, {}).then(function (response) {
         return _this.assignPredictions(response.data);
@@ -2633,8 +2638,10 @@ var Application = /*#__PURE__*/function (_React$Component) {
       _this.smCircleX = _this.canvas.clientWidth / 2;
       _this.smCircleY = _this.canvas.clientHeight / 2;
 
-      _this.getResult(p5); // p5.frameRate(60);
+      _this.getResult(p5);
 
+      _this.circleMiddlePoint.x = width / 2;
+      _this.circleMiddlePoint.y = height / 2; // p5.frameRate(60);
 
       if (!_this.completed) {
         p5.mousePressed = function () {
@@ -2688,7 +2695,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
       var radius = circleDiameter / 2;
       var countOptions = Object.keys(_this.state.options).length;
       var count = 0;
-      var radiusSmallerCircle = 10;
+      var radiusSmallerCircle = 10; // BIG CIRCLE
+
       p5.background(backgroundColor);
       p5.fill(circleColor);
       p5.noStroke();
