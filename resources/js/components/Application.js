@@ -90,6 +90,8 @@ class Application extends React.Component {
 
     addAttractor = (mouseX, mouseY, p5, botClick=true) => {
         let attractorsAllowed = botClick || this.attractorCount < this.attracorsAllowed;
+        let width = p5.width;
+        let height = p5.height;
 
         if (attractorsAllowed &&
             (mouseX > 0 && mouseX < this.canvas.clientWidth && mouseY > 0 && mouseY < this.canvas.clientHeight) &&
@@ -98,14 +100,15 @@ class Application extends React.Component {
 
             mouseX = parseInt(mouseX.toFixed(0));
             mouseY = parseInt(mouseY.toFixed(0));
-            let time = parseInt(this.timer);
-
+            let time = typeof this.timer !== 'string' ? parseInt(this.timer) : this.state.time;
             // Simple POST request with a JSON body using axios
             const data = {
                 postId: parseInt(this.canvas.dataset.id),
                 mouseX: mouseX,
                 mouseY: mouseY,
-                time: time
+                time: time,
+                width: width,
+                height: height
             };
 
             if (!botClick) {
@@ -134,8 +137,8 @@ class Application extends React.Component {
     startFirstTimer = (p5) => {
         this.timerTextColor = [255, 0, 0];
         let timer = this.timer;
-        let width = this.canvas.clientWidth;
-        let height = this.canvas.clientHeight;
+        let width = p5.width;
+        let height = p5.height;
         let myVar = setInterval(() => {
             timer--;
             this.updateFirstTimer(timer);
@@ -156,8 +159,8 @@ class Application extends React.Component {
     startSecondTimer = (p5) => {
         let timer = this.secondTimer;
         this.timerTextColor = [255, 255, 255];
-        let width = this.canvas.clientWidth;
-        let height = this.canvas.clientHeight;
+        let width = p5.width;
+        let height = p5.height;
         let myVar = setInterval(() => {
             timer--;
             this.updateFirstTimer(timer);
@@ -204,8 +207,8 @@ class Application extends React.Component {
 
 
     displayOnlyResult = (confidenceScore, middleText, circleX, circleY, p5) => {
-        let width = this.canvas.clientWidth;
-        let height = this.canvas.clientHeight;
+        let width = p5.width;
+        let height = p5.height;
         let count = 0;
         this.smCircleX = circleX;
         this.smCircleY = circleY;
@@ -324,13 +327,14 @@ class Application extends React.Component {
     setup = (p5, parentRef) => {
         p5.textFont('Nunito');
         let width = this.canvas.clientWidth;
-        let height = this.canvas.clientHeight;
         p5.createCanvas(width, width).parent(parentRef);
+        width = p5.width;
+        let height = p5.height;
         let angles = 6;
         let mouseX = p5.mouseX;
         let mouseY = p5.mouseY;
-        this.smCircleX = this.canvas.clientWidth / 2;
-        this.smCircleY = this.canvas.clientHeight / 2;
+        this.smCircleX = width / 2;
+        this.smCircleY = height / 2;
         this.getResult(p5);
         this.circleMiddlePoint.x = width / 2;
         this.circleMiddlePoint.y = height / 2;
@@ -381,7 +385,7 @@ class Application extends React.Component {
         let particles = this.particles;
         let width = this.canvas.clientWidth;
         let height = this.canvas.clientHeight;
-        let circleDiameter = (width/2) - (1/20 * width);
+        let circleDiameter = (width/2);
         let radius = circleDiameter/2;
         let countOptions = Object.keys(this.state.options).length;
         let count = 0;
@@ -402,7 +406,7 @@ class Application extends React.Component {
 
             p5.fill(circleColor);
             p5.noStroke();
-            p5.circle(this.smCircleX, this.smCircleY, circleDiameter/4);
+            p5.circle(this.smCircleX, this.smCircleY + 25, circleDiameter/4);
             p5.strokeWeight(0);
 
             // display of options
@@ -490,7 +494,7 @@ class Application extends React.Component {
 
         // my button
         if (!this.readyButtonState) {
-            let startButton = new StartButton(p5, this.canvas.clientWidth, this.canvas.clientHeight);
+            let startButton = new StartButton(p5);
             this.startButtonConfiguration = startButton.getConfiguration();
         }
 

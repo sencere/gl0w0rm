@@ -6,13 +6,13 @@ class StartButton {
     buttonY = 5;
     buttonRadius = 10;
 
-    constructor(p5, width, height) {
-        let rectWidth = this.rectWidth = width -10;
-        let rectHeight = this.rectHeight = height/10 -10;
+    constructor(p5) {
+        let rectWidth = this.rectWidth = p5.width - 10;
+        let rectHeight = this.rectHeight = ((p5.height) / 10);
         let mouseX = p5.mouseX;
         let mouseY = p5.mouseY;
-        if(mouseX > this.buttonX && mouseX < this.buttonX + rectWidth){
-            if(mouseY > this.buttonY && mouseY < this.buttonY + rectHeight){
+        if (mouseX > this.buttonX && mouseX < this.buttonX + rectWidth) {
+            if (mouseY > this.buttonY && mouseY < this.buttonY + rectHeight) {
                 this.inside = true;
             }
         }

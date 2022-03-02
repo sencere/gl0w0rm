@@ -21,6 +21,9 @@ class CreatePredictionsTable extends Migration
             $table->integer('time');
             $table->integer('mouseX');
             $table->integer('mouseY');
+            $table->integer('width');
+            $table->integer('height');
+            $table->string('grid');
             $table->timestamps();
         });
     }

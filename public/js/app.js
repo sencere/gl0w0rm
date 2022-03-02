@@ -2388,19 +2388,23 @@ var Application = /*#__PURE__*/function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "addAttractor", function (mouseX, mouseY, p5) {
       var botClick = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
       var attractorsAllowed = botClick || _this.attractorCount < _this.attracorsAllowed;
+      var width = p5.width;
+      var height = p5.height;
 
       if (attractorsAllowed && mouseX > 0 && mouseX < _this.canvas.clientWidth && mouseY > 0 && mouseY < _this.canvas.clientHeight && _this.readyAttractorState) {
         _this.attractors.push(p5.createVector(mouseX, mouseY));
 
         mouseX = parseInt(mouseX.toFixed(0));
         mouseY = parseInt(mouseY.toFixed(0));
-        var time = parseInt(_this.timer); // Simple POST request with a JSON body using axios
+        var time = typeof _this.timer !== 'string' ? parseInt(_this.timer) : _this.state.time; // Simple POST request with a JSON body using axios
 
         var data = {
           postId: parseInt(_this.canvas.dataset.id),
           mouseX: mouseX,
           mouseY: mouseY,
-          time: time
+          time: time,
+          width: width,
+          height: height
         };
 
         if (!botClick) {
@@ -2430,8 +2434,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "startFirstTimer", function (p5) {
       _this.timerTextColor = [255, 0, 0];
       var timer = _this.timer;
-      var width = _this.canvas.clientWidth;
-      var height = _this.canvas.clientHeight;
+      var width = p5.width;
+      var height = p5.height;
       var myVar = setInterval(function () {
         timer--;
 
@@ -2457,8 +2461,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "startSecondTimer", function (p5) {
       var timer = _this.secondTimer;
       _this.timerTextColor = [255, 255, 255];
-      var width = _this.canvas.clientWidth;
-      var height = _this.canvas.clientHeight;
+      var width = p5.width;
+      var height = p5.height;
       var myVar = setInterval(function () {
         timer--;
 
@@ -2509,8 +2513,8 @@ var Application = /*#__PURE__*/function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "displayOnlyResult", function (confidenceScore, middleText, circleX, circleY, p5) {
-      var width = _this.canvas.clientWidth;
-      var height = _this.canvas.clientHeight;
+      var width = p5.width;
+      var height = p5.height;
       var count = 0;
       _this.smCircleX = circleX;
       _this.smCircleY = circleY;
@@ -2630,13 +2634,14 @@ var Application = /*#__PURE__*/function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "setup", function (p5, parentRef) {
       p5.textFont('Nunito');
       var width = _this.canvas.clientWidth;
-      var height = _this.canvas.clientHeight;
       p5.createCanvas(width, width).parent(parentRef);
+      width = p5.width;
+      var height = p5.height;
       var angles = 6;
       var mouseX = p5.mouseX;
       var mouseY = p5.mouseY;
-      _this.smCircleX = _this.canvas.clientWidth / 2;
-      _this.smCircleY = _this.canvas.clientHeight / 2;
+      _this.smCircleX = width / 2;
+      _this.smCircleY = height / 2;
 
       _this.getResult(p5);
 
@@ -2691,7 +2696,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       var particles = _this.particles;
       var width = _this.canvas.clientWidth;
       var height = _this.canvas.clientHeight;
-      var circleDiameter = width / 2 - 1 / 20 * width;
+      var circleDiameter = width / 2;
       var radius = circleDiameter / 2;
       var countOptions = Object.keys(_this.state.options).length;
       var count = 0;
@@ -2711,7 +2716,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
         p5.fill(_circleColor);
         p5.noStroke();
-        p5.circle(_this.smCircleX, _this.smCircleY, circleDiameter / 4);
+        p5.circle(_this.smCircleX, _this.smCircleY + 25, circleDiameter / 4);
         p5.strokeWeight(0); // display of options
 
         Object.entries(_this.state.options).forEach(function (_ref7) {
@@ -2805,7 +2810,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
 
       if (!_this.readyButtonState) {
-        var startButton = new _StartButton__WEBPACK_IMPORTED_MODULE_6__["default"](p5, _this.canvas.clientWidth, _this.canvas.clientHeight);
+        var startButton = new _StartButton__WEBPACK_IMPORTED_MODULE_6__["default"](p5);
         _this.startButtonConfiguration = startButton.getConfiguration();
       }
 
@@ -3363,7 +3368,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var StartButton = function StartButton(p5, width, height) {
+var StartButton = function StartButton(p5) {
   var _this = this;
 
   _classCallCheck(this, StartButton);
@@ -3390,8 +3395,8 @@ var StartButton = function StartButton(p5, width, height) {
     };
   });
 
-  var rectWidth = this.rectWidth = width - 10;
-  var rectHeight = this.rectHeight = height / 10 - 10;
+  var rectWidth = this.rectWidth = p5.width - 10;
+  var rectHeight = this.rectHeight = p5.height / 10;
   var mouseX = p5.mouseX;
   var mouseY = p5.mouseY;
 
