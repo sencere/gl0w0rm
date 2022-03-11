@@ -8,32 +8,28 @@ use App\Models\Prediction;
 
 class PredictionController extends Controller
 {
-    public $gridSize = 64;
-    public $xCoordinates = ["a", "b", "c", "d", "e", "f", "g", "h"];
-    public $yCoordinates = [1, 2, 3, 4, 5, 6, 7, 8];
+    static $gridSize = 64;
+    static $xCoordinates = ["a", "b", "c", "d", "e", "f", "g", "h"];
+    static $yCoordinates = [1, 2, 3, 4, 5, 6, 7, 8];
 
-    public function convertToGridSystem($width, $height, $x, $y)
+    public static function convertToGridSystem($width, $height, $x, $y)
     {
-        // if ($width === $height) {
-            // throw new Exception("width and height must be equal");
-        // }
+        $gridX = self::$xCoordinates[count(self::$xCoordinates) -1];
+        $gridY = self::$yCoordinates[count(self::$yCoordinates) -1];
 
-        $gridX = $this->xCoordinates[count($this->xCoordinates) -1];
-        $gridY = $this->yCoordinates[count($this->yCoordinates) -1];
+        $width = $width - ($width % sqrt(self::$gridSize));
+        $height = $height - ($height % sqrt(self::$gridSize));
 
-        $width = $width - ($width % sqrt($this->gridSize));
-        $height = $height - ($height % sqrt($this->gridSize));
-
-        $sizeSquareSide = $width / sqrt($this->gridSize);
+        $sizeSquareSide = $width / sqrt(self::$gridSize);
 
         if ($x < $width) {
             $x = abs($x - ($x % $sizeSquareSide));
-            $gridX = $x < $sizeSquareSide ? $this->xCoordinates[0] : $this->xCoordinates[$x / $sizeSquareSide];
+            $gridX = $x < $sizeSquareSide ? self::$xCoordinates[0] : self::$xCoordinates[$x / $sizeSquareSide];
         }
 
         if ($y < $height) {
             $y = abs($y - ($y % $sizeSquareSide));
-            $gridY = $y < $sizeSquareSide ? $this->yCoordinates[0] : $this->yCoordinates[$y / $sizeSquareSide];
+            $gridY = $y < $sizeSquareSide ? self::$yCoordinates[0] : self::$yCoordinates[$y / $sizeSquareSide];
         }
 
         return $gridX . $gridY;
@@ -48,10 +44,10 @@ class PredictionController extends Controller
         $gridX = $gridKey[0];
         $gridY = $gridKey[1];
 
-        $sizeSquareSide = $width / sqrt($this->gridSize);
+        $sizeSquareSide = $width / sqrt(self::$gridSize);
 
-        $gridPositionX = array_search($gridX, $this->xCoordinates);
-        $gridPositionY = array_search($gridY, $this->yCoordinates);
+        $gridPositionX = array_search($gridX, self::$xCoordinates);
+        $gridPositionY = array_search($gridY, self::$yCoordinates);
 
         $positionX = (($gridPositionX + 1) * $sizeSquareSide);
         $positionY = (($gridPositionY + 1) * $sizeSquareSide) - ($sizeSquareSide / 2);
@@ -85,7 +81,7 @@ class PredictionController extends Controller
         $mouseY = request('mouseY');
 
         // grid coordinate
-        $grid = $this->convertToGridSystem($width, $height, $mouseX, $mouseY);
+        $grid = self::convertToGridSystem($width, $height, $mouseX, $mouseY);
 
         $predictionCount = Prediction::whereRaw('user_id=' . $userId . ' and post_id=' . $postId)->get()->count();
         $predictionCount = $predictionCount === 0 ? 1 : $predictionCount + 1;

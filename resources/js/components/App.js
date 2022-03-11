@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import Application from './Application';
 import {lazy, Suspense} from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -10,7 +9,7 @@ const App = lazy(() => import('./Application'))
 const WrapperApp = () => {
     return (
         <div>
-            <Suspense fallback={<div>Loading ... </div>}>
+            <Suspense fallback={<div>Loading...</div>}>
                 <App />
             </Suspense>
         </div>

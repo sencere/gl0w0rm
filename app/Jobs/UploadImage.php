@@ -44,10 +44,6 @@ class UploadImage implements ShouldQueue
             $c->upsize();
         })->save();
 
-        // if (Storage::disk('s3images')->put('profile/' . $fileName, fopen($path, 'r+'))) {
-            // File::delete($path);
-        // }
-
         $this->channel->image_filename = $fileName;
         $this->channel->save();
     }

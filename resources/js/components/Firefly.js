@@ -32,6 +32,8 @@ class Firefly {
         this.p5.stroke(this.stroke);
         this.p5.strokeWeight(7);
         this.p5.line(this.pos.x, this.pos.y, this.prev.x, this.prev.y);
+        // this.p5.fill(255,204, 0, this.p5.random(200, 255));
+        // this.p5.circle(this.pos.x, this.pos.y, 10);
         this.prev.x = this.pos.x;
         this.prev.y = this.pos.y;
     };

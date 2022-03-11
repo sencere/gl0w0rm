@@ -44,7 +44,7 @@ class Application extends React.Component {
                 time: response.data.time
             }));
 
-        await axios.post('/results/result/' + this.canvas.dataset.id, {})
+        await axios.post('/results/result/' + this.canvas.dataset.id, {width: this.p5.width, height: this.p5.height})
             .then(response => this.setState({
                 result: response.data.result,
                 confidence: response.data.confidence,
@@ -55,7 +55,7 @@ class Application extends React.Component {
     };
 
     getPredictions = () => {
-        axios.post('/posts/predictions/' + this.canvas.dataset.id, {})
+        axios.post('/posts/predictions/' + this.canvas.dataset.id, {width: this.p5.width, height: this.p5.height})
             .then(response => this.assignPredictions(response.data));
     };
 
@@ -232,7 +232,6 @@ class Application extends React.Component {
                 minValue = distance;
                 optionKey = key;
             }
-            // 
             this.minValue = distance;
             count++;
         });
@@ -253,7 +252,7 @@ class Application extends React.Component {
         p5.noStroke();
         p5.textSize(30);
         p5.textAlign(p5.CENTER, p5.CENTER);
-        p5.text('Crowd prediction: \n' + middleText, width/2, height/2);
+        p5.text('Crowd prediction: \n' + winner, width/2, height/2);
         p5.noLoop();
     };
 
@@ -326,6 +325,7 @@ class Application extends React.Component {
 
     setup = (p5, parentRef) => {
         p5.textFont('Nunito');
+        this.p5 = p5;
         let width = this.canvas.clientWidth;
         p5.createCanvas(width, width).parent(parentRef);
         width = p5.width;

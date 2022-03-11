@@ -2161,7 +2161,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/index.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 
- // import Application from './Application';
 
 
 
@@ -2176,7 +2175,7 @@ var WrapperApp = function WrapperApp() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react__WEBPACK_IMPORTED_MODULE_0__.Suspense, {
       fallback: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-        children: "Loading ... "
+        children: "Loading..."
       }),
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(App, {})
     })
@@ -2349,7 +2348,10 @@ var Application = /*#__PURE__*/function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "getPredictions", function () {
-      axios__WEBPACK_IMPORTED_MODULE_7___default().post('/posts/predictions/' + _this.canvas.dataset.id, {}).then(function (response) {
+      axios__WEBPACK_IMPORTED_MODULE_7___default().post('/posts/predictions/' + _this.canvas.dataset.id, {
+        width: _this.p5.width,
+        height: _this.p5.height
+      }).then(function (response) {
         return _this.assignPredictions(response.data);
       });
     });
@@ -2540,8 +2542,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
           winner = value;
           minValue = distance;
           optionKey = key;
-        } // 
-
+        }
 
         _this.minValue = distance;
         count++;
@@ -2559,7 +2560,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
       p5.noStroke();
       p5.textSize(30);
       p5.textAlign(p5.CENTER, p5.CENTER);
-      p5.text('Crowd prediction: \n' + middleText, width / 2, height / 2);
+      p5.text('Crowd prediction: \n' + winner, width / 2, height / 2);
       p5.noLoop();
     });
 
@@ -2633,6 +2634,7 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "setup", function (p5, parentRef) {
       p5.textFont('Nunito');
+      _this.p5 = p5;
       var width = _this.canvas.clientWidth;
       p5.createCanvas(width, width).parent(parentRef);
       width = p5.width;
@@ -2858,7 +2860,10 @@ var Application = /*#__PURE__*/function (_React$Component) {
 
               case 2:
                 _context.next = 4;
-                return axios__WEBPACK_IMPORTED_MODULE_7___default().post('/results/result/' + this.canvas.dataset.id, {}).then(function (response) {
+                return axios__WEBPACK_IMPORTED_MODULE_7___default().post('/results/result/' + this.canvas.dataset.id, {
+                  width: this.p5.width,
+                  height: this.p5.height
+                }).then(function (response) {
                   return _this2.setState({
                     result: response.data.result,
                     confidence: response.data.confidence,
@@ -2953,7 +2958,9 @@ var Firefly = function Firefly(x, y, _p) {
 
     _this.p5.strokeWeight(7);
 
-    _this.p5.line(_this.pos.x, _this.pos.y, _this.prev.x, _this.prev.y);
+    _this.p5.line(_this.pos.x, _this.pos.y, _this.prev.x, _this.prev.y); // this.p5.fill(255,204, 0, this.p5.random(200, 255));
+    // this.p5.circle(this.pos.x, this.pos.y, 10);
+
 
     _this.prev.x = _this.pos.x;
     _this.prev.y = _this.pos.y;

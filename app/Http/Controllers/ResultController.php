@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Result;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ResultController extends Controller
 {
@@ -12,8 +13,9 @@ class ResultController extends Controller
     {
         $userId =  auth()->user()->id;
         $pointsArray = [];
-        $postId = $post->first()->id;
-        $result = Result::whereRaw('user_id=' .  $userId . ' and post_id=' . $postId)->get()->first();
+        $postId = $post->id;
+
+        $result = Result::whereRaw('user_id=' .  $userId . ' and post_id=' . $postId)->get();
 
         $circleX = Result::where('post_id', $postId)
                     ->get()
@@ -22,13 +24,22 @@ class ResultController extends Controller
                     ->get()
                     ->avg('circleY');
 
-        if (!empty($result)) {
-            $option = $result->option()->get()->first()->option;
+        // $prediction = DB::table('predictions')
+                    // ->select('grid', DB::raw('count(*) as total'))
+                    // ->groupBy('grid')
+                    // ->orderBy('total', 'desc')
+                    // ->get();
+// 
+        // $attractors = PredictionController::convertFromGridSystem(request('width'), request('height'), $prediction[0]->grid);
 
+        // $circleX = $attractors['x'];
+        // $circleY = $attractors['y'];
+
+        if ($result->count()) {
             return [
                 'result' => true,
-                'confidence' => $result->confidence,
-                'option' => $option,
+                'confidence' => $result->first()->confidence,
+                'option' => $result->first()->option,
                 'circleX' => $circleX,
                 'circleY' => $circleY,
             ];

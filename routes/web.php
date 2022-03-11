@@ -54,11 +54,11 @@ Route::get('medium/{filename}', function ($filename)
         'filename' => 'required|regex:([a-zA-Z0-9]+)'
     ])->validate();
 
-    $path = storage_path('uploads/' . $filename);
-
     if (!File::exists($path)) {
         abort(404);
     }
+
+    $path = storage_path('uploads/' . $filename);
 
     $file = File::get($path);
     $type = File::mimeType($path);

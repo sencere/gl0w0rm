@@ -9,6 +9,7 @@ use App\Models\Prediction;
 use App\Models\Topic;
 use App\Models\Result;
 use Phpml\Clustering\KMeans;
+use Illuminate\Support\Facades\DB;
 
 class PostsController extends Controller
 {
@@ -158,23 +159,23 @@ class PostsController extends Controller
             $variance = round($sumOfSquares / (count($timeArray) - 1), 2);
         }
 
-        if ($resultCount > 2) {
-            $kmeans = new KMeans(10);
-            $cluster = $kmeans->cluster($attractorArray);
-        }
+        // if ($resultCount > 2) {
+            // $kmeans = new KMeans(10);
+            // $cluster = $kmeans->cluster($attractorArray);
+        // }
 
-        foreach ($cluster as $attractors) {
-            $x = [];
-            $y = [];
-            foreach ($attractors as $attractor) {
-                array_push($x, $attractor[0]);
-                array_push($y, $attractor[1]);
-            }
+        // foreach ($cluster as $attractors) {
+            // $x = [];
+            // $y = [];
+            // foreach ($attractors as $attractor) {
+                // array_push($x, $attractor[0]);
+                // array_push($y, $attractor[1]);
+            // }
 
-            if (count($x) > 0 && count($y) > 0) {
-                array_push($attractorAvg, [round(array_sum($x)/count($x)), round(array_sum($y)/count($y))]);
-            }
-        }
+            // if (count($x) > 0 && count($y) > 0) {
+                // array_push($attractorAvg, [round(array_sum($x)/count($x)), round(array_sum($y)/count($y))]);
+            // }
+        // }
 
         for($i = 0; $i < $attractorCount; $i++) {
             $time = Prediction::whereRaw('post_id=' . $postId . ' and attractor=' . ($i + 1))
@@ -189,8 +190,16 @@ class PostsController extends Controller
                     ->get()
                     ->avg('mouseY');
             } else {
-                $mouseX = $attractorAvg[$i][0];
-                $mouseY = $attractorAvg[$i][1];
+                $prediction = DB::table('predictions')
+                    ->select('grid', DB::raw('count(*) as total'))
+                    ->groupBy('grid')
+                    ->orderBy('total', 'desc')
+                    ->get();
+
+                $attractors = PredictionController::convertFromGridSystem(request('width'), request('height'), $predictions[$i]->grid, true);
+
+                $mouseX = $attractors['x'];
+                $mouseY = $attractors['y'];
             }
 
             $returnData[intval($time)] = [
