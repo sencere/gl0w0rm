@@ -54,11 +54,11 @@ Route::get('medium/{filename}', function ($filename)
         'filename' => 'required|regex:([a-zA-Z0-9]+)'
     ])->validate();
 
+    $path = storage_path('uploads/' . $filename);
+
     if (!File::exists($path)) {
         abort(404);
     }
-
-    $path = storage_path('uploads/' . $filename);
 
     $file = File::get($path);
     $type = File::mimeType($path);
@@ -71,7 +71,7 @@ Route::get('medium/{filename}', function ($filename)
 
 Route::group(['middleware' => ['auth']], function () {
     // API
-    Route::post('/posts/options/{post_id}', [PostsController::class, 'getPostOptions']);
+    Route::get('/post/options/{post_id}', [PostsController::class, 'getPostOptions']);
     Route::post('/posts/predictions/{post_id}', [PostsController::class, 'getPostPredictions']);
     Route::post('/results/result/{post}', [ResultController::class, 'getResult']);
     Route::post('/results', [ResultController::class, 'store']);

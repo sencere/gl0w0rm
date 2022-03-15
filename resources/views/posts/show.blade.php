@@ -43,3 +43,6 @@
         </div>
     @endsection
 @endif
+
+<script src="{{ asset('js/p5.min.js') }}"></script>
+<script src="{{ asset('js/merged.js') }}"></script>

@@ -3,7 +3,7 @@
 @section('content')
     <h4>Post settings update</h4>
     <hr />
-    <form method="post" action="/posts/settings/{{$post->id}}">
+    <form method="post" action="{{ url('/posts/settings/' . $post->id)}}">
         @csrf
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" name="votes" id="votes" {{ $post->allow_votes ? 'checked' : ''}}>

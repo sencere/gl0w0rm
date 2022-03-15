@@ -12,13 +12,3 @@ require('./bootstrap');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-require('./components/App');
-require('./components/Application');
-require('./components/PostBar');
-
-// Icons
-require('./components/icons/EyeIcon');
-require('./components/icons/ThumbsUp');
-require('./components/icons/ThumbsUpFill');
-require('./components/icons/ThumbsDown');
-require('./components/icons/ThumbsDownFill');

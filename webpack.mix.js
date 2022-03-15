@@ -12,7 +12,10 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'public/js')
-    .react()
     .sass('resources/sass/app.scss', 'public/css');
 
-mix.copy('resources/fonts', 'public/');
+//mix.copy('resources/fonts', 'public/');
+mix.copy('resources/js/p5.min.js', 'public/js');
+mix.combine(['resources/js/app/Sketch.js', 
+    'resources/js/app/Firefly.js',
+    'resources/js/app/StartButton.js'], 'public/js/merged.js');

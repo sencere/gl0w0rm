@@ -2,28 +2,26 @@
 
 @section('content')
     <h1>Channel</h1>
+
     <div class="panel panel-default">
         <div class="panel-body">
-                   <div class="media">
-                        <div class="media-left">
-                            @if ($channel->getImage() !== '/medium/')
-                                <img src="{{ $channel->getImage() }}" class="media-object">
-                            @else
-                                <img src="/fallback.png" class="media-object">
-                            @endif
-                        </div>
-                        <div class="media-body">
-                            {{ $channel->name }}
-                            <ul class="list-inline">
-                                <li>
-                                    <subscribe-button channel-slug="{{ $channel->slug }}"></subscribe-button>
-                                </li>
-                           </ul>
-                            @if ($channel->description)
-                                <hr>
-                                <p>{{ $channel->description }}</p>
-                            @endif
-                   </div>
+            <div class="d-flex">
+                <div class="p-2">
+                    @if ($channel->getImage() !== '/medium/')
+                        <img src="{{ $channel->getImage() }}" class="media-object">
+                    @else
+                        <img src="{{ url('/fallback.png') }}" class="media-object">
+                    @endif
+                </div>
+                <div class="user-link">
+                    {{ $channel->name }}
+                </div>
+            </div>
+
+            <div>
+                @if ($channel->description)
+                    {{ $channel->description }}
+                @endif
             </div>
         </div>
     </div>

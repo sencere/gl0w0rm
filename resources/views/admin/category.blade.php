@@ -3,7 +3,7 @@
 @section('content')
     <h1>Create a new category</h1>
     <hr />
-    <form method="post" action="/category">
+    <form method="post" action="{{ url('/category') }}">
         @csrf
         <div class="form-group">
             <label for="category">Category:</label>

@@ -3,28 +3,28 @@
 @section('content')
     <h1>Publish a Post</h1>
     <hr />
-    <form method="post" action="/posts">
+    <form method="post" action="{{ url('/posts') }}">
         @csrf
         <div class="form-group">
             <label for="topic">Topic:</label>
-            <select class="browser-default custom-select" id="topic_id" name="topic_id">
+            <select class="browser-default custom-select" value="" id="topic_id" name="topic_id">
                 <option selected>Please select a topic</option>
 
                 @foreach($topics as $topic)
-                    <option value="{{ $topic->id }}">{{ $topic->name }}</option>
+                    <option value="{{ $topic->id }}" {{ (collect(old('topic_id'))->contains($topic->id)) ? 'selected' : '' }}>{{ $topic->name }}</option>
                 @endforeach
 
             </select>
         </div>
         <div class="form-group">
             <label for="question">Question:</label>
-            <input type="text" class="form-control" id="quastion" name="question">
+            <input type="text" class="form-control" id="quastion" value="{{ old('question') }}" name="question">
         </div>
 
 
         <div class="form-group">
             <label for="time">Time:</label>
-            <input type="number" class="form-control" id="time" name="time" placeholder="30" min="30" max="90">
+            <input type="number" class="form-control" id="time" name="time" value="{{ old('time') }}" placeholder="30" min="30" max="90">
         </div>
 
         <div class="form-group">

@@ -3,7 +3,7 @@
 @section('content')
     <h1>Create a new topic</h1>
     <hr />
-    <form method="post" action="/topics">
+    <form method="post" action="{{ url('/topics') }}">
         @csrf
         <div class="form-group">
             <label for="category">Category:</label>
