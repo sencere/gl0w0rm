@@ -22,6 +22,8 @@ class TopicController extends Controller
             'page' => 'required|numeric'
         ])->validate();
 
+        session()->flash('breadcrumb', ['controller' => 'topic', 'id' => $topicId]);
+
         $posts = Topic::whereRaw('topic_id=' . $topicId)
             ->whereNull('posts.deleted_at')
             ->leftJoin('posts', 'topics.id', '=', 'posts.topic_id')

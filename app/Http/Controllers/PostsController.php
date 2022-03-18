@@ -27,6 +27,7 @@ class PostsController extends Controller
 
     public function show(Request $request, Post $post)
     {
+        session()->flash('breadcrumb', ['controller' => 'post','id' => $post->id]);
         $user = auth()->user();
         $lastUserView = $post->views()->latestByUser($user)->first();
         if (!$this->withinBuffer($lastUserView)) {

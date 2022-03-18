@@ -99,31 +99,33 @@ class Post extends Model
     public static function archives()
     {
         $breadcrumbArray = ['category' => '', 'topic' => '', 'post' => ''];
-        $arr = explode('/', $_SERVER['REQUEST_URI']);
 
-        if ($arr[1] === 'category') {
-            $category = Category::where('name', '=', $arr[2])
-                ->first();
-            $breadcrumbArray = ['category' => $category, 'topic' => '', 'post' => ''];
-        }
+        $breadcrumb = session('breadcrumb');
 
-        if ($arr[1] === 'topic') {
-            $checkArray = ['create', 'store'];
-            if (in_array($arr[2], $checkArray)) {
-                return;
+        if (isset($breadcrumb)) {
+            $controller = $breadcrumb['controller'];
+            $id = $breadcrumb['id'];
+
+            switch ($controller) {
+            case 'home':
+                $breadcrumbArray = ['category' => '', 'topic' => '', 'post' => ''];
+                break;
+            case 'category':
+                $category = Category::where('name', '=', $id)
+                    ->first();
+                $breadcrumbArray = ['category' => $category, 'topic' => '', 'post' => ''];
+                break;
+            case 'topic':
+                $topic = Topic::find($id);
+                $breadcrumbArray = ['category' => $topic->category, 'topic' => $topic, 'post' => ''];
+                break;
+            case 'post':
+                $post = Post::find($id);
+                $breadcrumbArray = ['category' => $post->topic->category, 'topic' => $post->topic, 'post' => $post->question];
+                break;
+            default:
+                break;
             }
-            $topic = Topic::find($arr[2]);
-            $breadcrumbArray = ['category' => $topic->category, 'topic' => $topic, 'post' => ''];
-        }
-
-        if ($arr[1] === 'posts') {
-            $checkArray = ['index', 'create', 'show', 'settings'];
-            if (in_array($arr[2], $checkArray)) {
-                return;
-            }
-
-            $post = Post::find($arr[2]);
-            $breadcrumbArray = ['category' => $post->topic->category, 'topic' => $post->topic, 'post' => $post->question];
         }
 
         return $breadcrumbArray;

@@ -26,8 +26,11 @@ class CategoryController extends Controller
             'name' => 'required|regex:([a-zA-Z]+)'
         ])->validate();
 
-       $category = \App\Models\Category::where('name', '=', request('name'))->first(); 
-       $topics = $category->topics;
+        $categoryName = request('name');
+        session()->flash('breadcrumb', ['controller' => 'category', 'id' => $categoryName]);
+
+        $category = \App\Models\Category::where('name', '=', $categoryName)->first();
+        $topics = $category->topics;
         return view('category.show', compact('topics'));
     }
 

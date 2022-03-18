@@ -24,6 +24,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+        session()->flash('breadcrumb', ['controller' => 'home', 'id' => '']);
         $categories = Category::all();
         return view('home', compact('categories'));
     }

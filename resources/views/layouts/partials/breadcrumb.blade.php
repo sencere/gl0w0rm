@@ -6,20 +6,21 @@
     <li class="nav-item">
         @if(!empty($breadcrumb['category']))
             <a class="nav-link" href="{{ url('/category/' . $breadcrumb['category']->name) }}">
-                {{ $breadcrumb['category']->name }}
+               {{ $breadcrumb['category']->name }}
             </a>
         @endif
     </li>
     <li class="nav-item">
-        @if (!empty($breadcrumb['topic']))
+        @if(!empty($breadcrumb['topic']))
             <a class="nav-link" href="{{ url('/topic/' . $breadcrumb['topic']->id . '/1') }}">
                 {{ $breadcrumb['topic']->name }}
             </a>
         @endif
     </li>
     <li class="nav-item">
-      <a class="nav-link disabled" href="#">{{!empty($breadcrumb['post']) ? $breadcrumb['post'] : ''}}</a>
+        <a class="nav-link disabled" href="#">
+            {{ $breadcrumb['post'] }}
+        </a>
     </li>
   </ul>
 </nav>
-
