@@ -61,7 +61,6 @@ class ResultController extends Controller
     public function store(Request $request)
     {
         $this->validate(request(), [
-
             'confidence' => 'required|regex:/^\d+(\.\d{1,2})?$/',
             'option'     => 'required|numeric|min:1',
             'postId'     => 'required|numeric|min:1|max:20',

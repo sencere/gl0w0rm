@@ -25,7 +25,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         @if(Auth::user()->roles->pluck('name')->first() === 'Admin')
-                            <a class="dropdown-item" href="/admin">Admin Panel</a>
+                            <a class="dropdown-item" href="{{ url('/admin') }}">Admin Panel</a>
                         @endif
                         <a class="dropdown-item" href="{{ url('/topic/create') }}">Create a new topic</a>
                         <a class="dropdown-item" href="{{ url('/posts/index') }}">Your posts</a>

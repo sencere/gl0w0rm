@@ -2,7 +2,7 @@
 
 @section('content')
     <h4>[{{ $post->topic->name }}] {{$post->question}}</h4>
-    <div id="landgrass" data-id="{{ $post->id }}"></div>
+    <div id="landgrass" data-id="{{ $post->id }}" data-url="{{ url('') }}"></div>
     @include('layouts.errors')
 @endsection
 @if ($post->allow_comments) 

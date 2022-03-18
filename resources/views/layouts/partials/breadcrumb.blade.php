@@ -1,15 +1,21 @@
 <nav class="navbar navbar-expand-sm bg-light navbar-light mt-5 pt-5">
   <ul class="navbar-nav">
     <li class="nav-item active">
-      <a class="nav-link" href="/home">Home</a>
+      <a class="nav-link" href="{{ url('/home') }}">Home</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="/category/{{!empty($breadcrumb['category']) ? $breadcrumb['category']->name : ''}}">
-            {{!empty($breadcrumb['category']) ? $breadcrumb['category']->name : ''}}
-        </a>
+        @if(!empty($breadcrumb['category']))
+            <a class="nav-link" href="{{ url('/category/' . $breadcrumb['category']->name) }}">
+                {{ $breadcrumb['category']->name }}
+            </a>
+        @endif
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="/topic/{{!empty($breadcrumb['topic']) ? $breadcrumb['topic']->id . '/1' : ''}}">{{!empty($breadcrumb['topic']) ? $breadcrumb['topic']->name : ''}}</a>
+        @if (!empty($breadcrumb['topic']))
+            <a class="nav-link" href="{{ url('/topic/' . $breadcrumb['topic']->id . '/1') }}">
+                {{ $breadcrumb['topic']->name }}
+            </a>
+        @endif
     </li>
     <li class="nav-item">
       <a class="nav-link disabled" href="#">{{!empty($breadcrumb['post']) ? $breadcrumb['post'] : ''}}</a>

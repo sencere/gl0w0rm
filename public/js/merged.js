@@ -4,10 +4,9 @@ window.onload = function() {
         var particles = [];
         var attractors = [];
         var attractorState = true;
-        //p5 = Object();
         var countdown = 60;
         var attracorsAllowed = 10;
-        var readyButtonState = false;
+        var readyButtonState = true;
         var readyTimerState = false;
         var readyAttractorState = false;
         var finishState = false;
@@ -16,8 +15,8 @@ window.onload = function() {
         var predictions = [];
         var attractorCount = 0;
         var completed = false;
-        var smCircleX = 0;
-        var smCircleY = 0;
+        var smCircleX = null;
+        var smCircleY = null;
         var secondTimer = 10;
         var variance = 0;
         var mean = 0;
@@ -43,9 +42,50 @@ window.onload = function() {
         var listAngles = [];
         var timerTextColor = [255, 255, 255];
 
+        // Predictions request
+        var predictions = [];
+        var mean = 0;
+        var variance = 0;
+
+        var url = '';
+
+        assignPredictions = function(data) {
+            var predictionsArr = [];
+
+            Object.entries(data.predictions).forEach(([key, value]) => {
+                predictionsArr[key] = value;
+            })
+
+            predictions = predictionsArr;
+            mean = data.mean;
+            variance = data.variance;
+        }
+
+        getPredictions = function(p5) {
+            var data = {
+                _token: token,
+                width: p5.width, 
+                height: p5.height
+            };
+            p5.httpPost(
+                url + '/posts/predictions/' + postId,
+                data,
+                function(response) {
+                    if (typeof response === 'string') {
+                        response = JSON.parse(response);    
+                    }
+
+                    assignPredictions(response);
+                },
+                function(error) {
+                    console.log(error);
+                }
+            );
+        }
+
         setOptions = function(responseOptions) {
             target = responseOptions.target;
-            time = responseOptions.time;            
+            time = responseOptions.time;
             question = responseOptions.question;
             options = responseOptions.options;
         }
@@ -62,6 +102,10 @@ window.onload = function() {
                 displayOnlyResult(confidence, option, circleX, circleY, p5);
                 setPredictionCompleted();
                 p5.noLoop();
+            }
+
+            if (!result) {
+                readyButtonState = false;
             }
 
             loading = true;
@@ -101,7 +145,7 @@ window.onload = function() {
                 mouseX = parseInt(mouseX.toFixed(0));
                 mouseY = parseInt(mouseY.toFixed(0));
                 var time = typeof timer !== 'string' ? parseInt(timer) : time;
-                
+
                 // sending attractor position
                 var data = {
                     _token: innerToken,
@@ -116,7 +160,7 @@ window.onload = function() {
                 if (!botClick) {
                     attractorCount++;
                     p5.httpPost(
-                        '/predictions', 
+                        url + '/predictions',
                         data,
                         function(response) {
                             console.log('attractor was added.');
@@ -128,6 +172,42 @@ window.onload = function() {
                 }
             }
         }
+
+        // prediction from player
+        displayCircleMiddleText = function(p5, width, height, winner, confidenceScore, optionKey) {
+            var confidence = parseFloat(confidenceScore.toFixed(2));
+            var option = parseInt(optionKey, 10);
+            p5.noStroke();
+            p5.fill(0, 129, 255);
+            p5.textSize(30);
+            p5.textAlign(p5.CENTER, p5.CENTER);
+            p5.text(winner, width/2, height/2);
+
+            p5.textSize(20);
+            p5.textAlign(p5.CENTER, p5.CENTER);
+            p5.text('Confidence: ' + confidenceScore.toFixed(2) + '%', width/2, (height/2) - height/15);
+
+            // Simple POST request with a JSON body using axios
+            var data = {
+                postId: parseInt(postId),
+                confidence: confidenceScore.toFixed(2),
+                option: optionKey,
+                circleX: smCircleX,
+                circleY: smCircleY,
+                _token: token
+            };
+
+            p5.httpPost(
+                url + '/results',
+                data,
+                function(response) {
+                    console.log('result added');
+                },
+                function(error) {
+                    console.log(error);
+                }
+            );
+        };
 
         displayOnlyResult = function(confidenceScore, middleText, circleX, circleY, p5) {
             var width = p5.width;
@@ -171,12 +251,14 @@ window.onload = function() {
             p5.fill(255, 204, 0);
             p5.textSize(20);
             p5.textAlign(p5.CENTER, p5.CENTER);
-            p5.text('Confidence: ' + crowdConfidenceScore + '%', width/2, (height/2) - height/15);
+            if (crowdConfidenceScore > 0 && crowdConfidenceScore < 100)
+                p5.text('Confidence: ' + crowdConfidenceScore + '%', width/2, (height/2) - height/15);
 
             p5.noStroke();
             p5.textSize(30);
             p5.textAlign(p5.CENTER, p5.CENTER);
-            p5.text('Crowd prediction: \n' + winner, width/2, height/2);
+            if (crowdConfidenceScore > 0 && crowdConfidenceScore < 100)
+                p5.text('Crowd prediction: \n' + winner, width/2, height/2);
             p5.noLoop();
         };
 
@@ -193,7 +275,7 @@ window.onload = function() {
                     updateTimer('GO!');
                     timerTextColor = [0, 255, 0];
                     secondTimer = time;
-                    //getPredictions();
+                    getPredictions(p5);
                     setTimeout(function()  {
                         startSecondTimer(p5);
                         readyAttractorState = true;
@@ -202,7 +284,7 @@ window.onload = function() {
             }, 1000);
         }
 
-        startSecondTimer = function(p5) {            
+        startSecondTimer = function(p5) {
             var timer = secondTimer;
             timerTextColor = [255, 255, 255];
             var width = p5.width;
@@ -210,6 +292,10 @@ window.onload = function() {
             var myVar = setInterval(() => {
                 timer--;
                 updateTimer(timer);
+
+                if (typeof predictions[timer] !== 'undefined') {
+                    addAttractor(predictions[timer].mouseX, predictions[timer].mouseY, p5);
+                }
 
                 if (timer < 1) {
                     clearInterval(myVar);
@@ -231,7 +317,7 @@ window.onload = function() {
             timer = '';
         }
 
-        p.calculatingListAngles = function() {
+        calculatingListAngles = function(p5) {
             var angles = 6;
             // calculate listAngles
             for (var i = 0; i <= angles; i++) {
@@ -241,7 +327,7 @@ window.onload = function() {
                     for (var j = 0;j < i; j++) {
                         var angle = 0;
                         angle = (2 * (j) * (180 / i)) + 90;
-                        angle = angle * this.PI / 180;
+                        angle = angle * p5.PI / 180;
                         innerArray.push(angle);
                     }
 
@@ -266,6 +352,48 @@ window.onload = function() {
             }, milliSeconds);
         };
 
+
+        displayPredictionResults = (p5, width, height) => {
+            var countOptions = Object.keys(options).length;
+            var count = 0;
+            var circleDiameter = (width/2) - (1/20 * width);
+            var radius = circleDiameter/2;
+            var resultArr = [];
+            var minValue = p5.pow(10,5);
+            var winner = '';
+            var middleText = '';
+            var distanceSum = 1;
+            var percentagePerOption = 100 / countOptions;
+            var angle = listAngles[countOptions][count];
+            var optionKey = 0;
+            angle = angle + p5.PI;
+
+            if (predictions.length > 0) {
+                Object.entries(options).forEach(([key, value]) => {
+                    var angle = listAngles[countOptions][count];
+                    var x = (width/2) + radius * p5.cos(-1 * angle);
+                    var y = (height/2) + radius * p5.sin(-1 * angle);
+
+                    var distance = p5.dist(x, y, smCircleX, smCircleY);
+                    distanceSum += distance;
+
+                    if (distance < minValue) {
+                        winner = value;
+                        minValue = distance;
+                        optionKey = key;
+                    }
+
+                    minValue = distance;
+                    count++;
+                });
+                var confidenceScore = (radius - minValue) * 100 / radius;
+                confidenceScore = Math.abs(confidenceScore);
+
+                displayCircleMiddleText(p5, width, height, winner, confidenceScore, optionKey);
+                p5.noLoop();
+            }
+        };
+
         p.setup = function () {
             var self = this;
 
@@ -275,6 +403,7 @@ window.onload = function() {
             // Canvas element
             var canvas = document.getElementById('landgrass');
             postId = canvas.getAttribute('data-id');
+            url = canvas.getAttribute('data-url');
             var canvasWidth = canvas.clientWidth;
             var canvasHeight = this.height;
 
@@ -284,10 +413,10 @@ window.onload = function() {
             p.createCanvas(canvasWidth,canvasWidth);
 
             // Option angles calculation
-            this.calculatingListAngles();
+            calculatingListAngles(this);
 
             // Options
-            this.httpGet('/post/options/' + postId, 'json', false, function(response) {
+            this.httpGet(url + '/post/options/' + postId, 'json', false, function(response) {
                 setOptions(response);
             });
 
@@ -295,7 +424,7 @@ window.onload = function() {
             token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             this.httpPost(
-                '/results/result/' + postId, 
+                url + '/results/result/' + postId,
                 {width: canvasWidth, height: canvasHeight, _token: token},
                 function(response) {
                     assignResult(response, self);
@@ -305,7 +434,7 @@ window.onload = function() {
                 }
             );
 
-            // mouse click 
+            // mouse click
             if (!completed) {
                 this.mousePressed = function() {
                     addAttractor(this.mouseX, this.mouseY, this, false);
@@ -344,7 +473,7 @@ window.onload = function() {
             if (result) {
                 setPredictionCompleted();
             } else if (result === null) {
-                
+
             }
 
             // DISPLAY OPTION LOGIC + DISPLAY SMALLER CIRCLE
@@ -456,13 +585,13 @@ window.onload = function() {
                 this.text(timer, this.width/2, this.height/2);
             }
 
-            //if (finishState) {
-              //displayPredictionResults(p5, width, height);
-            //}
-
             if (result === true) {
                 displayOnlyResult(confidence, option, circleX, circleY, this);
                 this.noLoop();
+            }
+
+            if (finishState) {
+                displayPredictionResults(this, this.width, this.height);
             }
 
             // StartButton logic
@@ -474,6 +603,7 @@ window.onload = function() {
     }
     new p5(sketch_idnameofdiv, 'landgrass');
 };
+
 function Firefly(x, y, p5) {
     this.pos = p5.createVector(x, y);
     this.prev = p5.createVector(x, y);
