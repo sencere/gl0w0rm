@@ -64,6 +64,7 @@ class PostsController extends Controller
             'subscription' => $subscriptionStatus,
             'vote' => $voteStatus,
             'userSame' => $userSame,
+            'slug' => $channel->slug,
         ];
 
         return view('posts.show', $data);

@@ -39,7 +39,7 @@
         @endif
         <div class="p-2 ml-auto">
             @if(!$userSame)
-                <button type="button" class="btn btn-purple" id="subscribe" data-toggle="tooltip">
+                <button type="button" class="btn {{ $subscription ? 'btn-danger subscribed' : 'btn-purple' }}" id="subscribe" data-slug="{{ $slug }}">
                     {{ $subscription ? "Subscribed" : "Subscribe" }}
                 </button>
             @endif
