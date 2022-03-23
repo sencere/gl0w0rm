@@ -20,16 +20,9 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(Request $request)
+    public function index(Category $category)
     {
-        validator($request->route()->parameters(), [
-            'name' => 'required|regex:([a-zA-Z]+)'
-        ])->validate();
-
-        $categoryName = request('name');
-        session()->flash('breadcrumb', ['controller' => 'category', 'id' => $categoryName]);
-
-        $category = \App\Models\Category::where('name', '=', $categoryName)->first();
+        session()->flash('breadcrumb', ['controller' => 'category', 'id' => $category->id]);
         $topics = $category->topics;
         return view('category.show', compact('topics'));
     }

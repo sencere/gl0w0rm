@@ -89,7 +89,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/user/{user}', [UserController::class, 'show']);
 
     // Navigation
-    Route::get('/category/{name}', [CategoryController::class, 'index']);
+    Route::get('/category/{category}', [CategoryController::class, 'index']);
     Route::get('/topic/{id}/{page}', [TopicController::class, 'index']);
 
     Route::post('/posts', [PostsController::class, 'store']);

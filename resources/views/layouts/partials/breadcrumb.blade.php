@@ -5,7 +5,7 @@
     </li>
     <li class="nav-item">
         @if(!empty($breadcrumb['category']))
-            <a class="nav-link" href="{{ url('/category/' . $breadcrumb['category']->name) }}">
+            <a class="nav-link" href="{{ url('/category/' . $breadcrumb['category']->id) }}">
                {{ $breadcrumb['category']->name }}
             </a>
         @endif

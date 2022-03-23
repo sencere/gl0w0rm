@@ -49,6 +49,10 @@ window.onload = function() {
 
         var url = '';
 
+        var backgroundColor = [22, 22, 22];
+        var circleColor = [20, 20, 20];
+
+
         assignPredictions = function(data) {
             var predictionsArr = [];
 
@@ -177,15 +181,28 @@ window.onload = function() {
         displayCircleMiddleText = function(p5, width, height, winner, confidenceScore, optionKey) {
             var confidence = parseFloat(confidenceScore.toFixed(2));
             var option = parseInt(optionKey, 10);
+
+            // Canvas Background
+            p5.background(backgroundColor);
+
+            // Big Circle
+            var circleDiameter = (p5.height/2);
+            p5.fill(circleColor);
+            p5.noStroke();
+            p5.circle(p5.width/2, p5.height/2, circleDiameter);
+            p5.strokeWeight(0);
+
             p5.noStroke();
             p5.fill(0, 129, 255);
-            p5.textSize(30);
-            p5.textAlign(p5.CENTER, p5.CENTER);
-            p5.text(winner, width/2, height/2);
-
             p5.textSize(20);
             p5.textAlign(p5.CENTER, p5.CENTER);
-            p5.text('Confidence: ' + confidenceScore.toFixed(2) + '%', width/2, (height/2) - height/15);
+            p5.text('Confidence: ' +
+                    '\n' +
+                    confidenceScore.toFixed(2) + '%' +
+                    '\n' +
+                    'Your prediction: ' +
+                    '\n' +
+                    winner, 0, 0, p5.width, p5.height);
 
             // Simple POST request with a JSON body using axios
             var data = {
@@ -207,6 +224,7 @@ window.onload = function() {
                     console.log(error);
                 }
             );
+            p5.noLoop()
         };
 
         displayOnlyResult = function(confidenceScore, middleText, circleX, circleY, p5) {
@@ -242,23 +260,22 @@ window.onload = function() {
             var crowdConfidenceScore = (radius - minValue) * 100 / radius;
             crowdConfidenceScore = parseFloat(crowdConfidenceScore.toFixed(2));
 
-            // QUESTION
-            p5.fill(255, 204, 0);
-            p5.textSize(30);
-            p5.text(target + '\n' + question, width/2, height/4);
 
-            // CROWD PREDICTION
+            if (crowdConfidenceScore < 0)
+                crowdConfidenceScore = '';
+
+            // QUESTION
             p5.fill(255, 204, 0);
             p5.textSize(20);
             p5.textAlign(p5.CENTER, p5.CENTER);
-            if (crowdConfidenceScore > 0 && crowdConfidenceScore < 100)
-                p5.text('Confidence: ' + crowdConfidenceScore + '%', width/2, (height/2) - height/15);
-
-            p5.noStroke();
-            p5.textSize(30);
-            p5.textAlign(p5.CENTER, p5.CENTER);
-            if (crowdConfidenceScore > 0 && crowdConfidenceScore < 100)
-                p5.text('Crowd prediction: \n' + winner, width/2, height/2);
+            p5.text(target +
+                '\n' + question +
+                '\n' +
+                '\n' + 'Confidence: ' +
+                '\n' + crowdConfidenceScore + '%' +
+                '\n' +
+                '\n' + 'Crowd prediction:' +
+                '\n' + winner, 0, 0, p5.width, p5.height);
             p5.noLoop();
         };
 
@@ -273,7 +290,7 @@ window.onload = function() {
                 if (timerInside < 1) {
                     clearInterval(myVar);
                     updateTimer('GO!');
-                    timerTextColor = [0, 255, 0];
+                    timerTextColor = [0, 129, 255];
                     secondTimer = time;
                     getPredictions(p5);
                     setTimeout(function()  {
@@ -456,11 +473,9 @@ window.onload = function() {
             var radiusSmallerCircle = 10;
 
             // Canvas Background
-            var backgroundColor = [22, 22, 22];
             this.background(backgroundColor);
 
             // Big Circle
-            var circleColor = [20, 20, 20];
             var circleDiameter = (this.height/2);
             var radius = circleDiameter/2;
             var countOptions = Object.keys(options).length;
@@ -478,11 +493,10 @@ window.onload = function() {
 
             // DISPLAY OPTION LOGIC + DISPLAY SMALLER CIRCLE
             if (readyTimerState && !completed) {
-                // let circleColor = p5.color(5, 8, 163);
-                var circleColor = this.color(217, 255, 255);
-                circleColor.setAlpha(128 + 128 * (this.sin(this.millis() / 1000) + 0.7));
+                var smallerCircleColor = this.color(217, 255, 255);
+                smallerCircleColor.setAlpha(128 + 128 * (this.sin(this.millis() / 1000) + 0.7));
 
-                this.fill(circleColor);
+                this.fill(smallerCircleColor);
                 this.noStroke();
                 this.circle(smCircleX, smCircleY, circleDiameter/4);
                 this.strokeWeight(0);
@@ -504,10 +518,12 @@ window.onload = function() {
             // Question position in the middle
             this.noStroke();
             this.fill(timerTextColor);
-            this.textSize(30);
+            this.textSize(20);
             this.textAlign(this.CENTER, this.CENTER);
             if (!readyTimerState) {
-                this.text(target + '\n' + question, this.width/2, this.height/2);
+                this.text(target +
+                    '\n' +
+                    question, 0, 0, this.width, this.height);
             }
 
 
@@ -576,7 +592,6 @@ window.onload = function() {
                 }
             }
 
-
             if (readyTimerState) {
                 this.noStroke();
                 this.fill(timerTextColor);
@@ -602,4 +617,5 @@ window.onload = function() {
         }
     }
     new p5(sketch_idnameofdiv, 'landgrass');
+    new PostBar();
 };

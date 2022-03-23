@@ -16,6 +16,7 @@ mix.js('resources/js/app.js', 'public/js')
 
 //mix.copy('resources/fonts', 'public/');
 mix.copy('resources/js/p5.min.js', 'public/js');
-mix.combine(['resources/js/app/Sketch.js', 
-    'resources/js/app/Firefly.js',
-    'resources/js/app/StartButton.js'], 'public/js/merged.js');
+mix.combine(['resources/js/app/sketch.js', 
+    'resources/js/app/firefly.js',
+    'resources/js/app/startButton.js',
+    'resources/js/app/postBar.js'], 'public/js/merged.js');

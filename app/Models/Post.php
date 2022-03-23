@@ -111,7 +111,7 @@ class Post extends Model
                 $breadcrumbArray = ['category' => '', 'topic' => '', 'post' => ''];
                 break;
             case 'category':
-                $category = Category::where('name', '=', $id)
+                $category = Category::find($id)
                     ->first();
                 $breadcrumbArray = ['category' => $category, 'topic' => '', 'post' => ''];
                 break;
