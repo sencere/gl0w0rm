@@ -20,11 +20,27 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(Category $category)
+    public function index(Request $reqeust, $categoryId, $page)
     {
-        session()->flash('breadcrumb', ['controller' => 'category', 'id' => $category->id]);
-        $topics = $category->topics;
-        return view('category.show', compact('topics'));
+        $elementsPerPage = 10;
+        session()->flash('breadcrumb', ['controller' => 'category', 'id' => $categoryId]);
+
+        $topics = Category::whereRaw('categories.id=' . $categoryId)
+            ->leftJoin('topics', 'categories.id', '=', 'topics.category_id')
+            ->orderBy('topics.created_at', 'desc');
+
+        $count = $topics->count();
+        $maxPages = (int)floor($count / $elementsPerPage);
+        $topics = $topics->skip(($page -1) * $elementsPerPage)->limit($elementsPerPage)->get();
+
+        $data = [
+            'topics' => $topics,
+            'maxPages' => $maxPages,
+            'page' => $page,
+            'categoryId' => $categoryId,
+        ];
+
+        return view('category.show', $data);
     }
 
     /**

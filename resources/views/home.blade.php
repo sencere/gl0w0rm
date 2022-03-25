@@ -6,10 +6,10 @@
         @foreach ($categories as $category)
             <div class="card mb-3">
               <div class="card-body card-cust">
-                <a class="link-text" href="{{ url('/category/' . $category->id  ) }}"> 
+                <a class="link-text" href="{{ url('/category/' . $category->id . '/1' ) }}">
                     <h5 class="card-title">{{ $category->name }}</h5>
                 </a>
-                <a href="{{ url('/category/' . $category->id  ) }}" class="btn btn-purple">Enter</a>
+                <a href="{{ url('/category/' . $category->id . '/1' ) }}" class="btn btn-purple">Enter</a>
               </div>
             </div>
         @endforeach

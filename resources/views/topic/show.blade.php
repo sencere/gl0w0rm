@@ -33,9 +33,4 @@
             </ul>
         </nav>
     @endif
-    @if (session('status'))
-        <div class="alert" role="alert">
-            {{ session('status') }}
-        </div>
-    @endif
 @endsection
