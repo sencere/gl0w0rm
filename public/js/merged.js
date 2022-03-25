@@ -1,5 +1,5 @@
 window.onload = function() {
-    function sketch_idnameofdiv(p) {
+    function sketch(p) {
         var amountOfFireflies = 80;
         var particles = [];
         var attractors = [];
@@ -52,7 +52,6 @@ window.onload = function() {
         var backgroundColor = [22, 22, 22];
         var circleColor = [20, 20, 20];
 
-
         assignPredictions = function(data) {
             var predictionsArr = [];
 
@@ -68,7 +67,7 @@ window.onload = function() {
         getPredictions = function(p5) {
             var data = {
                 _token: token,
-                width: p5.width, 
+                width: p5.width,
                 height: p5.height
             };
             p5.httpPost(
@@ -76,7 +75,7 @@ window.onload = function() {
                 data,
                 function(response) {
                     if (typeof response === 'string') {
-                        response = JSON.parse(response);    
+                        response = JSON.parse(response);
                     }
 
                     assignPredictions(response);
@@ -130,8 +129,6 @@ window.onload = function() {
         updateTimer = function(counter) {
             timer = counter;
         };
-
-
 
         addAttractor = function(mouseX, mouseY, p5, botClick=true) {
             var attractorsAllowed = botClick || attractorCount < attracorsAllowed;
@@ -234,34 +231,30 @@ window.onload = function() {
             smCircleX = circleX;
             smCircleY = circleY;
             var countOptions = Object.keys(options).length;
-            var circleDiameter = (width/2) - (1/20 * width);
-            var radius = circleDiameter/2;
-            var minValue = Math.pow(10,5);
+            var circleDiameter = (width / 2) - (1 / 20 * width);
+            var radius = circleDiameter / 2;
+            var minValue = Math.pow(10, 5);
             var winner = '';
-            var distanceSum = 1;
             var optionKey = 0;
             Object.entries(options).forEach(([key, value]) => {
                 var angle = listAngles[countOptions][count];
-                var x = (width/2) + radius * p5.cos(-1 * angle);
-                var y = (height/2) + radius * p5.sin(-1 * angle);
-
+                var x = (width / 2) + radius * p5.cos(-1 * angle);
+                var y = (height / 2) + radius * p5.sin(-1 * angle);
                 var distance = p5.dist(x, y, smCircleX, smCircleY);
-                distanceSum += distance;
 
                 if (distance < minValue) {
                     winner = value;
                     minValue = distance;
                     optionKey = key;
                 }
-                this.minValue = distance;
+
                 count++;
             });
 
-            var crowdConfidenceScore = (radius - minValue) * 100 / radius;
-            crowdConfidenceScore = parseFloat(crowdConfidenceScore.toFixed(2));
+            var crowdConfidenceScore = 100 - (minValue * 100 / circleDiameter);
+            crowdConfidenceScore = Math.abs(confidenceScore);
 
-
-            if (crowdConfidenceScore < 0)
+            if (crowdConfidenceScore > 100)
                 crowdConfidenceScore = '';
 
             // QUESTION
@@ -369,30 +362,25 @@ window.onload = function() {
             }, milliSeconds);
         };
 
-
         displayPredictionResults = (p5, width, height) => {
             var countOptions = Object.keys(options).length;
             var count = 0;
-            var circleDiameter = (width/2) - (1/20 * width);
-            var radius = circleDiameter/2;
+            var circleDiameter = (width / 2) - (1 / 20 * width);
+            var radius = circleDiameter / 2;
             var resultArr = [];
             var minValue = p5.pow(10,5);
             var winner = '';
             var middleText = '';
-            var distanceSum = 1;
             var percentagePerOption = 100 / countOptions;
-            var angle = listAngles[countOptions][count];
             var optionKey = 0;
-            angle = angle + p5.PI;
 
             if (predictions.length > 0) {
                 Object.entries(options).forEach(([key, value]) => {
                     var angle = listAngles[countOptions][count];
-                    var x = (width/2) + radius * p5.cos(-1 * angle);
-                    var y = (height/2) + radius * p5.sin(-1 * angle);
+                    var x = (width / 2) + radius * p5.cos(-1 * angle);
+                    var y = (height / 2) + radius * p5.sin(-1 * angle);
 
                     var distance = p5.dist(x, y, smCircleX, smCircleY);
-                    distanceSum += distance;
 
                     if (distance < minValue) {
                         winner = value;
@@ -400,10 +388,10 @@ window.onload = function() {
                         optionKey = key;
                     }
 
-                    minValue = distance;
                     count++;
                 });
-                var confidenceScore = (radius - minValue) * 100 / radius;
+
+                var confidenceScore = 100 - (minValue * 100 / circleDiameter);
                 confidenceScore = Math.abs(confidenceScore);
 
                 displayCircleMiddleText(p5, width, height, winner, confidenceScore, optionKey);
@@ -470,7 +458,7 @@ window.onload = function() {
         p.draw = function () {
             var self = this;
             var count = 0;
-            var radiusSmallerCircle = 10;
+            // var radiusSmallerCircle = 10;
 
             // Canvas Background
             this.background(backgroundColor);
@@ -479,6 +467,7 @@ window.onload = function() {
             var circleDiameter = (this.height/2);
             var radius = circleDiameter/2;
             var countOptions = Object.keys(options).length;
+            var attractorRadius = circleDiameter / 30;
 
             this.fill(circleColor);
             this.noStroke();
@@ -511,6 +500,7 @@ window.onload = function() {
                     this.textSize(20);
                     this.textAlign(this.CENTER, this.CENTER);
                     this.text(value, x, y);
+                    this.text(key, x, y + 20);
                     count++;
                 });
             }
@@ -539,7 +529,7 @@ window.onload = function() {
                 for (var i = 0; i < attractors.length; i++) {
                     this.fill(240,10,10,150);
                     this.noStroke();
-                    this.circle(attractors[i].x, attractors[i].y, radiusSmallerCircle);
+                    this.circle(attractors[i].x, attractors[i].y, attractorRadius);
                 }
 
                 // Firefly rendering
@@ -563,7 +553,7 @@ window.onload = function() {
                 var concentrationY = particleSumY / particleLength;
                 var movingFactor = 0.05;
                 var rememberMovingFactor = 0;
-                var allowedDistance = 2.5*radiusSmallerCircle;
+                var allowedDistance = 2.5 * attractorRadius;
                 var distanceConcentCircl = this.dist(concentrationX, concentrationY, smCircleX, smCircleY);
 
                 if (mean === 0 && variance === 0) {
@@ -579,15 +569,22 @@ window.onload = function() {
 
                 if (readyAttractorState) {
                     if (smCircleX < concentrationX) {
-                        smCircleX = smCircleX + movingFactor;
+                        smCircleXcheck = smCircleX + movingFactor;
                     } else {
-                        smCircleX = smCircleX - movingFactor;
+                        smCircleXcheck = smCircleX - movingFactor;
                     }
 
                     if (smCircleY < concentrationY) {
-                        smCircleY = smCircleY + movingFactor;
+                        smCircleYcheck = smCircleY + movingFactor;
                     } else {
-                        smCircleY = smCircleY - movingFactor;
+                        smCircleYcheck = smCircleY - movingFactor;
+                    }
+
+                    var ropeDistance = this.dist(smCircleXcheck, smCircleYcheck, this.width / 2, this.height / 2) < (radius + attractorRadius);
+
+                    if (ropeDistance) {
+                        smCircleX = smCircleXcheck;
+                        smCircleY = smCircleYcheck;
                     }
                 }
             }
@@ -616,7 +613,7 @@ window.onload = function() {
             }
         }
     }
-    new p5(sketch_idnameofdiv, 'landgrass');
+    new p5(sketch, 'landgrass');
     new PostBar();
 };
 
